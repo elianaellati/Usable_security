@@ -1,0 +1,42 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/my_day"
+            android:icon="@drawable/sunn"
+            android:title="My Day" />
+        <item
+            android:id="@+id/important"
+            android:icon="@drawable/imp"
+            android:title="Important" />
+
+        <item
+            android:id="@+id/notification"
+            android:icon="@drawable/noti"
+            android:title="Notification"
+            />
+
+
+        <item
+            android:id="@+id/tasks"
+            android:icon="@drawable/task"
+            android:title="Tasks"
+            />
+
+        <item
+            android:id="@+id/completed"
+            android:icon="@drawable/check"
+            android:title="Completed" />
+
+        <item
+            android:id="@+id/assigned"
+            android:icon="@drawable/assign"
+            android:title="Assigned" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/log"
+            android:title="Logout" />
+
+    </group>
+</menu>

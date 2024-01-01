@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name"></string>
+    <!-- to toggle the open close button of the navigation drawer -->
+    <string name="open_drawer">Open</string>
+    <string name="close_drawer">Close</string>
+
+
+
+    <string-array name="date_options_array">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Pick a Date</item>
+    </string-array>
+
+
+    <string-array name="reminders">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Next Week</item>
+    </string-array>
+
+
+    <string-array name="repeat">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
+
+</resources>
