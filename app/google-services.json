@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "851312410154",
+    "firebase_url": "https://usable-security-default-rtdb.firebaseio.com",
+    "project_id": "usable-security",
+    "storage_bucket": "usable-security.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851312410154:android:8c89ab03df907bc2ba0d53",
+        "android_client_info": {
+          "package_name": "com.example.usable_security"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3_uyAcGDNg5CgUFDQ6xTWiPeWwSap24w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
