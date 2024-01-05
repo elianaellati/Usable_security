@@ -14,17 +14,40 @@
 
 
     <string-array name="reminders">
-        <item>Today</item>
-        <item>Tomorrow</item>
-        <item>Next Week</item>
+        <item>None</item>
+        <item>5 minutes before</item>
+        <item>15 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+        <item>2 hour before</item>
+        <item>1 day before</item>
+        <item>2 days before</item>
+        <item>1 month before</item>
+        <item>custom</item>
     </string-array>
 
+    <string-array name="remind_units">
+        <item>Minute</item>
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+    </string-array>
 
     <string-array name="repeat">
         <item>Daily</item>
         <item>Weekly</item>
         <item>Monthly</item>
         <item>Yearly</item>
+        <item>custom</item>
+    </string-array>
+
+
+    <string-array name="repeat_units">
+        <item>Days</item>
+        <item>Weeks</item>
+        <item>Month</item>
+        <item>Year</item>
     </string-array>
 
 </resources>

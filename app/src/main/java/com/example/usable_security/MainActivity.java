@@ -61,9 +61,11 @@ public class MainActivity extends AppCompatActivity {
                                 Log.e(TAG, "Error writing data", e);
                             }
                         });*/
-                // Open the login page (replace LoginActivity.class with your actual login activity)
-                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(intent);
+                // Open the login page (replace LoginActivity.class with your actual login activity)
+              //  Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+              //  startActivity(intent);
             }
         });
        Button loginn=findViewById(R.id.buttonlogin);
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!username.isEmpty()&& !password.isEmpty()){
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference dataRef = database.getReference("Data");
-                    dataRef.orderByChild("Username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                    dataRef.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             boolean usernameFound = false;
@@ -84,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 usernameFound = true;
 
-                                String storedPassword = snapshot.child("Password").getValue(String.class);
-                                String storedusername=snapshot.child("Username").getValue(String.class);
+                                String storedPassword = snapshot.child("password").getValue(String.class);
+                                String storedusername=snapshot.child("username").getValue(String.class);
                                 if ( storedPassword.equals(password) && storedusername.equals(storedusername)) {
                                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                     startActivity(intent);
