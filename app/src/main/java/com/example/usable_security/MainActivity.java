@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                 String storedPassword = snapshot.child("Password").getValue(String.class);
                                 String storedusername=snapshot.child("Username").getValue(String.class);
                                 if ( storedPassword.equals(password) && storedusername.equals(storedusername)) {
-                                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                     startActivity(intent);
 
                                 } else {
