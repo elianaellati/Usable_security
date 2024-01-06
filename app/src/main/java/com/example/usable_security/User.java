@@ -77,6 +77,7 @@ public class User {
 
 
 
+
     public User(String name, String username, String password, String email) {
         this.name = name;
         this.username = username;
@@ -85,7 +86,7 @@ public class User {
     }
 
 
-
-
-
+    public void addContactToMap(String contactId, contacts contact) {
+        contacts.put(contactId,contact);
+    }
 }

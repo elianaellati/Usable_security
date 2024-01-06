@@ -256,36 +256,7 @@ public class SignInActivity extends AppCompatActivity {
         String userId = usersReference.push().getKey();
         User user = new User(name,username,email,password);
         usersReference.child(userId).setValue(user);
-        contacts contact1 = new contacts("Jameel", "Jameel@gmail.com");
-        usersReference.child(userId).child("contacts").child("contactId1").setValue(contact1);
 
-
-
-
-
-        // Save the user's information in the database
-       /* HashMap<String, Object> hashmap = new HashMap<>();
-        hashmap.put("Name", name);
-        hashmap.put("Username", username);
-        hashmap.put("Email", email);
-        hashmap.put("Password", password);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference Ref = database.getReference("Data");
-        String key = Ref.push().getKey();
-        hashmap.put("key", key);
-        Ref.child(key).setValue(hashmap)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        status.setText("User added successfully");
-                        Toast.makeText(SignInActivity.this, "User added to the database", Toast.LENGTH_SHORT).show();
-                                  Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-                                 startActivity(intent);
-                    } else {
-                        // Failed to save user data
-                        Log.e(TAG, "Failed to save user data: " + task.getException());
-                        // Handle database save failure (e.g., display an error message to the user)
-                    }
-                });*/
     }
 
 }

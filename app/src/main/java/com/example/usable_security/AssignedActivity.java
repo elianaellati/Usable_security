@@ -7,17 +7,22 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.usable_security.R;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,12 +33,21 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.Map;
 
-public class  AssignedActivity extends AppCompatActivity {
+public class  AssignedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public DrawerLayout drawerLayout;
 
+    public ActionBarDrawerToggle actionBarDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assigned_page);
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        navigationView.setNavigationItemSelectedListener(this);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         displayContacts();
 
         Button add =findViewById(R.id.addButton);
@@ -94,21 +108,21 @@ public class  AssignedActivity extends AppCompatActivity {
                         if (dataSnapshot.exists()) {
                             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                 User user = userSnapshot.getValue(User.class);
-                                if (user != null ) {
+                                if (user != null  ) {
                                     isEmailFound = true;
                                     String id=User.key;
                                     Log.d("Info", "EMAIl found:" + user.getUsername());
                                     Log.d("Info", "EMAIl found:" + id);
                                     contacts contact = new contacts(user.getName(), user.getEmail());
-                                    DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
-                                    DatabaseReference newContactRef = userContactsRef.push();
-                                    newContactRef.setValue(contact);
+
                                     SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                     String userJson = preferences.getString("user", "");
-                                    User updateuser=null;
-                                    if (!userJson.isEmpty()) {
-                                        Gson gson = new Gson();
-                                        updateuser = gson.fromJson(userJson, User.class);
+                                    Gson gson = new Gson();
+                                    User  updateuser = gson.fromJson(userJson, User.class);;
+                                    if (updateuser.getEmail().compareTo(enteredEmail)!=0 && user.getContacts().containsValue(contact.email)) {
+                                        DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
+                                        DatabaseReference newContactRef = userContactsRef.push();
+                                        newContactRef.setValue(contact);
                                         updateuser.addContactToMap(newContactRef.getKey(),contact);
                                         String userrJson = gson.toJson( updateuser);
                                         SharedPreferences.Editor editor = preferences.edit();
@@ -146,6 +160,38 @@ public class  AssignedActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.my_day:
+                openMyDayIntent() ;
+                break;
+            case R.id.assigned:
+                openAssignedIntent();
+                break;
+
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void openAssignedIntent() {
+        Intent intent = new Intent(this, AssignedActivity.class);
+        startActivity(intent);
+    }
+    private void openMyDayIntent() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
 
 
 }

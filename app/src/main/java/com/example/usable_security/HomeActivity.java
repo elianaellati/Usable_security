@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.DatePickerDialog;
@@ -15,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.MenuItem;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,6 +36,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -42,7 +45,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
 
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -53,8 +56,15 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homeactivity);
-        ActionBar actionBar;
-        actionBar = getSupportActionBar();
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        navigationView.setNavigationItemSelectedListener( this);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      //  ActionBar actionBar;
+       // actionBar = getSupportActionBar();
 
 
         ColorDrawable colorDrawable
@@ -397,7 +407,7 @@ public class HomeActivity extends AppCompatActivity {
                                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // Handle Cancel button click
+
                                         dialog.cancel();
                                     }
                                 })
@@ -437,11 +447,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
-        drawerLayout = findViewById(R.id.my_drawer_layout);
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         TextView txtView = findViewById(R.id.currentDate);
 
@@ -449,19 +455,34 @@ public class HomeActivity extends AppCompatActivity {
         String currentDate = dateFormat.format(new Date());
         txtView.setText(currentDate);
 
-
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Intent assignIntent = new Intent(this, AssignedActivity.class);
-            startActivity(assignIntent);
+            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.assigned:
+                openAssignedIntent();
+                break;
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void openAssignedIntent() {
+        Intent intent = new Intent(this, AssignedActivity.class);
+        startActivity(intent);
+    }
+
 
 
 }
