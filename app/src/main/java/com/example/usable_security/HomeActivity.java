@@ -439,6 +439,8 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            Intent assignIntent = new Intent(this, AssignedActivity.class);
+            startActivity(assignIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);

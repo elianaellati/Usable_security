@@ -250,8 +250,21 @@ public class SignInActivity extends AppCompatActivity {
 
 
     private void addUserToDatabase(String name, String username, String email, String password) {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        String userId = usersReference.push().getKey();
+        User user = new User(name,username,email,password);
+        usersReference.child(userId).setValue(user);
+        contacts contact1 = new contacts("Jameel", "Jameel@gmail.com");
+        usersReference.child(userId).child("contacts").child("contactId1").setValue(contact1);
+
+
+
+
+
         // Save the user's information in the database
-        HashMap<String, Object> hashmap = new HashMap<>();
+       /* HashMap<String, Object> hashmap = new HashMap<>();
         hashmap.put("Name", name);
         hashmap.put("Username", username);
         hashmap.put("Email", email);
@@ -272,7 +285,7 @@ public class SignInActivity extends AppCompatActivity {
                         Log.e(TAG, "Failed to save user data: " + task.getException());
                         // Handle database save failure (e.g., display an error message to the user)
                     }
-                });
+                });*/
     }
 
 }
