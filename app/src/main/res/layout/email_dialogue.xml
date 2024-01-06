@@ -11,15 +11,17 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="2dp"
-        android:text="Email"
-        android:textColor="#601903"
+        android:text=" Email"
+        android:textColor="@color/teal_700"
         android:textSize="25dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingBottom="10dp"
+        />
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
-        android:hint="Enter an email" />
+        android:hint="   Enter an email" />
 
 </LinearLayout>

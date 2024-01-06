@@ -2,6 +2,7 @@ package com.example.usable_security;
 
 import android.provider.ContactsContract;
 
+import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -10,6 +11,9 @@ public class User {
     private String password;
     private String email;
     private  String name;
+
+
+
 
     public String getKey() {
         return key;
@@ -67,6 +71,9 @@ public class User {
         this.contacts = contacts;
     }
 
+    public void addContactToMap(String contactId, contacts contact) {
+        contacts.put(contactId, contact);
+    }
 
     public User(String name, String username, String password, String email) {
         this.name = name;

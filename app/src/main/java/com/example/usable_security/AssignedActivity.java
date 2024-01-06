@@ -103,6 +103,19 @@ public class  AssignedActivity extends AppCompatActivity {
                                     DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
                                     DatabaseReference newContactRef = userContactsRef.push();
                                     newContactRef.setValue(contact);
+                                    SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                                    String userJson = preferences.getString("user", "");
+                                    User updateuser=null;
+                                    if (!userJson.isEmpty()) {
+                                        Gson gson = new Gson();
+                                        updateuser = gson.fromJson(userJson, User.class);
+                                        updateuser.addContactToMap(newContactRef.getKey(),contact);
+                                        String userrJson = gson.toJson( updateuser);
+                                        SharedPreferences.Editor editor = preferences.edit();
+                                        editor.putString("user",  userrJson);
+                                        editor.apply();
+                                    }
+
                                     displayContacts();
                                 }
                             }
