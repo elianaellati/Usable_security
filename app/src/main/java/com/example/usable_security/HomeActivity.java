@@ -33,6 +33,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -66,6 +70,8 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                tasks task=new tasks();
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                 LayoutInflater inflater = HomeActivity.this.getLayoutInflater();
                 View titleView = inflater.inflate(R.layout.title_dialogue, null);
@@ -84,10 +90,8 @@ public class HomeActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-// Set margin between ImageView elements (adjust as needed)
-                params.setMargins(30, 0, 60, 0);
 
-                //iconLayout.setGravity(Gravity.CENTER);
+                params.setMargins(30, 0, 60, 0);
                 layout.addView(iconLayout);
 
                 ImageButton calendarButton = new ImageButton(HomeActivity.this);
@@ -118,8 +122,9 @@ public class HomeActivity extends AppCompatActivity {
                                             int year = calendar.get(Calendar.YEAR);
                                             int month = calendar.get(Calendar.MONTH);
                                             int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
                                             String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                                            // TODO: Use the selectedDate (e.g., display it in a TextView)
+
                                             Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
                                         } else if (selectedItem.equals("Tomorrow")) {
                                             // Get tomorrow's date
@@ -128,9 +133,10 @@ public class HomeActivity extends AppCompatActivity {
                                             int year = calendar.get(Calendar.YEAR);
                                             int month = calendar.get(Calendar.MONTH);
                                             int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
                                             String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                                            // TODO: Use the selectedDate (e.g., display it in a TextView)
                                             Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
+
                                         } else if (selectedItem.equals("Pick a Date")) {
                                             // Show a DatePickerDialog to pick a custom date
                                             Calendar calendar = Calendar.getInstance();
@@ -143,9 +149,8 @@ public class HomeActivity extends AppCompatActivity {
                                                     new DatePickerDialog.OnDateSetListener() {
                                                         @Override
                                                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                                            // Handle the selected date (e.g., display it in a TextView)
+                                                            task.setDate(new Date(year - 1900, monthOfYear, dayOfMonth));
                                                             String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-                                                            // TODO: Use the selectedDate (e.g., display it in a TextView)
                                                             Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
                                                         }
                                                     },
@@ -196,6 +201,7 @@ public class HomeActivity extends AppCompatActivity {
                                         // You can update a TextView or store the selected time in a variable
                                         // For example:
                                         String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                                        task.setTime(selectedTime);
                                         Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
                                     }
                                 },
@@ -274,7 +280,7 @@ public class HomeActivity extends AppCompatActivity {
                                                         public void onClick(DialogInterface dialog, int which) {
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
-                                                            // TODO: Use the values (days and unit) for custom repeat logic
+                                                            task.setRepeat(days+""+unit);
                                                             Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                         }
                                                     })
@@ -287,6 +293,7 @@ public class HomeActivity extends AppCompatActivity {
                                                     })
                                                     .show();
                                         } else {
+                                            task.setRepeat(selectedItem);
                                             Toast.makeText(HomeActivity.this, "Repeat every " + selectedItem, Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -369,7 +376,7 @@ public class HomeActivity extends AppCompatActivity {
                                                         public void onClick(DialogInterface dialog, int which) {
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
-                                                            // TODO: Use the values (days and unit) for custom repeat logic
+                                                            task.setReminder(days+""+unit);
                                                             Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                         }
                                                     })
@@ -382,6 +389,7 @@ public class HomeActivity extends AppCompatActivity {
                                                     })
                                                     .show();
                                         } else {
+                                            task.setReminder(notify);
                                             Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -407,6 +415,13 @@ public class HomeActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         String taskText = input.getText().toString();
+                        task.setName(taskText);
+                        String id=User.key;
+                        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("tasks");
+                        DatabaseReference newContactRef = userTasksRef.push();
+                        newContactRef.setValue(task);
+
+
 
                     }
                 });
@@ -433,6 +448,8 @@ public class HomeActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
         txtView.setText(currentDate);
+
+
     }
 
     @Override

@@ -21,6 +21,7 @@ public class User {
 
     static String key;
     public Map<String,contacts> contacts;
+    public Map<String,tasks> tasks;
 
     public void setUsername(String username) {
         this.username = username;
@@ -62,10 +63,18 @@ public class User {
     public Map<String, contacts> getContacts() {
         return contacts;
     }
-
     public void setContacts(Map<String, contacts> contacts) {
         this.contacts = contacts;
     }
+
+    public Map<String, tasks> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Map<String, tasks> tasks) {
+        this.tasks = tasks;
+    }
+
 
 
     public User(String name, String username, String password, String email) {
