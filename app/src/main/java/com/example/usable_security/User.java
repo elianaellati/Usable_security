@@ -85,7 +85,7 @@ public class User {
     }
 
 
-
-
-
+    public void addContactToMap(String contactId, contacts contact) {
+        contacts.put(contactId,contact);
+    }
 }
