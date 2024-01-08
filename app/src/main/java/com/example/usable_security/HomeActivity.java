@@ -48,6 +48,7 @@ import com.google.gson.Gson;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -518,45 +519,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-
-//    public void displayTasks(){
-//        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-//        String userJson = preferences.getString("user", "");
-//        User user=null;
-//        if (!userJson.isEmpty()) {
-//            Gson gson = new Gson();
-//            user = gson.fromJson(userJson, User.class);
-//        }
-//        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
-//        Map<String, tasks> tasksMap = user.tasks;
-//        String [] name=new String[tasksMap.size()];
-//        int i=0;
-//        for (Map.Entry<String, tasks> entry : tasksMap.entrySet()) {
-//            tasks task = entry.getValue();
-//            String taskName= task.getName();
-////            Boolean importance=task.getImportant();
-//            Date taskDate=task.getDate();
-//
-//
-//            Calendar currentCalendar = Calendar.getInstance();
-//            int currentYear = currentCalendar.get(Calendar.YEAR);
-//            int currentMonth = currentCalendar.get(Calendar.MONTH);
-//            int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
-//            Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
-//
-//            if(taskDate.equals(currentDate)){
-//                name[i]=taskName;
-//                Log.d("Name", "task " + name[i]);
-//                ++i;
-//            }
-//
-//
-//        }
-//        recycler.setLayoutManager(new LinearLayoutManager(this));
-//        adapter_tasks adapter = new adapter_tasks(name);
-//        recycler.setAdapter(adapter);
-//    }
-
     public void displayTasks() {
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
@@ -566,8 +528,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             user = gson.fromJson(userJson, User.class);
         }
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
-        Map<String, tasks> tasksMap = user.getTasks();
-        List<tasks> taskList = new ArrayList<>(tasksMap.values());
+    Map<String, tasks> tasksMap = user.getTasks();
+//        List<tasks> taskList = new ArrayList<>(tasksMap.values());
+//        Map<String, tasks> tasksMap = user != null ? user.getTasks() : Collections.emptyMap();
+       // List<tasks> taskList = new ArrayList<>(tasksMap.values());
+        if (tasksMap != null) {
+            List<tasks> taskList = new ArrayList<>(tasksMap.values());
         Calendar currentCalendar = Calendar.getInstance();
         List<tasks> todayTasks = new ArrayList<>();
 
@@ -575,19 +541,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int currentMonth = currentCalendar.get(Calendar.MONTH);
         int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
         Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+            for (tasks task : taskList) {
 
-        for (tasks task : taskList) {
-
-            if (task.getDate().equals(currentDate)) {
-                task.toString();
-                String taskId = task.getId();
-                todayTasks.add(task);
+                if (task.getDate().equals(currentDate)) {
+                    task.toString();
+                    String taskId = task.getId();
+                    todayTasks.add(task);
+                }
             }
+            recycler.setLayoutManager(new LinearLayoutManager(this));
+            adapter_tasks adapter = new adapter_tasks(todayTasks);
+            recycler.setAdapter(adapter);
         }
 
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-        adapter_tasks adapter = new adapter_tasks(todayTasks);
-        recycler.setAdapter(adapter);
     }
 
 }
