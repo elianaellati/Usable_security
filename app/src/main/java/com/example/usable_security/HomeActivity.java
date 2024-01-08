@@ -74,18 +74,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      //  ActionBar actionBar;
-       // actionBar = getSupportActionBar();
-
-
         ColorDrawable colorDrawable
                 = new ColorDrawable(Color.parseColor("#0F9D58"));
 
         Button simpleButton= findViewById(R.id.addButton);
         simpleButton.setBackgroundColor(Color.BLACK);
-
-
-
         Button addTaskButton = findViewById(R.id.addButton);
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -477,12 +470,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 builder.show();
             }
         });
-
-
-
-
         TextView txtView = findViewById(R.id.currentDate);
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
         txtView.setText(currentDate);
@@ -514,10 +502,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);
     }
-
-
-
-
 
 //    public void displayTasks(){
 //        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);

@@ -1,5 +1,6 @@
 package com.example.usable_security;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,30 +50,27 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     }
 
 
+    @SuppressLint("RecyclerView")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder,int position) {
         final String[] id = {User.key};
         CardView cardView = holder.cardView;
         TextView namee = cardView.findViewById(R.id.name);
         namee.setText(tasks.get(position).getName());
         Log.d("userId", id[0]);
-         task = tasks.get(holder.getAdapterPosition());
+        task = tasks.get(holder.getAdapterPosition());
         ImageButton starButton = cardView.findViewById(R.id.starButton);
-
         ImageButton details=cardView.findViewById(R.id.detailsButton);
-
 
         details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                // Create a custom layout inflater for the dialog items
                 LayoutInflater inflater = LayoutInflater.from(context);
                 View dialogView = inflater.inflate(R.layout.dialogue_details, null);
                 builder.setView(dialogView);
 
-//                 Set up the dialog options with images and text
                 ImageView editImage = dialogView.findViewById(R.id.editImage);
                 TextView editText = dialogView.findViewById(R.id.editText);
                 editImage.setImageResource(R.drawable.edit_icon);
@@ -123,8 +121,10 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                 shareImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Handle the click event for the "Share" option
-                        // Add your share logic here
+                        tasks clickedTask = tasks.get(position); // Retrieve the corresponding task from the list
+                        Intent intent = new Intent(context, Share.class);
+                        intent.putExtra("task", clickedTask);
+                        context.startActivity(intent);
                         dialog.dismiss(); // Dismiss the dialog after handling the click
                     }
                 });

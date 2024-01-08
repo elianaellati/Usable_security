@@ -14,6 +14,6 @@ public class details extends AppCompatActivity {
       setContentView(R.layout.task_details);
         Intent intent = getIntent();
         tasks task = (tasks) intent.getSerializableExtra("task");
-        Log.d("tatata", task.getName()); // Use Log.d for logging
+        Log.d("tatata", task.getName());
     }
 }

@@ -12,8 +12,6 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
@@ -26,8 +24,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         />
-
-    <!-- Button for adding items -->
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
@@ -61,5 +57,4 @@
         app:menu="@menu/navigation_bar"
         app:itemTextAppearance="@style/MyNavigationItemStyle"
         />
-
 </androidx.drawerlayout.widget.DrawerLayout>
