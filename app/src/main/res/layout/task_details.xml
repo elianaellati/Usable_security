@@ -1,58 +1,157 @@
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
 
     <TextView
         android:id="@+id/details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_gravity="center_vertical"
         android:padding="10dp"
         android:text="Details"
         android:textColor="#601903"
-        android:textSize="50dp"
+        android:textSize="40dp"
         android:textStyle="bold" />
+
+
+
+        <EditText
+            android:id="@+id/taskName"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+           />
+
+
+
+        <EditText
+            android:id="@+id/noteText"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:inputType="text"
+            android:hint="Notes"
+            />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/editDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/calendar2" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textColor="#601903"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/dateEditText"
+                android:layout_width="359dp"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
 
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/name"
-            android:padding="10dp"
+        <ImageView
+            android:id="@+id/editTimeImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name:"
-            android:textColor="#601903"
-            android:textSize="50dp"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/taskName"
-            android:padding="10dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/clock2" />
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#601903"
-            android:textSize="50dp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time"
+                android:textColor="#601903"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/timeEditText"
+                android:layout_width="359dp"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/editReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/reminder" />
+
+
+            <TextView
+                android:id="@+id/re"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Early Reminder"
+                android:textColor="#601903"
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
 
     </LinearLayout>
 
 
 
-    <TextView
-        android:id="@+id/note"
-        android:padding="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Note"
-        android:textColor="#601903"
-        android:textSize="50dp"
-        android:textStyle="bold" />
+
+
+
+
+
+
+
+
+
+
 
 
 
