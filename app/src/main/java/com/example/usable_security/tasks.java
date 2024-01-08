@@ -1,8 +1,9 @@
 package com.example.usable_security;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class tasks {
+public class tasks implements Serializable {
 
     String id;
 

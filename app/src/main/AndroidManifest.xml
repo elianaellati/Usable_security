@@ -45,6 +45,11 @@
             </intent-filter>
         </activity>
 
+
+        <activity
+            android:name=".details"
+            android:exported="true">
+        </activity>
     </application>
 
 
