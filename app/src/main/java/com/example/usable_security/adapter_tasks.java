@@ -99,12 +99,17 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                 editImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(context, details.class);
-                        intent.putExtra("task", task);
-                        context.startActivity(intent);
-                        dialog.dismiss(); // Dismiss the dialog after handling the click
+                        int position = holder.getAdapterPosition(); // Get the position of the clicked item
+                        if (position != RecyclerView.NO_POSITION) {
+                            tasks clickedTask = tasks.get(position); // Retrieve the corresponding task from the list
+                            Intent intent = new Intent(context, details.class);
+                            intent.putExtra("task", clickedTask);
+                            context.startActivity(intent);
+                            dialog.dismiss(); // Dismiss the dialog after handling the click
+                        }
                     }
                 });
+
 
                 deleteImage.setOnClickListener(new View.OnClickListener() {
                     @Override
