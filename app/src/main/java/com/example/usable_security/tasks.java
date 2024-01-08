@@ -10,6 +10,8 @@ public class tasks implements Serializable {
      String name;
      Date date;
 
+     String note="";
+
      Boolean important=false;
 
      Boolean completed=false;
@@ -91,5 +93,13 @@ public class tasks implements Serializable {
 
     public void setReminder(String reminder) {
         this.reminder = reminder;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }
