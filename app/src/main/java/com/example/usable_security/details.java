@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log; // Import Log class for logging
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -12,14 +13,20 @@ import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class details extends AppCompatActivity {
+public class details extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     EditText edtName;
     EditText edtNote;
@@ -29,11 +36,21 @@ public class details extends AppCompatActivity {
     ImageView editTime;
 
     EditText edtTime;
+    public DrawerLayout drawerLayout;
+
+    public ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_details);
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        navigationView.setNavigationItemSelectedListener(this);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         tasks task = (tasks) intent.getSerializableExtra("task");
         Log.d("tatata", task.getName());
@@ -155,12 +172,38 @@ public class details extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
     }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.my_day:
+                openMyDayIntent() ;
+                break;
+            case R.id.assigned:
+                openAssignedIntent();
+                break;
+
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void openAssignedIntent() {
+        Intent intent = new Intent(this, AssignedActivity.class);
+        startActivity(intent);
+    }
+    private void openMyDayIntent() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
 }

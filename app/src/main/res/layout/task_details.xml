@@ -1,3 +1,13 @@
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText">
+
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -140,21 +150,18 @@
 
     </LinearLayout>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </LinearLayout>
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:itemIconPadding="8dp"
+        app:itemIconSize="24dp"
+        android:background="@color/teal_700"
+        app:itemTextColor="@android:color/white"
+        app:menu="@menu/navigation_bar"
+        app:itemTextAppearance="@style/MyNavigationItemStyle"
+        />
+</androidx.drawerlayout.widget.DrawerLayout>
