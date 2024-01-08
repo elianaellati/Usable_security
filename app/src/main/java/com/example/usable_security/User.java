@@ -89,4 +89,8 @@ public class User {
     public void addContactToMap(String contactId, contacts contact) {
         contacts.put(contactId,contact);
     }
+
+    public void addTaskToMap(String taskId, tasks task) {
+        tasks.put(taskId, task);
+    }
 }

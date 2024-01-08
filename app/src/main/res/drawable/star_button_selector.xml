@@ -1,0 +1,6 @@
+<!-- res/drawable/star_button_selector.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_star_filled" android:state_checked="true" />
+    <item android:drawable="@drawable/ic_star_outline" />
+</selector>
+

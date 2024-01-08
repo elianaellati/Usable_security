@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class tasks {
 
+    String id;
 
      String name;
      Date date;
@@ -12,7 +13,26 @@ public class tasks {
 
      Boolean completed=false;
      String time;
-     String repeat;
+
+    public Boolean getImportant() {
+        return important;
+    }
+
+    public void setImportant(Boolean important) {
+        this.important = important;
+    }
+
+
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    String repeat;
      String reminder; public tasks(){}
 
     public tasks(String name, Date date, String time, String repeat, String reminder) {
@@ -21,6 +41,15 @@ public class tasks {
         this.time = time;
         this.repeat = repeat;
         this.reminder = reminder;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+
+        this.id = id;
     }
 
     public String getName() {

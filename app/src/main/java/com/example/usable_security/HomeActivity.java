@@ -7,11 +7,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -39,11 +43,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
@@ -56,6 +64,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homeactivity);
+        ActionBar actionBar;
+        actionBar = getSupportActionBar();
+        displayTasks();
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -104,86 +115,86 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 params.setMargins(30, 0, 60, 0);
                 layout.addView(iconLayout);
 
-                ImageButton calendarButton = new ImageButton(HomeActivity.this);
-                calendarButton.setImageResource(R.drawable.calendar);
-                calendarButton.setBackgroundColor(Color.WHITE);
-                calendarButton.setLayoutParams(params);
-
-                calendarButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        LayoutInflater inflater = getLayoutInflater();
-                        View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
-                        Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
-                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(HomeActivity.this,
-                                R.array.date_options_array, android.R.layout.simple_spinner_item);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinner.setAdapter(adapter);
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(HomeActivity.this);
-                        dialogBuilder.setView(dialogView)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String selectedItem = (String) spinner.getSelectedItem();
-                                        if (selectedItem.equals("Today")) {
-                                            // Get today's date
-                                            Calendar calendar = Calendar.getInstance();
-                                            int year = calendar.get(Calendar.YEAR);
-                                            int month = calendar.get(Calendar.MONTH);
-                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
-                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-
-                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-                                        } else if (selectedItem.equals("Tomorrow")) {
-                                            // Get tomorrow's date
-                                            Calendar calendar = Calendar.getInstance();
-                                            calendar.add(Calendar.DAY_OF_MONTH, 1); // Add one day for tomorrow
-                                            int year = calendar.get(Calendar.YEAR);
-                                            int month = calendar.get(Calendar.MONTH);
-                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
-                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-
-                                        } else if (selectedItem.equals("Pick a Date")) {
-                                            // Show a DatePickerDialog to pick a custom date
-                                            Calendar calendar = Calendar.getInstance();
-                                            int year = calendar.get(Calendar.YEAR);
-                                            int month = calendar.get(Calendar.MONTH);
-                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-
-                                            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                                                    HomeActivity.this,
-                                                    new DatePickerDialog.OnDateSetListener() {
-                                                        @Override
-                                                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                                            task.setDate(new Date(year - 1900, monthOfYear, dayOfMonth));
-                                                            String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-                                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    },
-                                                    year, month, dayOfMonth
-                                            );
-                                            datePickerDialog.show();
-                                        }
-                                    }
-                                })
-                          .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Handle Cancel button click
-                                dialog.cancel();
-                            }
-                        })
-                                .show();
-
-
-                    }
-                });
-
-                        iconLayout.addView(calendarButton);
+//                ImageButton calendarButton = new ImageButton(HomeActivity.this);
+//                calendarButton.setImageResource(R.drawable.calendar);
+//                calendarButton.setBackgroundColor(Color.WHITE);
+//                calendarButton.setLayoutParams(params);
+//
+//                calendarButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                        LayoutInflater inflater = getLayoutInflater();
+//                        View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
+//                        Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
+//                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(HomeActivity.this,
+//                                R.array.date_options_array, android.R.layout.simple_spinner_item);
+//                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                        spinner.setAdapter(adapter);
+//                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(HomeActivity.this);
+//                        dialogBuilder.setView(dialogView)
+//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        String selectedItem = (String) spinner.getSelectedItem();
+//                                        if (selectedItem.equals("Today")) {
+//                                            // Get today's date
+//                                            Calendar calendar = Calendar.getInstance();
+//                                            int year = calendar.get(Calendar.YEAR);
+//                                            int month = calendar.get(Calendar.MONTH);
+//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
+//                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+//
+//                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
+//                                        } else if (selectedItem.equals("Tomorrow")) {
+//                                            // Get tomorrow's date
+//                                            Calendar calendar = Calendar.getInstance();
+//                                            calendar.add(Calendar.DAY_OF_MONTH, 1); // Add one day for tomorrow
+//                                            int year = calendar.get(Calendar.YEAR);
+//                                            int month = calendar.get(Calendar.MONTH);
+//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
+//                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+//                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
+//
+//                                        } else if (selectedItem.equals("Pick a Date")) {
+//                                            // Show a DatePickerDialog to pick a custom date
+//                                            Calendar calendar = Calendar.getInstance();
+//                                            int year = calendar.get(Calendar.YEAR);
+//                                            int month = calendar.get(Calendar.MONTH);
+//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//
+//                                            DatePickerDialog datePickerDialog = new DatePickerDialog(
+//                                                    HomeActivity.this,
+//                                                    new DatePickerDialog.OnDateSetListener() {
+//                                                        @Override
+//                                                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//                                                            task.setDate(new Date(year - 1900, monthOfYear, dayOfMonth));
+//                                                            String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+//                                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
+//                                                        }
+//                                                    },
+//                                                    year, month, dayOfMonth
+//                                            );
+//                                            datePickerDialog.show();
+//                                        }
+//                                    }
+//                                })
+//                          .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                // Handle Cancel button click
+//                                dialog.cancel();
+//                            }
+//                        })
+//                                .show();
+//
+//
+//                    }
+//                });
+//
+//                        iconLayout.addView(calendarButton);
 
                 // Create an ImageButton for the clock icon
                 ImageButton clockButton = new ImageButton(HomeActivity.this);
@@ -407,7 +418,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-
+                                        // Handle Cancel button click
                                         dialog.cancel();
                                     }
                                 })
@@ -426,12 +437,33 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                         String taskText = input.getText().toString();
                         task.setName(taskText);
+                        Calendar currentCalendar = Calendar.getInstance();
+                        int currentYear = currentCalendar.get(Calendar.YEAR);
+                        int currentMonth = currentCalendar.get(Calendar.MONTH);
+                        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+                        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+                        task.setDate(currentDate);
                         String id=User.key;
                         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("tasks");
-                        DatabaseReference newContactRef = userTasksRef.push();
-                        newContactRef.setValue(task);
+                        DatabaseReference newTaskRef = userTasksRef.push();
+                        newTaskRef.setValue(task);
+                        String taskId = newTaskRef.getKey();
+                        Log.d("Tskkk",taskId);
+                        task.setId(taskId);
+                        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                        String userJson = preferences.getString("user", "");
+                        User updateuser=null;
+                        if (!userJson.isEmpty()) {
+                            Gson gson = new Gson();
+                            updateuser = gson.fromJson(userJson, User.class);
+                            updateuser.addTaskToMap(newTaskRef.getKey(),task);
+                            String userrJson = gson.toJson( updateuser);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("user",  userrJson);
+                            editor.apply();
 
-
+                        }
+                        displayTasks();
 
                     }
                 });
@@ -455,8 +487,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         String currentDate = dateFormat.format(new Date());
         txtView.setText(currentDate);
 
-    }
 
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -484,5 +516,78 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+
+
+
+//    public void displayTasks(){
+//        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+//        String userJson = preferences.getString("user", "");
+//        User user=null;
+//        if (!userJson.isEmpty()) {
+//            Gson gson = new Gson();
+//            user = gson.fromJson(userJson, User.class);
+//        }
+//        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
+//        Map<String, tasks> tasksMap = user.tasks;
+//        String [] name=new String[tasksMap.size()];
+//        int i=0;
+//        for (Map.Entry<String, tasks> entry : tasksMap.entrySet()) {
+//            tasks task = entry.getValue();
+//            String taskName= task.getName();
+////            Boolean importance=task.getImportant();
+//            Date taskDate=task.getDate();
+//
+//
+//            Calendar currentCalendar = Calendar.getInstance();
+//            int currentYear = currentCalendar.get(Calendar.YEAR);
+//            int currentMonth = currentCalendar.get(Calendar.MONTH);
+//            int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+//            Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+//
+//            if(taskDate.equals(currentDate)){
+//                name[i]=taskName;
+//                Log.d("Name", "task " + name[i]);
+//                ++i;
+//            }
+//
+//
+//        }
+//        recycler.setLayoutManager(new LinearLayoutManager(this));
+//        adapter_tasks adapter = new adapter_tasks(name);
+//        recycler.setAdapter(adapter);
+//    }
+
+    public void displayTasks() {
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        User user = null;
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            user = gson.fromJson(userJson, User.class);
+        }
+        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
+        Map<String, tasks> tasksMap = user.getTasks();
+        List<tasks> taskList = new ArrayList<>(tasksMap.values());
+        Calendar currentCalendar = Calendar.getInstance();
+        List<tasks> todayTasks = new ArrayList<>();
+
+        int currentYear = currentCalendar.get(Calendar.YEAR);
+        int currentMonth = currentCalendar.get(Calendar.MONTH);
+        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+
+        for (tasks task : taskList) {
+
+            if (task.getDate().equals(currentDate)) {
+                task.toString();
+                String taskId = task.getId();
+                todayTasks.add(task);
+            }
+        }
+
+        recycler.setLayoutManager(new LinearLayoutManager(this));
+        adapter_tasks adapter = new adapter_tasks(todayTasks);
+        recycler.setAdapter(adapter);
+    }
 
 }

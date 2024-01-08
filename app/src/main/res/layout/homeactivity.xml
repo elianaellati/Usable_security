@@ -14,55 +14,63 @@
         android:background="@drawable/background">
 
         <LinearLayout
+            android:id="@+id/headerLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:id="@+id/txt"
-                android:layout_width="205dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="start"
                 android:text="My Day"
                 android:textColor="#601903"
-                android:textSize="50dp"
+                android:textSize="50sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/currentDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:text=""
+                android:textColor="#601903"
+                android:textSize="25sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/currentDate"
-            android:layout_width="wrap_content"
-            android:layout_height="61dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="70dp"
-            android:text=""
-            android:textColor="#601903"
-            android:textSize="25sp"
-            android:textStyle="bold" />
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_viewTasks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/headerLayout"
+            android:paddingTop="10dp"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/tasks"
+            />
 
         <Button
             android:id="@+id/addButton"
             android:layout_width="match_parent"
-            android:layout_height="67dp"
-            android:layout_marginTop="600dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:background="#f00"
             android:drawableLeft="@drawable/add"
             android:padding="10dp"
             android:text="Add Task"
             android:textSize="25sp" />
 
-
-
-
     </RelativeLayout>
+
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_bar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:itemIconPadding="8dp"
@@ -70,7 +78,6 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
-        app:itemTextAppearance="@style/MyNavigationItemStyle"
-        />
+        app:itemTextAppearance="@style/MyNavigationItemStyle" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

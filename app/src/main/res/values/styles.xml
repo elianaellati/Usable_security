@@ -6,6 +6,10 @@
         <item name="android:padding">16dp</item> <!-- Padding around the text -->
     </style>
 
+    <style name="CircularCheckboxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/circular_checkbox</item>
+    </style>
+
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
