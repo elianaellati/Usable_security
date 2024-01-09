@@ -302,7 +302,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                         public void onClick(DialogInterface dialog, int which) {
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
-                                                            task.setRepeat(days+""+unit);
+                                                            task.setRepeat(days+" "+unit);
                                                             Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                         }
                                                     })
@@ -398,7 +398,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                         public void onClick(DialogInterface dialog, int which) {
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
-                                                            task.setReminder(days+""+unit);
+                                                            task.setReminder(days+" "+unit);
                                                             Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                         }
                                                     })
