@@ -20,8 +20,6 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="Details"
-        android:layout_gravity="center_horizontal"
-        android:layout_alignParentBottom="true"
         android:textColor="#601903"
         android:textSize="40dp"
         android:textStyle="bold" />
@@ -33,7 +31,7 @@
             android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30dp"
+            android:textSize="25dp"
            />
 
         <EditText
@@ -41,7 +39,7 @@
             android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:inputType="text"
             android:hint="Add note"
             />
@@ -70,7 +68,7 @@
             android:layout_height="wrap_content"
             android:text="Date"
             android:textColor="#601903"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:textStyle="bold" />
 
             <EditText
@@ -111,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:text="Time"
                 android:textColor="#601903"
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:textStyle="bold" />
 
             <EditText
@@ -149,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:text="Early Reminder"
                 android:textColor="#601903"
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:textStyle="bold" />
 
         <Spinner
@@ -157,7 +155,7 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="30dp"
+            android:textSize="25dp"
             android:entries="@array/reminders" />
         </LinearLayout>
 
@@ -191,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:text="Repeat"
                 android:textColor="#601903"
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:textStyle="bold" />
 
             <Spinner
@@ -199,7 +197,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:entries="@array/repeat" />
         </LinearLayout>
 
