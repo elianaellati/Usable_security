@@ -2,6 +2,8 @@ package com.example.usable_security;
 
 import android.provider.ContactsContract;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -10,6 +12,9 @@ public class User {
     private String password;
     private String email;
     private  String name;
+
+
+
 
     public String getKey() {
         return key;
@@ -83,6 +88,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
+
     }
 
 

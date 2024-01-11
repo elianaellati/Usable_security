@@ -1,17 +1,20 @@
 package com.example.usable_security;
 
-
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +35,7 @@ public class ShareAdapter
     private contacts contactt;
     private Context context;
     private tasks task;
+    private String keycontact;
     Map<String, contacts> contactsMap;
 
     public ShareAdapter(List<contacts> contact,tasks task, Map<String, contacts> contactsMap){
@@ -64,10 +68,10 @@ public class ShareAdapter
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchtheuser();
+                ShareDialogue();
+
             }
             });
-
 
     }
 
@@ -85,6 +89,51 @@ public class ShareAdapter
         }
 
     }
+    public void ShareDialogue(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.access_dialogue, null);
+        builder.setView(dialogView);
+        CheckBox view = dialogView.findViewById(R.id.view);
+        CheckBox edit = dialogView.findViewById(R.id.edit);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                findKey();
+                searchtheuser();
+                task.setShared(1);
+                if(view.isChecked() && edit.isChecked()){
+                    task.setAccess(1);
+                }else if(view.isChecked()){
+                    Log.d("LoginInfo", "Incorrect password for username: " );
+                    task.setAccess(0);
+                }else{
+                    task.setAccess(1);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+            }
+
+
+
+    public void findKey(){
+        for(Map.Entry<String,contacts> entry: contactsMap.entrySet()) {
+            if(entry.getValue().getEmail().compareToIgnoreCase(contactt.getEmail())==0){
+                keycontact=entry.getKey();
+            }
+        }
+    }
     public void searchtheuser() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
@@ -101,7 +150,8 @@ public class ShareAdapter
                         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(userKey).child("tasks");
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
-
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
+                        userRef.child(keycontact).child("shared").setValue(1);
                     }
                 }
 

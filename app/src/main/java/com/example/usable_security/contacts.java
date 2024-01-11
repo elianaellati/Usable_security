@@ -19,6 +19,7 @@ public class contacts {
 
     String name;
     String email;
+    int shared=0;
 
     public contacts() {
         // Default constructor required for Firebase

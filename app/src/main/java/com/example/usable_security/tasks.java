@@ -4,7 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class tasks implements Serializable {
+    int access=1;
 
+    public int getShared() {
+        return shared;
+    }
+
+    public void setShared(int shared) {
+        this.shared = shared;
+    }
+
+    int shared =0;
     String id;
 
      String name;
@@ -16,6 +26,16 @@ public class tasks implements Serializable {
 
      Boolean completed=false;
      String time;
+
+    public int getAccess() {
+        return access;
+    }
+
+    public void setAccess(int access) {
+        this.access = access;
+    }
+
+
 
     public Boolean getImportant() {
         return important;
