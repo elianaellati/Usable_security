@@ -49,10 +49,9 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         }
         RecyclerView recycler = findViewById(R.id.recycler_view);
         Map<String, contacts> contactsMap = user.contacts;
-
         List<contacts> contact = new ArrayList<>(contactsMap.values());
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        ShareAdapter adapter = new ShareAdapter(contact,task, contactsMap);
+        ShareAdapter adapter = new ShareAdapter(contact,task,contactsMap);
         recycler.setAdapter(adapter);
 
     }

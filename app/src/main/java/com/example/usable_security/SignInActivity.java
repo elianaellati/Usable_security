@@ -26,7 +26,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class SignInActivity extends AppCompatActivity {
@@ -189,7 +191,7 @@ public class SignInActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Email verification sent, handle the success (e.g., show a message to the user)
                         Log.d(TAG, "Email verification sent.");
-
+                        addUserToDatabase(name, username, email, password);
                         // Schedule a task to check email verification status after one minute
                         checkEmailVerificationStatus(user, name, username, email, password);
                     } else {
