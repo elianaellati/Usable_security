@@ -93,4 +93,13 @@ public class User {
     public void addTaskToMap(String taskId, tasks task) {
         tasks.put(taskId, task);
     }
-}
+
+    public void removeTaskFromMap(String taskId, tasks task) {
+        tasks.remove(taskId, task);
+    }
+
+    public void editTask(String taskId, tasks updatedTask) {
+            tasks.put(taskId, updatedTask);
+        }
+
+    }

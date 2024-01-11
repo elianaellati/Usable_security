@@ -212,9 +212,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                        new TimePickerDialog.OnTimeSetListener() {
                            @Override
                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                               // Handle the selected time (hourOfDay and minute)
-                               // You can update a TextView or store the selected time in a variable
-                               // For example:
+
                                String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                                task.setTime(selectedTime);
                            }
@@ -394,6 +392,18 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
+                            User updateuser=null;
+                            updateuser = gson.fromJson(userJson, User.class);
+                            updateuser.editTask(entry.getKey(),task);
+                            String userrJson = gson.toJson( updateuser);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("user",  userrJson);
+                            editor.apply();
+
+                            Intent intent = new Intent(details.this, HomeActivity.class);
+                            startActivity(intent);
+
+
                         }
                     }
                 }
