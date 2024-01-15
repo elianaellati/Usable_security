@@ -15,6 +15,27 @@ public class tasks implements Serializable {
     }
 
     int shared =0;
+    int status=0;
+
+    public String getShareduser() {
+        return shareduser;
+    }
+
+    public void setShareduser(String shareduser) {
+        this.shareduser = shareduser;
+    }
+
+    String shareduser=null;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    String email=null;
     String id;
 
      String name;

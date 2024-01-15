@@ -191,7 +191,7 @@ public class SignInActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Email verification sent, handle the success (e.g., show a message to the user)
                         Log.d(TAG, "Email verification sent.");
-                        addUserToDatabase(name, username, email, password);
+                        addUserToDatabase(name, username, email,password);
                         // Schedule a task to check email verification status after one minute
                         checkEmailVerificationStatus(user, name, username, email, password);
                     } else {
@@ -256,7 +256,7 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
         String userId = usersReference.push().getKey();
-        User user = new User(name,username,email,password);
+        User user = new User(name,username,password,email);
         usersReference.child(userId).setValue(user);
 
     }

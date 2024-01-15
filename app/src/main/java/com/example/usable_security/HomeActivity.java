@@ -505,12 +505,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.assigned:
                 openAssignedIntent();
                 break;
+            case R.id.notification:
+                openNotificationIntent();
+                break;
+
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private void openNotificationIntent() {
+        Intent intent = new Intent(this, Notification.class);
+        startActivity(intent);
+    }
     private void openAssignedIntent() {
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);

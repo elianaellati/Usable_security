@@ -33,15 +33,18 @@ public class ShareAdapter
 
     private List<contacts> contact;
     private contacts contactt;
+    private SharedPreferences preferences;
     private Context context;
     private tasks task;
     private String keycontact;
+    private String name;
     Map<String, contacts> contactsMap;
 
     public ShareAdapter(List<contacts> contact,tasks task, Map<String, contacts> contactsMap){
         this.contactsMap=contactsMap;
         this.task=task;
        this.contact=contact;
+
     }
 
 
@@ -137,6 +140,11 @@ public class ShareAdapter
     public void searchtheuser() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
+        preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        Gson gson = new Gson();
+        User storeduser = gson.fromJson(userJson, User.class);
+        name=storeduser.getName();
         usersReference.orderByChild("email").equalTo(contactt.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -147,6 +155,9 @@ public class ShareAdapter
                         User user = userSnapshot.getValue(User.class);
                         String userKey = userSnapshot.getKey();
                         isUsernameFound = true;
+                        task.setShared(1);
+                        task.setShareduser(name);
+                        task.setEmail(storeduser.getEmail());
                         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(userKey).child("tasks");
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
