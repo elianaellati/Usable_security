@@ -116,87 +116,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 params.setMargins(30, 0, 60, 0);
                 layout.addView(iconLayout);
 
-//                ImageButton calendarButton = new ImageButton(HomeActivity.this);
-//                calendarButton.setImageResource(R.drawable.calendar);
-//                calendarButton.setBackgroundColor(Color.WHITE);
-//                calendarButton.setLayoutParams(params);
-//
-//                calendarButton.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//
-//                        LayoutInflater inflater = getLayoutInflater();
-//                        View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
-//                        Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
-//                        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(HomeActivity.this,
-//                                R.array.date_options_array, android.R.layout.simple_spinner_item);
-//                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//                        spinner.setAdapter(adapter);
-//                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(HomeActivity.this);
-//                        dialogBuilder.setView(dialogView)
-//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                        String selectedItem = (String) spinner.getSelectedItem();
-//                                        if (selectedItem.equals("Today")) {
-//                                            // Get today's date
-//                                            Calendar calendar = Calendar.getInstance();
-//                                            int year = calendar.get(Calendar.YEAR);
-//                                            int month = calendar.get(Calendar.MONTH);
-//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-//                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
-//                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-//
-//                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-//                                        } else if (selectedItem.equals("Tomorrow")) {
-//                                            // Get tomorrow's date
-//                                            Calendar calendar = Calendar.getInstance();
-//                                            calendar.add(Calendar.DAY_OF_MONTH, 1); // Add one day for tomorrow
-//                                            int year = calendar.get(Calendar.YEAR);
-//                                            int month = calendar.get(Calendar.MONTH);
-//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-//                                            task.setDate(new Date(year - 1900, month, dayOfMonth));
-//                                            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-//                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-//
-//                                        } else if (selectedItem.equals("Pick a Date")) {
-//                                            // Show a DatePickerDialog to pick a custom date
-//                                            Calendar calendar = Calendar.getInstance();
-//                                            int year = calendar.get(Calendar.YEAR);
-//                                            int month = calendar.get(Calendar.MONTH);
-//                                            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-//
-//                                            DatePickerDialog datePickerDialog = new DatePickerDialog(
-//                                                    HomeActivity.this,
-//                                                    new DatePickerDialog.OnDateSetListener() {
-//                                                        @Override
-//                                                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//                                                            task.setDate(new Date(year - 1900, monthOfYear, dayOfMonth));
-//                                                            String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-//                                                            Toast.makeText(HomeActivity.this, selectedDate, Toast.LENGTH_SHORT).show();
-//                                                        }
-//                                                    },
-//                                                    year, month, dayOfMonth
-//                                            );
-//                                            datePickerDialog.show();
-//                                        }
-//                                    }
-//                                })
-//                          .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                // Handle Cancel button click
-//                                dialog.cancel();
-//                            }
-//                        })
-//                                .show();
-//
-//
-//                    }
-//                });
-//
-//                        iconLayout.addView(calendarButton);
-
                 // Create an ImageButton for the clock icon
                 ImageButton clockButton = new ImageButton(HomeActivity.this);
 
@@ -413,6 +332,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         } else {
                                             task.setReminder(notify);
                                             Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
+
+//                                            long timeInMillis = calculateReminderTime(dueDate, reminderOption);
+//                                            ReminderManager.setReminder(context, timeInMillis, taskName);
+
                                         }
                                     }
                                 })
@@ -535,7 +458,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             user = gson.fromJson(userJson, User.class);
         }
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
-    Map<String, tasks> tasksMap = user.getTasks();
+        Map<String, tasks> tasksMap = user.getTasks();
         if (tasksMap != null) {
             List<tasks> taskList = new ArrayList<>(tasksMap.values());
         Calendar currentCalendar = Calendar.getInstance();
