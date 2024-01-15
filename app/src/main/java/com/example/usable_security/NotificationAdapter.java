@@ -28,15 +28,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
-
+    boolean isEmailFound=false;
     private List<tasks> tasks;
     private tasks task;
     Map<String,tasks>usertasks;
+
     private Context context;
+    User user;
     private SharedPreferences preferences;
 
     public NotificationAdapter(List<tasks> tasks) {
@@ -55,53 +58,55 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(NotificationAdapter.ViewHolder holder, int position) {
         CardView cardView = holder.cardView;
-        String foundKey=null;
+        String foundKey = null;
         Button accept = cardView.findViewById(R.id.btnAccept);
-        task= tasks.get(holder.getAdapterPosition());
-        TextView namee = (TextView)cardView.findViewById(R.id.contactname);
-        namee.setText("     Shared From "+tasks.get(position).getShareduser());
-        TextView task= (TextView)cardView.findViewById(R.id.task);
-        task.setText("     "+"Task "+tasks.get(position).getName());
-         accept.setOnClickListener(new View.OnClickListener() {
+        Button reject = cardView.findViewById(R.id.btnReject);
+        task = tasks.get(holder.getAdapterPosition());
+        TextView namee = (TextView) cardView.findViewById(R.id.contactname);
+        namee.setText("     Shared From " + tasks.get(position).getShareduser());
+        TextView task = (TextView) cardView.findViewById(R.id.task);
+        task.setText("     " + "Task " + tasks.get(position).getName());
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        Gson gson = new Gson();
+        User storeduser = gson.fromJson(userJson, User.class);
+
+        usersReference.orderByChild("email").equalTo(storeduser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isEmailFound = false;
+
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                       user = userSnapshot.getValue(User.class);
+
+                        Map<String, contacts> contact = user.getContacts();
+                        usertasks = user.getTasks();
+                        for (Map.Entry<String, contacts> entry : contact.entrySet()) {
+                            if (entry.getValue().getEmail().compareToIgnoreCase(tasks.get(position).getEmail()) == 0) {
+                                isEmailFound = true;
+                            }
+                        }
+
+                    }
+
+                }
+                boolean finalIsEmailFound = isEmailFound;
+                accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for (Map.Entry<String, tasks> entry : usertasks.entrySet()) {
+                    if (entry.getValue().getName().compareToIgnoreCase(tasks.get(position).getName()) == 0) {
+                        entry.getValue().setShared(0);
+                        usersReference.child(User.key).child("tasks").child(entry.getKey()).child("shared").setValue(0);
+                    }
+                }
 
+                            if (finalIsEmailFound ==false) {
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference usersReference = database.getReference("Data");
-                usersReference.orderByChild("email").equalTo(tasks.get(position).getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean isEmailFound = false;
-
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                Map<String,contacts>contact=user.getContacts();
-                               usertasks=user.getTasks();
-                                for( Map.Entry<String,contacts> entry:contact.entrySet()){
-                                   if( entry.getValue().getEmail().compareToIgnoreCase(tasks.get(position).getEmail())==0){
-                                       isEmailFound=true;
-                                    }
-                                }
-                                for(Map.Entry<String,tasks> entry: usertasks.entrySet()){
-                                    if(entry.getValue().getName().compareToIgnoreCase(tasks.get(position).getName())==0){
-                                        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
-                                        userTasksRef.child(entry.getKey()).child("shared").setValue(0);
-                                        userTasksRef.child(entry.getKey()).child("name").setValue(tasks.get(position).getName());
-                                        userTasksRef.child(entry.getKey()).child("note").setValue(tasks.get(position).getNote());
-                                        userTasksRef.child(entry.getKey()).child("reminder").setValue(tasks.get(position).getReminder());
-                                        userTasksRef.child(entry.getKey()).child("repeat").setValue(tasks.get(position).getRepeat());
-                                        userTasksRef.child(entry.getKey()).child("time").setValue(tasks.get(position).getTime());
-                                        userTasksRef.child(entry.getKey()).child("time").setValue(tasks.get(position).getEmail());
-                                    }
-                                }
-
-                            }
-
-                            if (!isEmailFound) {
-
-                                contacts contact = new contacts(tasks.get(position).getShareduser(),tasks.get(position).getEmail());
+                                contacts contact = new contacts(tasks.get(position).getShareduser(), tasks.get(position).getEmail());
                                 DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
                                 DatabaseReference newContactRef = userContactsRef.push();
                                 newContactRef.setValue(contact);
@@ -109,32 +114,56 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                                 String userJson = preferences.getString("user", "");
                                 Gson gson = new Gson();
                                 User updateuser = gson.fromJson(userJson, User.class);
-                                updateuser.addContactToMap(newContactRef.getKey(),contact);
-                                String userrJson = gson.toJson( updateuser);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("user",  userrJson);
-                                editor.apply();
+                                updateuser.addContactToMap(newContactRef.getKey(), contact);
+
                             }
-                            notifyItemRemoved(position);
-                        }
+                user.setTasks(usertasks);
+                String userrJson = gson.toJson(user);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("user", userrJson);
+                editor.apply();
+
+
+                removeTask(holder.getAdapterPosition());
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle errors here
-                        Log.e("FirebaseError", "Error: " + databaseError.getMessage());
-                    }
+
                 });
 
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        reject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (usertasks != null && !usertasks.isEmpty()) {
+                    for (Map.Entry<String, tasks> entry : usertasks.entrySet()) {
+                        if (entry.getValue().getName().compareToIgnoreCase(tasks.get(position).getName()) == 0) {
+                            usersReference.child(User.key).child("tasks").child(entry.getKey()).removeValue();
+                            removeTask(holder.getAdapterPosition());
+                        }
+                    }
+                }
+                removeTask(holder.getAdapterPosition());
             }
         });
 
     }
 
+
     @Override
     public int getItemCount() {
         return tasks.size();
+    }
+    public void removeTask(int position) {
+        tasks.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, tasks.size());
     }
 
 
