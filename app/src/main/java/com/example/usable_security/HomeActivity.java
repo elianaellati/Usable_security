@@ -1,4 +1,6 @@
 package com.example.usable_security;
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -41,8 +43,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -59,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
-
+    private ReminderUtils reminderUtils = new ReminderUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,6 +290,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         String notify = (String) spinner.getSelectedItem();
+
+                                        Calendar currentCalendar = Calendar.getInstance();
+                                        int currentYear = currentCalendar.get(Calendar.YEAR);
+                                        int currentMonth = currentCalendar.get(Calendar.MONTH);
+                                        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+                                        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+                                        task.setDate(currentDate);
+                                        task.setName(input.getText().toString());
+
                                         if (notify.equals("custom")) {
                                             // Create an EditText for entering the number of days
                                             EditText daysEditText = new EditText(HomeActivity.this);
@@ -319,6 +333,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setReminder(days+" "+unit);
                                                             Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                                            long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
+                                                             int requestCode1 = 1;
+                                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task.getName(),requestCode1);
                                                         }
                                                     })
                                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -332,9 +349,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         } else {
                                             task.setReminder(notify);
                                             Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
-
-//                                            long timeInMillis = calculateReminderTime(dueDate, reminderOption);
-//                                            ReminderManager.setReminder(context, timeInMillis, taskName);
+                                            long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
+                                            int requestCode1 = 1;
+                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task.getName(),requestCode1);
 
                                         }
                                     }
@@ -450,6 +467,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void displayTasks() {
+
+        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key);
+        userTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again whenever data at this location is updated.
+                for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
+                    // Iterate through the tasks
+                  // List<tasks> userTasks=userTasksRef.child(User.key).child("tasks");
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", databaseError.toException());
+            }
+        });
+
+
+
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         User user = null;
@@ -483,5 +521,4 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
-
 }
