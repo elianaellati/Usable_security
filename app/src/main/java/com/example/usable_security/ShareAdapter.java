@@ -12,10 +12,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.biometric.BiometricPrompt;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -27,10 +31,11 @@ import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class ShareAdapter
         extends RecyclerView.Adapter<ShareAdapter.ViewHolder>{
-
+   int flag=0;
     private List<contacts> contact;
     private contacts contactt;
     private SharedPreferences preferences;
@@ -103,16 +108,20 @@ public class ShareAdapter
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                findKey();
-                searchtheuser();
-                task.setShared(1);
-                if(view.isChecked() && edit.isChecked()){
-                    task.setAccess(1);
-                }else if(view.isChecked()){
-                    Log.d("LoginInfo", "Incorrect password for username: " );
-                    task.setAccess(0);
-                }else{
-                    task.setAccess(1);
+                BiometricPrompt biometricPrompt = getPrompt();
+                biometricPrompt.authenticate(getPromptInfo());
+                if(flag==2) {
+                    findKey();
+                    searchtheuser();
+                    task.setShared(1);
+                    if (view.isChecked() && edit.isChecked()) {
+                        task.setAccess(1);
+                    } else if (view.isChecked()) {
+                        Log.d("LoginInfo", "Incorrect password for username: ");
+                        task.setAccess(0);
+                    } else {
+                        task.setAccess(1);
+                    }
                 }
             }
         });
@@ -149,20 +158,31 @@ public class ShareAdapter
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isUsernameFound = false;
-
+                 int flag=0;
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         User user = userSnapshot.getValue(User.class);
+                        Map<String,tasks>taskk=user.getTasks();
                         String userKey = userSnapshot.getKey();
                         isUsernameFound = true;
                         task.setShared(1);
                         task.setShareduser(name);
                         task.setEmail(storeduser.getEmail());
-                        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(userKey).child("tasks");
-                        DatabaseReference newTaskRef = userTasksRef.push();
-                        newTaskRef.setValue(task);
-                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
-                        userRef.child(keycontact).child("shared").setValue(1);
+                        for (Map.Entry<String, tasks> entry : taskk.entrySet()) {
+                            Log.d("LoginInfo","Incorrect password for username: "+entry.getValue().getName());
+                            Log.d("LoginInfo","Incorrect password for username: "+entry.getValue().equals(task));
+                            if (entry.getValue().getName().compareToIgnoreCase(task.getName())==0) {
+                                Log.d("LoginInfo", "Ba700000000000000000 ");
+                                flag=1;
+                            }
+                        }
+                        if(flag==0) {
+                            DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(userKey).child("tasks");
+                            DatabaseReference newTaskRef = userTasksRef.push();
+                            newTaskRef.setValue(task);
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
+                            userRef.child(keycontact).child("shared").setValue(1);
+                        }
                     }
                 }
 
@@ -180,4 +200,44 @@ public class ShareAdapter
 
         });
     }
+    private BiometricPrompt getPrompt() {
+
+        Executor executor = ContextCompat.getMainExecutor(context);
+        BiometricPrompt.AuthenticationCallback callback = new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                flag = 1;
+                notifyUser(errString.toString());
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                flag = 2;
+                notifyUser("Authentication Succeeded!");
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                flag = 1;
+                super.onAuthenticationFailed();
+                notifyUser("Authentication Failed!");
+            }
+        };
+
+        return new BiometricPrompt((FragmentActivity) context, executor, callback);
+    }
+
+    private BiometricPrompt.PromptInfo getPromptInfo() {
+        return new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometric Authentication")
+                .setSubtitle("Authenticate using your biometric data")
+                .setNegativeButtonText("Cancel")
+                .build();
+    }
+    private void notifyUser(String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
 }
