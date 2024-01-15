@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -468,25 +469,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void displayTasks() {
 
-        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key);
+        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
         userTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again whenever data at this location is updated.
+                Map<String, tasks> taskMap = new HashMap<>();
                 for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
-                    // Iterate through the tasks
-                  // List<tasks> userTasks=userTasksRef.child(User.key).child("tasks");
-
+                    tasks task = taskSnapshot.getValue(tasks.class);
+                    if (task != null) {
+                        taskMap.put(taskSnapshot.getKey(), task);
+                    }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", databaseError.toException());
             }
         });
-
-
 
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
