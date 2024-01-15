@@ -30,6 +30,11 @@ public class contacts {
         this.email = email;
     }
 
+    public int getShared() {
+        return shared;
+    }
 
-
+    public void setShared(int shared) {
+        this.shared = shared;
+    }
 }

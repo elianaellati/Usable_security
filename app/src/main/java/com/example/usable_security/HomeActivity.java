@@ -529,9 +529,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
     Map<String, tasks> tasksMap = user.getTasks();
-//        List<tasks> taskList = new ArrayList<>(tasksMap.values());
-//        Map<String, tasks> tasksMap = user != null ? user.getTasks() : Collections.emptyMap();
-       // List<tasks> taskList = new ArrayList<>(tasksMap.values());
         if (tasksMap != null) {
             List<tasks> taskList = new ArrayList<>(tasksMap.values());
         Calendar currentCalendar = Calendar.getInstance();
@@ -543,7 +540,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
             for (tasks task : taskList) {
 
-                if (task.getDate().equals(currentDate)) {
+                if (task.getDate().equals(currentDate)  && task.getShared()==0) {
+
                     task.toString();
                     String taskId = task.getId();
                     todayTasks.add(task);

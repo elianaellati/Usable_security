@@ -38,6 +38,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     private Context context;
     private tasks task;
     private AlertDialog detailsDialog;
+    private AlertDialog viewDialog;
 
     public adapter_tasks(List<tasks> tasks) {
         this.tasks = tasks;
@@ -62,12 +63,15 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
         Log.d("userId", id[0]);
 
         task = tasks.get(holder.getAdapterPosition());
+
         ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 
         details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                task = tasks.get(holder.getAdapterPosition());
+                if(task.getAccess()==1){
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 LayoutInflater inflater = LayoutInflater.from(context);
                 View dialogView = inflater.inflate(R.layout.dialogue_details, null);
@@ -199,6 +203,116 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                 });
 
             }
+         else if (task.getAccess()==0){
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    LayoutInflater inflater = LayoutInflater.from(context);
+                    View dialogView = inflater.inflate(R.layout.dialogue_view, null);
+                    builder.setView(dialogView);
+
+
+
+                    ImageView viewImage = dialogView.findViewById(R.id.view);
+                    TextView editText = dialogView.findViewById(R.id.viewText);
+                    viewImage.setImageResource(R.drawable.view);
+                    editText.setText("View");
+
+                    ImageView deleteImage = dialogView.findViewById(R.id.deleteImage);
+                    TextView deleteText = dialogView.findViewById(R.id.deleteText);
+                    deleteImage.setImageResource(R.drawable.delete_icon);
+                    deleteText.setText("Delete");
+
+                    viewDialog = builder.create();
+                    viewDialog.show();
+
+
+                    viewImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int position = holder.getAdapterPosition(); // Get the position of the clicked item
+                            if (position != RecyclerView.NO_POSITION) {
+                                tasks clickedTask = tasks.get(position); // Retrieve the corresponding task from the list
+                                Intent intent = new Intent(context, view.class);
+                                intent.putExtra("task", clickedTask);
+                                context.startActivity(intent);
+                                viewDialog.dismiss(); // Dismiss the dialog after handling the click
+                            }
+                        }
+                    });
+
+
+                    deleteImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Show a confirmation dialog before deleting the task
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Confirm Deletion");
+                            builder.setMessage("Are you sure you want to delete this task?");
+                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Iterate over the tasks and delete the matching one from the database
+                                    SharedPreferences preferences=context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                                    String userJson = preferences.getString("user", "");
+                                    User user = null;
+                                    if (!userJson.isEmpty()) {
+                                        Gson gson = new Gson();
+                                        user = gson.fromJson(userJson, User.class);
+                                        User updateuser=null;
+                                        Map<String, tasks> taskMap = user.getTasks();
+                                        for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                                            if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
+                                                DatabaseReference userTasksRef = FirebaseDatabase.getInstance()
+                                                        .getReference()
+                                                        .child("Data")
+                                                        .child(User.key)
+                                                        .child("tasks");
+                                                updateuser = gson.fromJson(userJson, User.class);
+                                                String userrJson = gson.toJson( updateuser);
+                                                SharedPreferences.Editor editor = preferences.edit();
+                                                updateuser.removeTaskFromMap(entry.getKey(),task);
+                                                editor.putString("user",  userrJson);
+                                                editor.apply();
+                                                userTasksRef.child(entry.getKey()).removeValue()
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                // Task deleted successfully
+                                                                tasks.remove(holder.getAdapterPosition()); // Remove the deleted task from the list
+                                                                notifyItemRemoved(holder.getAdapterPosition()); // Notify the adapter of the removed item
+                                                                notifyItemRangeChanged(holder.getAdapterPosition(), tasks.size()); // Notify the adapter that the data set has changed
+                                                                dialog.dismiss();
+                                                                viewDialog.dismiss();
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                // Handle any errors that may occur
+                                                                Log.e("DeleteTask", "Error deleting task from database", e);
+
+                                                            }
+                                                        });
+                                                break; // Exit the loop after deleting the task
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // User clicked the "No" button, do nothing
+                                    dialog.dismiss();
+                                    viewDialog.dismiss();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+                }
+                }
         });
 
 
@@ -300,7 +414,6 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
             this.cardView = cardView;
         }
     }
-
 
 
 }

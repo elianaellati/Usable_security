@@ -30,8 +30,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -39,9 +42,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class details extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -57,6 +62,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     public DrawerLayout drawerLayout;
     private SharedPreferences preferences;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+     String  nameBeforeUpdate="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +79,13 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         Intent intent = getIntent();
         tasks task = (tasks) intent.getSerializableExtra("task");
         Log.d("tatata", task.getName());
-        edtName=findViewById(R.id.taskName);
-        edtNote=findViewById(R.id.noteText);
-        edtDate=findViewById(R.id.dateEditText);
-        editDate =findViewById(R.id.editDate);
-        editTime =findViewById(R.id.editTimeImage);
-        edtTime=findViewById(R.id.timeEditText);
-        edtBtn=findViewById(R.id.editButton);
+        edtName = findViewById(R.id.taskName);
+        edtNote = findViewById(R.id.noteText);
+        edtDate = findViewById(R.id.dateEditText);
+        editDate = findViewById(R.id.editDate);
+        editTime = findViewById(R.id.editTimeImage);
+        edtTime = findViewById(R.id.timeEditText);
+        edtBtn = findViewById(R.id.editButton);
 
         edtName.setText(task.getName());
         edtNote.setText(task.getNote());
@@ -106,9 +112,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         spinner.setSelection(position);
 
 
-
-     Spinner spinner2 = findViewById(R.id.spinner2);
-                String taskRepeat= task.getRepeat();
+        Spinner spinner2 = findViewById(R.id.spinner2);
+        String taskRepeat = task.getRepeat();
 
         List<String> repeatList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.repeat)));
         if (!repeatList.contains(taskRepeat)) {
@@ -125,7 +130,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
         int position2 = adapter2.getPosition(taskRepeat);
         spinner2.setSelection(position2);
-
 
 
         Date taskDate = task.getDate();
@@ -190,44 +194,43 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         });
 
 
-       editTime.setOnClickListener(new View.OnClickListener(){
-           @Override
-           public void onClick(View v) {
+        editTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-               Calendar calendar = Calendar.getInstance();
-               int hour = calendar.get(Calendar.HOUR_OF_DAY);
-               int minute = calendar.get(Calendar.MINUTE);
+                Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
 
-               // Split the task's time into hour and minute
-               String[] timeParts = task.getTime().split(":");
-               if (timeParts.length == 2) {
-                   hour = Integer.parseInt(timeParts[0]);
-                   minute = Integer.parseInt(timeParts[1]);
-               }
+                // Split the task's time into hour and minute
+                String[] timeParts = task.getTime().split(":");
+                if (timeParts.length == 2) {
+                    hour = Integer.parseInt(timeParts[0]);
+                    minute = Integer.parseInt(timeParts[1]);
+                }
 
 
+                TimePickerDialog timePickerDialog = new TimePickerDialog(
+                        details.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-               TimePickerDialog timePickerDialog = new TimePickerDialog(
-                       details.this,
-                       new TimePickerDialog.OnTimeSetListener() {
-                           @Override
-                           public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                                task.setTime(selectedTime);
+                            }
+                        },
+                        hour,
+                        minute,
 
-                               String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
-                               task.setTime(selectedTime);
-                           }
-                       },
-                       hour,
-                       minute,
+                        true
+                );
 
-                       true
-               );
+                // Show the TimePickerDialog
+                timePickerDialog.show();
 
-               // Show the TimePickerDialog
-               timePickerDialog.show();
-
-           }
-       });
+            }
+        });
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -266,7 +269,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                 public void onClick(DialogInterface dialog, int which) {
                                     String days = daysEditText.getText().toString();
                                     String unit = (String) unitSpinner.getSelectedItem();
-                                    task.setReminder(days+" "+unit);
+                                    task.setReminder(days + " " + unit);
 
                                     if (!reminderList.contains(task.getReminder())) {
                                         reminderList.add(task.getReminder()); // Add the new custom reminder to the list
@@ -336,8 +339,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                 public void onClick(DialogInterface dialog, int which) {
                                     String days = daysEditText.getText().toString();
                                     String unit = (String) unitSpinner.getSelectedItem();
-                                    task.setRepeat(days+" "+unit);
-
+                                    task.setRepeat(days + " " + unit);
 
                                     if (!repeatList.contains(task.getRepeat())) {
                                         repeatList.add(task.getRepeat()); // Add the new custom reminder to the list
@@ -368,22 +370,24 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         });
 
 
-
         edtBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String userJson = preferences.getString("user", "");
-                User user=null;
+                User user = null;
 
                 if (!userJson.isEmpty()) {
                     Gson gson = new Gson();
                     user = gson.fromJson(userJson, User.class);
-                    Map<String,tasks> taskMap=user.getTasks();
-                    for(Map.Entry<String,tasks> entry: taskMap.entrySet()){
+                    Map<String, tasks> taskMap = user.getTasks();
+                    for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                        Log.d("Taskkkkkkkk", task.getName());
+                        nameBeforeUpdate=task.getName();
+                        if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
 
-                        Log.d("Taskkkkkkkk",task.getName());
-                        if(entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
+                            editForSharedContacts(user, task);
+
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
                             userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
@@ -392,18 +396,16 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
-                            User updateuser=null;
+                            User updateuser = null;
                             updateuser = gson.fromJson(userJson, User.class);
-                            updateuser.editTask(entry.getKey(),task);
-                            String userrJson = gson.toJson( updateuser);
+                            updateuser.editTask(entry.getKey(), task);
+                            String userrJson = gson.toJson(updateuser);
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("user",  userrJson);
+                            editor.putString("user", userrJson);
                             editor.apply();
 
                             Intent intent = new Intent(details.this, HomeActivity.class);
                             startActivity(intent);
-
-
                         }
                     }
                 }
@@ -413,6 +415,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
 
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
@@ -425,7 +428,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.my_day:
-                openMyDayIntent() ;
+                openMyDayIntent();
                 break;
             case R.id.assigned:
                 openAssignedIntent();
@@ -441,9 +444,76 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);
     }
+
     private void openMyDayIntent() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
+
+
+    private void editForSharedContacts(User user, tasks task) {
+        Log.d("hello", "hieiei");
+        Log.d("name", "" + user.getName());
+        Map<String, contacts> contactsMap = user.getContacts();
+        ArrayList<String> contactEmails = new ArrayList<>();
+        if (contactsMap != null) {
+            for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
+                if (entry.getValue().getShared() == 1) {
+                    Log.d("name", "" + entry.getValue().getName());
+                    String email = entry.getValue().getEmail();
+                    if (email != null && !email.isEmpty()) {
+                        contactEmails.add(email);
+                        Log.d("email", email);
+                    }
+                }
+            }
+            // Now you can use the contactEmails list for further processing
+        } else {
+            Log.d("contacts", "Contacts map is null");
+        }
+
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Data");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    User currentUser = userSnapshot.getValue(User.class);
+                    Log.d("UserData", "Snapshot key: " + userSnapshot.getKey());
+                    Log.d("UserData", "Current user: " + currentUser);
+                    if (currentUser != null) {
+                        String userEmail = currentUser.getEmail();
+                        Log.d("UserEmail", "Current user email: " + userEmail);
+
+                        if (userEmail != null && contactEmails.contains(userEmail)) {
+                            Log.d("TaskFound", "Task found for user with email: " + userEmail);
+                            Map<String, tasks> userTasks = currentUser.getTasks();
+                            if (userTasks != null) {
+                                for (Map.Entry<String, tasks> entry : userTasks.entrySet()) {
+                                    tasks userTask = entry.getValue();
+                                    if (userTask.getName().equals(nameBeforeUpdate)) {
+                                        Log.d("TaskFound", "Found matching task: " + userTask.getName());
+                                        DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
+                                        userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
+                                        userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
+                                        userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
+                                        userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
+                                        userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Error reading data from Firebase", error.toException());
+            }
+        });
+    }
+
+
+
 
 }
