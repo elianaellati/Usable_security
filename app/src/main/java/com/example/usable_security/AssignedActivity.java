@@ -48,6 +48,8 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         displayContacts();
 
         Button add =findViewById(R.id.addButton);
@@ -64,27 +66,31 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         String userJson = preferences.getString("user", "");
         User user=null;
         if (!userJson.isEmpty()) {
+
             Gson gson = new Gson();
              user = gson.fromJson(userJson, User.class);
+            Log.d("Info", "EMAIl found:" + user.getUsername());
         }
         RecyclerView recycler = findViewById(R.id.recycler_view);
-        Map<String, contacts> contactsMap = user.contacts;
-        String [] name=new String[contactsMap.size()];
-        String [] email=new String[contactsMap.size()];
-        int i=0;
-        for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
-            String contactId = entry.getKey();
-            contacts contactt = entry.getValue();
-            String contactName = contactt.getName();
-            String contactEmail = contactt.getEmail();
-            Log.d("LoginInfo", "Login successful. Username: " + contactEmail);
-            name[i]=contactName;
-            email[i]=contactEmail;
-            ++i;
+        if(!user.contacts.isEmpty()) {
+            Map<String, contacts> contactsMap = user.contacts;
+            String[] name = new String[contactsMap.size()];
+            String[] email = new String[contactsMap.size()];
+            int i = 0;
+            for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
+                String contactId = entry.getKey();
+                contacts contactt = entry.getValue();
+                String contactName = contactt.getName();
+                String contactEmail = contactt.getEmail();
+                Log.d("LoginInfo", "Login successful. Username: " + contactEmail);
+                name[i] = contactName;
+                email[i] = contactEmail;
+                ++i;
+            }
+            recycler.setLayoutManager(new LinearLayoutManager(this));
+            Adapter adapter = new Adapter(name, email);
+            recycler.setAdapter(adapter);
         }
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-        Adapter adapter = new Adapter(name,email);
-        recycler.setAdapter(adapter);
     }
     private void showEmailInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -119,9 +125,10 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
                                     String userJson = preferences.getString("user", "");
                                     Gson gson = new Gson();
                                     User  updateuser = gson.fromJson(userJson, User.class);;
-                                    if (updateuser.getEmail().compareTo(enteredEmail)!=0 && user.getContacts().containsValue(contact.email)) {
+                                    if (updateuser.getEmail().compareTo(enteredEmail)!=0 ) {
                                         DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
                                         DatabaseReference newContactRef = userContactsRef.push();
+                                        Log.d("Info", "Elianaaaaaaaaaaaaa" + user.getUsername());
                                         newContactRef.setValue(contact);
                                         updateuser.addContactToMap(newContactRef.getKey(),contact);
                                         String userrJson = gson.toJson( updateuser);

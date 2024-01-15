@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
                                     User.key=userId;
                                     SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
+                                    editor.clear();
                                     Gson gson = new Gson();
                                     String userJson = gson.toJson(user);
                                     editor.putString("user", userJson);
                                     editor.apply();
-
                                     Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
 
                                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);

@@ -3,6 +3,7 @@ package com.example.usable_security;
 import android.provider.ContactsContract;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class User {
     }
 
     static String key;
-    public Map<String,contacts> contacts;
+    public Map<String,contacts> contacts=new HashMap<>();  ;
     public Map<String,tasks> tasks;
 
     public void setUsername(String username) {
