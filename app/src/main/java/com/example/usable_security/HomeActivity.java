@@ -100,6 +100,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 tasks task=new tasks();
 
+                task.setReminder("None");
+                task.setRepeat("None");
+
+                Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+
+                task.setTime(selectedTime);
+                Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
+
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                 LayoutInflater inflater = HomeActivity.this.getLayoutInflater();
                 View titleView = inflater.inflate(R.layout.title_dialogue, null);
@@ -270,6 +282,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 notify.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+
                         LayoutInflater inflater = getLayoutInflater();
                         View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
                         Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
@@ -347,7 +361,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                         }
                                                     })
                                                     .show();
-                                        } else {
+                                        } else if(!notify.equals("custom") && !notify.equals("none")) {
                                             task.setReminder(notify);
                                             Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
@@ -522,4 +536,36 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
+
+
+    // Example method to handle user interaction when "custom" is selected
+    public void onCustomRepeatSelected(int customRepeatInterval, String customRepeatUnit,tasks task) {
+        // Calculate the next due date based on the custom repeat interval and unit
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(getCalendarUnitFromCustomRepeatUnit(customRepeatUnit), customRepeatInterval);
+        Date nextDueDate = calendar.getTime();
+        tasks newTask=new tasks();
+        newTask.setName(task.name);
+        newTask.setDate(nextDueDate);
+        newTask.setRepeat(customRepeatInterval+" "+customRepeatUnit);
+
+
+    }
+
+    // Helper method to convert custom repeat units to Calendar units
+    private int getCalendarUnitFromCustomRepeatUnit(String customRepeatUnit) {
+        switch (customRepeatUnit) {
+            case "Days":
+                return Calendar.DAY_OF_MONTH;
+            case "Weeks":
+                return Calendar.WEEK_OF_YEAR;
+            case "Month":
+                return Calendar.MONTH;
+            case "Year":
+                return Calendar.YEAR;
+            default:
+                throw new IllegalArgumentException("Invalid custom repeat unit: " + customRepeatUnit);
+        }
+    }
+
 }

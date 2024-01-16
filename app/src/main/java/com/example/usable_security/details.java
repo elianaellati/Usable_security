@@ -64,6 +64,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     public ActionBarDrawerToggle actionBarDrawerToggle;
      String  nameBeforeUpdate="";
 
+    private ReminderUtils reminderUtils = new ReminderUtils();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -278,6 +280,10 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                     }
 
                                     Toast.makeText(details.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                    long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
+                                    int requestCode1 = 1;
+                                    ReminderManager.setReminder(details.this, timeInMillis, task.getName(),requestCode1);
+
                                 }
                             })
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -291,6 +297,9 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                 } else {
                     task.setReminder(notify);
                     Toast.makeText(details.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
+//                    long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
+//                    int requestCode1 = 1;
+//                    ReminderManager.setReminder(details.this, timeInMillis, task.getName(),requestCode1);
                 }
 
             }

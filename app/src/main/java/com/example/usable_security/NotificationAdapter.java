@@ -103,7 +103,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                         usersReference.child(User.key).child("tasks").child(entry.getKey()).child("shared").setValue(0);
                     }
                 }
-
                             if (finalIsEmailFound ==false) {
 
                                 contacts contact = new contacts(tasks.get(position).getShareduser(), tasks.get(position).getEmail());
