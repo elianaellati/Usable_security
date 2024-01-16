@@ -59,11 +59,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
 
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    Map<String,tasks> taskMap=new HashMap<>();
 
     private ReminderUtils reminderUtils = new ReminderUtils();
 
@@ -241,6 +243,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setRepeat(days+" "+unit);
                                                             Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                                            onCustomRepeatSelected(Integer.parseInt(days),unit,task);
                                                         }
                                                     })
                                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -253,6 +256,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                     .show();
                                         } else {
                                             task.setRepeat(selectedItem);
+                                            onRepeatSelected(selectedItem,task);
                                             Toast.makeText(HomeActivity.this, "Repeat every " + selectedItem, Toast.LENGTH_SHORT).show();
                                         }
                                     }
@@ -307,6 +311,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         String notify = (String) spinner.getSelectedItem();
 
                                         Calendar currentCalendar = Calendar.getInstance();
+                                        currentCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
                                         int currentYear = currentCalendar.get(Calendar.YEAR);
                                         int currentMonth = currentCalendar.get(Calendar.MONTH);
                                         int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
@@ -394,17 +399,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         String taskText = input.getText().toString();
                         task.setName(taskText);
                         Calendar currentCalendar = Calendar.getInstance();
-                        int currentYear = currentCalendar.get(Calendar.YEAR);
-                        int currentMonth = currentCalendar.get(Calendar.MONTH);
-                        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
-                        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+                        currentCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                        currentCalendar.set(Calendar.MINUTE, 0);
+                        currentCalendar.set(Calendar.SECOND, 0);
+                        currentCalendar.set(Calendar.MILLISECOND, 0);
+
+                        Date currentDate = currentCalendar.getTime();
                         task.setDate(currentDate);
+                        Log.d("Dateeeee",String.valueOf(task.getDate()));
                         String id=User.key;
                         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("tasks");
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
                         String taskId = newTaskRef.getKey();
                         Log.d("Tskkk",taskId);
+                        Log.d("Adddedddddddddddddd",taskId);
+                        displayTasks();
                         task.setId(taskId);
                         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         String userJson = preferences.getString("user", "");
@@ -413,11 +423,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             Gson gson = new Gson();
                             updateuser = gson.fromJson(userJson, User.class);
                             updateuser.addTaskToMap(newTaskRef.getKey(),task);
+                            Log.d("kkkkkkkkkkkkkkkkk",taskId);
                             String userrJson = gson.toJson( updateuser);
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("user",  userrJson);
                             editor.apply();
-
+                            displayTasks();
                         }
                         displayTasks();
 
@@ -463,18 +474,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.notification:
                 openNotificationIntent();
                 break;
-            case R.id.nav_logout:
-                openLogoutIntent();
-                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
-    }
-    private void openLogoutIntent() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
     }
     private void openNotificationIntent() {
         Intent intent = new Intent(this, Notification.class);
@@ -488,28 +492,86 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
 
+//    public void displayTasks() {
+//
+//        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
+//        userTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Map<String, tasks> taskMap = new HashMap<>();
+//                for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
+//                    tasks task = taskSnapshot.getValue(tasks.class);
+//                    if (task != null) {
+//                        taskMap.put(taskSnapshot.getKey(), task);
+//                        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+//                        String userJson = preferences.getString("user", "");
+//                        User user = null;
+//                        if (!userJson.isEmpty()) {
+//                            Gson gson = new Gson();
+//                            user = gson.fromJson(userJson, User.class);
+//                        }
+//                        user.setTasks(taskMap);
+//
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                // Failed to read value
+//                Log.w(TAG, "Failed to read value.", databaseError.toException());
+//            }
+//        });
+//
+//        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+//        String userJson = preferences.getString("user", "");
+//        User user = null;
+//        if (!userJson.isEmpty()) {
+//            Gson gson = new Gson();
+//            user = gson.fromJson(userJson, User.class);
+//        }
+//        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
+//        Map<String, tasks> tasksMap = user.getTasks();
+//        if (tasksMap != null) {
+//            List<tasks> taskList = new ArrayList<>(tasksMap.values());
+//        Calendar currentCalendar = Calendar.getInstance();
+//        List<tasks> todayTasks = new ArrayList<>();
+//
+//        int currentYear = currentCalendar.get(Calendar.YEAR);
+//        int currentMonth = currentCalendar.get(Calendar.MONTH);
+//        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+//        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+//            for (tasks task : taskList) {
+//
+//                Calendar taskCalendar = Calendar.getInstance();
+//                taskCalendar.setTime(task.getDate());
+//                int taskYear = taskCalendar.get(Calendar.YEAR);
+//                int taskMonth = taskCalendar.get(Calendar.MONTH);
+//                int taskDayOfMonth = taskCalendar.get(Calendar.DAY_OF_MONTH);
+//                Date taskDate = new Date(taskYear - 1900, taskMonth, taskDayOfMonth);
+//
+//                if (taskDate==currentDate  && task.getShared()==0) {
+//                    task.toString();
+//                    todayTasks.add(task);
+//                }
+//                else{
+//                    Log.d("jfjfjfjfjj",task.getName()+ ":::"+ task.getDate());
+//                }
+//            }
+//            recycler.setLayoutManager(new LinearLayoutManager(this));
+//            adapter_tasks adapter = new adapter_tasks(todayTasks);
+//            if(!todayTasks.isEmpty()){
+//                Log.d("ksksksk","DDDDD");
+//            }
+//            recycler.setAdapter(adapter);
+//        }
+//
+//    }
+
     public void displayTasks() {
-
-        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
-        userTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Map<String, tasks> taskMap = new HashMap<>();
-                for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
-                    tasks task = taskSnapshot.getValue(tasks.class);
-                    if (task != null) {
-                        taskMap.put(taskSnapshot.getKey(), task);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
-            }
-        });
-
+        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
+        List<tasks> todayTasks = new ArrayList<>();
+        List<tasks> taskList = new ArrayList<>();
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         User user = null;
@@ -517,35 +579,62 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Gson gson = new Gson();
             user = gson.fromJson(userJson, User.class);
         }
-        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
-        Map<String, tasks> tasksMap = user.getTasks();
-        if (tasksMap != null) {
-            List<tasks> taskList = new ArrayList<>(tasksMap.values());
-        Calendar currentCalendar = Calendar.getInstance();
-        List<tasks> todayTasks = new ArrayList<>();
 
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
-        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
-            for (tasks task : taskList) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isUsernameFound = false;
 
-                if (task.getDate().equals(currentDate)  && task.getShared()==0) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        if (dataSnapshot.exists()) {
+                            User userr = userSnapshot.getValue(User.class);
+                            Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
+                            taskMap = userr.getTasks();
+                            if (taskMap != null) {
+                                for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                                    taskList.add(entry.getValue());
 
-                    task.toString();
-                    String taskId = task.getId();
-                    todayTasks.add(task);
+                                    // Log the task details along with the formatted date
+                                    Log.d("LoginInfo", "Ba7000000000000 " + entry.getValue().getName() + " " + entry.getValue().getDate());
+
+
+                                }
+                            }
+                        }
+                        recycler.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
+                        adapter_tasks adapter = new adapter_tasks(todayTasks);
+                        recycler.setAdapter(adapter);
+                    }
                 }
+
+
+                Log.d("LoginInfo", "Elianaaaaaaaaaaaaa");
+                // List<tasks> taskList = new ArrayList<>(taskMap.values());
+                Calendar currentCalendar = Calendar.getInstance();
+                int currentYear = currentCalendar.get(Calendar.YEAR);
+                int currentMonth = currentCalendar.get(Calendar.MONTH);
+                int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
+                Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+                for (tasks task : taskList) {
+                    if (task.getDate().equals(currentDate) && task.getShared() == 0) {
+                        task.toString();
+                        String taskId = task.getId();
+                        Log.d("LoginInfo", "Aloooos " + task.getName());
+                        todayTasks.add(task);
+                    }
+                }
+
             }
-            recycler.setLayoutManager(new LinearLayoutManager(this));
-            adapter_tasks adapter = new adapter_tasks(todayTasks);
-            recycler.setAdapter(adapter);
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+       });
         }
-
-    }
-
-
-    // Example method to handle user interaction when "custom" is selected
     public void onCustomRepeatSelected(int customRepeatInterval, String customRepeatUnit,tasks task) {
         // Calculate the next due date based on the custom repeat interval and unit
         Calendar calendar = Calendar.getInstance();
@@ -555,8 +644,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         newTask.setName(task.name);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(customRepeatInterval+" "+customRepeatUnit);
-
-
+        newTask.setRepeat(task.repeat);
+        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
+        DatabaseReference newTaskRef = userTasksRef.push();
+        newTaskRef.setValue(newTask);
     }
 
     // Helper method to convert custom repeat units to Calendar units
@@ -572,6 +663,76 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 return Calendar.YEAR;
             default:
                 throw new IllegalArgumentException("Invalid custom repeat unit: " + customRepeatUnit);
+        }
+    }
+    public void onRepeatSelected(String selectedRepeatOption,tasks task) {
+        int repeatInterval;
+        String repeatUnit;
+
+        switch (selectedRepeatOption) {
+            case "None":
+                // Set the repeat interval to 0 for no repetition
+                repeatInterval = 0;
+                // Set the repeat unit to an empty string or null, as there's no repetition
+                repeatUnit = "";
+                break;
+            case "Daily":
+                // Set the repeat interval to 1 for daily repetition
+                repeatInterval = 1;
+                // Set the repeat unit to "day"
+                repeatUnit = "day";
+                break;
+            case "Weekly":
+                // Set the repeat interval to 1 for weekly repetition
+                repeatInterval = 1;
+                // Set the repeat unit to "week"
+                repeatUnit = "week";
+                break;
+            case "Monthly":
+                // Set the repeat interval to 1 for monthly repetition
+                repeatInterval = 1;
+                // Set the repeat unit to "month"
+                repeatUnit = "month";
+                break;
+            case "Yearly":
+                // Set the repeat interval to 1 for yearly repetition
+                repeatInterval = 1;
+                // Set the repeat unit to "year"
+                repeatUnit = "year";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid repeat option: " + selectedRepeatOption);
+        }
+
+        // Calculate the next due date based on the selected repeat option
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(getCalendarUnitFromRepeatUnit(repeatUnit), repeatInterval);
+        Date nextDueDate = calendar.getTime();
+        tasks newTask=new tasks();
+        newTask.setName(task.name);
+        newTask.setDate(nextDueDate);
+        newTask.setRepeat(task.repeat);
+        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
+        DatabaseReference newTaskRef = userTasksRef.push();
+        newTaskRef.setValue(newTask);
+
+    }
+
+    // Helper method to convert repeat units to Calendar units
+    private int getCalendarUnitFromRepeatUnit(String repeatUnit) {
+        switch (repeatUnit) {
+            case "None":
+                return -1;
+            case "day":
+                return Calendar.DAY_OF_MONTH;
+            case "week":
+                return Calendar.WEEK_OF_YEAR;
+            case "month":
+                return Calendar.MONTH;
+            case "year":
+                return Calendar.YEAR;
+            default:
+                throw new IllegalArgumentException("Invalid repeat unit: " + repeatUnit);
         }
     }
 

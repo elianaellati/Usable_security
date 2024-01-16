@@ -26,8 +26,8 @@ public class User {
     }
 
     static String key;
-    public Map<String,contacts> contacts=new HashMap<>();  ;
-    public Map<String,tasks> tasks;
+    public Map<String,contacts> contacts=new HashMap<>();
+    public Map<String,tasks> tasks=new HashMap<>();
 
     public void setUsername(String username) {
         this.username = username;
