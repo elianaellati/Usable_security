@@ -141,15 +141,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (usertasks != null && !usertasks.isEmpty()) {
-                    for (Map.Entry<String, tasks> entry : usertasks.entrySet()) {
-                        if (entry.getValue().getName().compareToIgnoreCase(tasks.get(position).getName()) == 0) {
-                            usersReference.child(User.key).child("tasks").child(entry.getKey()).removeValue();
-                            removeTask(holder.getAdapterPosition());
+                if (tasks != null && position < tasks.size()) { // Check position within bounds
+                    String taskName = tasks.get(position).getName();
+
+                    if (usertasks != null && !usertasks.isEmpty()) {
+                        for (Map.Entry<String, tasks> entry : usertasks.entrySet()) {
+                            if (entry.getValue().getName().compareToIgnoreCase(taskName) == 0) {
+                                usersReference.child(User.key).child("tasks").child(entry.getKey()).removeValue();
+                                break;
+                            }
                         }
+                        removeTask(holder.getAdapterPosition());
                     }
+
                 }
-                removeTask(holder.getAdapterPosition());
             }
         });
 

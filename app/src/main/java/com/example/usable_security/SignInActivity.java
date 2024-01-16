@@ -251,7 +251,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    private void addUserToDatabase(String name, String username, String email, String password) {
+    private void  addUserToDatabase(String name, String username, String email, String password) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");

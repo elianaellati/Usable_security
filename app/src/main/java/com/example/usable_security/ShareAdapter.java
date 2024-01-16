@@ -108,9 +108,9 @@ public class ShareAdapter
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                BiometricPrompt biometricPrompt = getPrompt();
-                biometricPrompt.authenticate(getPromptInfo());
-                if(flag==2) {
+                //BiometricPrompt biometricPrompt = getPrompt();
+                //biometricPrompt.authenticate(getPromptInfo());
+               // if(flag==2) {
                     findKey();
                     searchtheuser();
                     task.setShared(1);
@@ -123,7 +123,7 @@ public class ShareAdapter
                         task.setAccess(1);
                     }
                 }
-            }
+          //  }
         });
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
