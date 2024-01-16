@@ -124,8 +124,15 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
                                     SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                     String userJson = preferences.getString("user", "");
                                     Gson gson = new Gson();
-                                    User  updateuser = gson.fromJson(userJson, User.class);;
-                                    if (updateuser.getEmail().compareTo(enteredEmail)!=0 ) {
+                                    int flagg=0;
+                                    User  updateuser = gson.fromJson(userJson, User.class);
+                                    Map<String,contacts> contacct=updateuser.getContacts();
+                                    for(Map.Entry<String,contacts> entry: contacct.entrySet() ){
+                                        if(entry.getValue().getEmail().compareToIgnoreCase(enteredEmail)==0){
+                                            flagg=1;
+                                        }
+                                    }
+                                    if (updateuser.getEmail().compareToIgnoreCase(enteredEmail)!=0 && flagg==0 ) {
                                         DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
                                         DatabaseReference newContactRef = userContactsRef.push();
                                         Log.d("Info", "Elianaaaaaaaaaaaaa" + user.getUsername());
@@ -184,13 +191,19 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
             case R.id.assigned:
                 openAssignedIntent();
                 break;
+            case R.id.nav_logout:
+                openLogoutIntent();
+                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private void openLogoutIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
     private void openAssignedIntent() {
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);

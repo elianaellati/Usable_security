@@ -168,12 +168,14 @@ public class ShareAdapter
                         task.setShared(1);
                         task.setShareduser(name);
                         task.setEmail(storeduser.getEmail());
-                        for (Map.Entry<String, tasks> entry : taskk.entrySet()) {
-                            Log.d("LoginInfo","Incorrect password for username: "+entry.getValue().getName());
-                            Log.d("LoginInfo","Incorrect password for username: "+entry.getValue().equals(task));
-                            if (entry.getValue().getName().compareToIgnoreCase(task.getName())==0) {
-                                Log.d("LoginInfo", "Ba700000000000000000 ");
-                                flag=1;
+                        if (taskk != null) {
+                            for (Map.Entry<String, tasks> entry : taskk.entrySet()) {
+                                Log.d("LoginInfo", "Incorrect password for username: " + entry.getValue().getName());
+                                Log.d("LoginInfo", "Incorrect password for username: " + entry.getValue().equals(task));
+                                if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
+                                    Log.d("LoginInfo", "Ba700000000000000000 ");
+                                    flag = 1;
+                                }
                             }
                         }
                         if(flag==0) {

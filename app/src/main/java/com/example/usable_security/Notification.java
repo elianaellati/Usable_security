@@ -109,13 +109,19 @@ public class Notification extends AppCompatActivity implements NavigationView.On
             case R.id.notification:
                 openNotificationIntent();
                 break;
+            case R.id.nav_logout:
+                openLogoutIntent();
+                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private void openLogoutIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
     private void openAssignedIntent() {
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);
