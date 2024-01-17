@@ -64,6 +64,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
 
         task = tasks.get(holder.getAdapterPosition());
 
+
+
         ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 
@@ -121,13 +123,16 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     @Override
                     public void onClick(View v) {
                         // Show a confirmation dialog before deleting the task
+                        task = tasks.get(holder.getAdapterPosition());
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setTitle("Confirm Deletion");
                         builder.setMessage("Are you sure you want to delete this task?");
+
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Iterate over the tasks and delete the matching one from the database
+
                                 SharedPreferences preferences=context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                 String userJson = preferences.getString("user", "");
                                 User user = null;
@@ -136,40 +141,44 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                     user = gson.fromJson(userJson, User.class);
                                     User updateuser=null;
                                     Map<String, tasks> taskMap = user.getTasks();
-                                    for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                                        if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
-                                            DatabaseReference userTasksRef = FirebaseDatabase.getInstance()
-                                                    .getReference()
-                                                    .child("Data")
-                                                    .child(User.key)
-                                                    .child("tasks");
-                                            updateuser = gson.fromJson(userJson, User.class);
-                                            String userrJson = gson.toJson( updateuser);
-                                            SharedPreferences.Editor editor = preferences.edit();
-                                            updateuser.removeTaskFromMap(entry.getKey(),task);
-                                            editor.putString("user",  userrJson);
-                                            editor.apply();
-                                            userTasksRef.child(entry.getKey()).removeValue()
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            // Task deleted successfully
-                                                            tasks.remove(holder.getAdapterPosition()); // Remove the deleted task from the list
-                                                            notifyItemRemoved(holder.getAdapterPosition()); // Notify the adapter of the removed item
-                                                            notifyItemRangeChanged(holder.getAdapterPosition(), tasks.size()); // Notify the adapter that the data set has changed
-                                                            dialog.dismiss();
-                                                            detailsDialog.dismiss();// Dismiss the dialog after handling the click
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            // Handle any errors that may occur
-                                                            Log.e("DeleteTask", "Error deleting task from database", e);
 
-                                                        }
-                                                    });
-                                            break; // Exit the loop after deleting the task
+                                    if(!taskMap.isEmpty()) {
+                                        for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                                            String taskName = entry.getValue().getName();
+                                            if (taskName != null && entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
+                                                DatabaseReference userTasksRef = FirebaseDatabase.getInstance()
+                                                        .getReference()
+                                                        .child("Data")
+                                                        .child(User.key)
+                                                        .child("tasks");
+                                                updateuser = gson.fromJson(userJson, User.class);
+                                                String userrJson = gson.toJson(updateuser);
+                                                SharedPreferences.Editor editor = preferences.edit();
+                                                updateuser.removeTaskFromMap(entry.getKey(), task);
+                                                editor.putString("user", userrJson);
+                                                editor.apply();
+                                                userTasksRef.child(entry.getKey()).removeValue()
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                // Task deleted successfully
+                                                                tasks.remove(holder.getAdapterPosition()); // Remove the deleted task from the list
+                                                                notifyItemRemoved(holder.getAdapterPosition()); // Notify the adapter of the removed item
+                                                                notifyItemRangeChanged(holder.getAdapterPosition(), tasks.size()); // Notify the adapter that the data set has changed
+                                                                dialog.dismiss();
+                                                                detailsDialog.dismiss();// Dismiss the dialog after handling the click
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                // Handle any errors that may occur
+                                                                Log.e("DeleteTask", "Error deleting task from database", e);
+
+                                                            }
+                                                        });
+                                                break; // Exit the loop after deleting the task
+                                            }
                                         }
                                     }
                                 }
@@ -204,14 +213,10 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
 
             }
          else if (task.getAccess()==0){
-
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     LayoutInflater inflater = LayoutInflater.from(context);
                     View dialogView = inflater.inflate(R.layout.dialogue_view, null);
                     builder.setView(dialogView);
-
-
-
                     ImageView viewImage = dialogView.findViewById(R.id.view);
                     TextView editText = dialogView.findViewById(R.id.viewText);
                     viewImage.setImageResource(R.drawable.view);
@@ -258,7 +263,6 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                     if (!userJson.isEmpty()) {
                                         Gson gson = new Gson();
                                         user = gson.fromJson(userJson, User.class);
-                                        User updateuser=null;
                                         Map<String, tasks> taskMap = user.getTasks();
                                         for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                             if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
@@ -267,6 +271,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                                         .child("Data")
                                                         .child(User.key)
                                                         .child("tasks");
+
+                                                User updateuser = null;
                                                 updateuser = gson.fromJson(userJson, User.class);
                                                 String userrJson = gson.toJson( updateuser);
                                                 SharedPreferences.Editor editor = preferences.edit();
@@ -331,8 +337,10 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     starButton.setTag("outline");
                     task.setImportant(false);
                 }
-                tasks.set(holder.getAdapterPosition(),task);
-                String ID=null;
+
+
+                //tasks.set(holder.getAdapterPosition(),task);
+                //String ID=null;
                 SharedPreferences preferences= context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                 String userJson = preferences.getString("user", "");
                 User user=null;
@@ -341,10 +349,11 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     Gson gson = new Gson();
                     user = gson.fromJson(userJson, User.class);
                     Map<String,tasks>taskMap=user.getTasks();
+                    task = tasks.get(holder.getAdapterPosition());
                     for(Map.Entry<String,tasks> entry: taskMap.entrySet()){
-
                         Log.d("Taskkkkkkkk",task.getName());
-                        if(entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
+                        String taskName = entry.getValue().getName();
+                        if (taskName != null && entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant());
                         }
@@ -365,6 +374,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
         circularCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (isChecked) {
                     // Checkbox is checked, change its color to green
                     circularCheckbox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#00796B")));
@@ -374,7 +384,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     circularCheckbox.setButtonTintList(ColorStateList.valueOf(Color.WHITE));
                     task.setCompleted(false);
                 }
-                tasks.set(holder.getAdapterPosition(), task);
+               // tasks.set(holder.getAdapterPosition(), task);
                 String ID=null;
                 SharedPreferences preferences= context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                 String userJson = preferences.getString("user", "");
@@ -385,9 +395,10 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     user = gson.fromJson(userJson, User.class);
                     Map<String,tasks>taskMap=user.getTasks();
                     for(Map.Entry<String,tasks> entry: taskMap.entrySet()){
-
+                        task = tasks.get(holder.getAdapterPosition());
                         Log.d("Taskkkkkkkk",task.getName());
-                        if(entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
+                        String taskName = entry.getValue().getName();
+                        if (taskName != null && entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("completed").setValue(task.getCompleted());
                         }

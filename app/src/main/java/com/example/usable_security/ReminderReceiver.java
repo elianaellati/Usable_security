@@ -12,7 +12,7 @@ import android.os.Build;
 public class ReminderReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        String taskName = intent.getStringExtra("taskName");
+        tasks task = (tasks) intent.getSerializableExtra("task");;
 
         // Create a notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -26,12 +26,10 @@ public class ReminderReceiver extends BroadcastReceiver {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
-        // Create and show a notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
                 .setSmallIcon(R.drawable.notify)
                 .setContentTitle("Reminder")
-                .setContentText("Task: " + taskName)
+                .setContentText("Task: " + task.name + "at: " + task.getTime())
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

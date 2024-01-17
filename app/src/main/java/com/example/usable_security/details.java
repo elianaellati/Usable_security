@@ -287,7 +287,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                     Toast.makeText(details.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                     long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
                                     int requestCode1 = 1;
-                                    ReminderManager.setReminder(details.this, timeInMillis, task.getName(),requestCode1);
+                                    ReminderManager.setReminder(details.this, timeInMillis, task,requestCode1);
 
                                 }
                             })
@@ -397,7 +397,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     Map<String, tasks> taskMap = user.getTasks();
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                         Log.d("Taskkkkkkkk", task.getName());
-
                         task.setName(edtName.getText().toString());
                         task.setNote(edtNote.getText().toString());
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {

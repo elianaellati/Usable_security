@@ -352,8 +352,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             task.setReminder(days+" "+unit);
                                                             Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
-                                                             int requestCode1 = 1;
-                                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task.getName(),requestCode1);
+                                                            int requestCode1 = 1;
+                                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
                                                         }
                                                     })
                                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -369,7 +369,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
                                             int requestCode1 = 1;
-                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task.getName(),requestCode1);
+                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
 
                                         }
                                     }
@@ -713,8 +713,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Date nextDueDate = calendar.getTime();
         tasks newTask=new tasks();
         newTask.setName(task.name);
+        newTask.setNote(task.note);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(task.repeat);
+        newTask.setReminder(task.reminder);
         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
         DatabaseReference newTaskRef = userTasksRef.push();
         newTaskRef.setValue(newTask);

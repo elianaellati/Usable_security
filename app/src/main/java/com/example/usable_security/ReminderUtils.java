@@ -83,8 +83,7 @@ public class ReminderUtils {
                     throw new IllegalArgumentException("Invalid reminder option: " + reminderOption);
             }
 
-            long reminderTimeMillis = calendar.getTimeInMillis() - timeDifferenceMillis;
-
+            long reminderTimeMillis = calendar.getTimeInMillis();
             return reminderTimeMillis;
         }
     }
