@@ -619,7 +619,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
                 Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
                 for (tasks task : taskList) {
-                    if (task.getDate().equals(currentDate) && task.getShared() == 0) {
+                    if ( task.getShared() == 0) {
                         task.toString();
                         String taskId = task.getId();
                         Log.d("LoginInfo", "Aloooos " + task.getName());

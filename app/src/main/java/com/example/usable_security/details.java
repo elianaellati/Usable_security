@@ -28,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -64,6 +66,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     public ActionBarDrawerToggle actionBarDrawerToggle;
      String  nameBeforeUpdate="";
 
+    Map<String,contacts> contactsMap=new HashMap<>();
+    ArrayList<String> contactEmails = new ArrayList<>();
     private ReminderUtils reminderUtils = new ReminderUtils();
 
     @Override
@@ -93,7 +97,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         edtNote.setText(task.getNote());
         edtTime.setText(task.getTime());
 
-
+        nameBeforeUpdate=task.getName();
         Spinner spinner = findViewById(R.id.spinner);
         String taskReminder = task.getReminder();
 
@@ -210,8 +214,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     hour = Integer.parseInt(timeParts[0]);
                     minute = Integer.parseInt(timeParts[1]);
                 }
-
-
                 TimePickerDialog timePickerDialog = new TimePickerDialog(
                         details.this,
                         new TimePickerDialog.OnTimeSetListener() {
@@ -219,6 +221,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
                                 String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                                Log.d("fffff", selectedTime);
                                 task.setTime(selectedTime);
                             }
                         },
@@ -392,11 +395,9 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     Map<String, tasks> taskMap = user.getTasks();
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                         Log.d("Taskkkkkkkk", task.getName());
-                        nameBeforeUpdate=task.getName();
+
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
-
                             editForSharedContacts(user, task);
-
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
                             userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
@@ -463,63 +464,104 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     private void editForSharedContacts(User user, tasks task) {
         Log.d("hello", "hieiei");
         Log.d("name", "" + user.getName());
-        Map<String, contacts> contactsMap = user.getContacts();
-        ArrayList<String> contactEmails = new ArrayList<>();
-        if (contactsMap != null) {
-            for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
-                if (entry.getValue().getShared() == 1) {
-                    Log.d("name", "" + entry.getValue().getName());
-                    String email = entry.getValue().getEmail();
-                    if (email != null && !email.isEmpty()) {
-                        contactEmails.add(email);
-                        Log.d("email", email);
-                    }
-                }
-            }
-            // Now you can use the contactEmails list for further processing
-        } else {
-            Log.d("contacts", "Contacts map is null");
+
+        List<contacts> contactList = new ArrayList<>();
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            user = gson.fromJson(userJson, User.class);
         }
 
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Data");
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    User currentUser = userSnapshot.getValue(User.class);
-                    Log.d("UserData", "Snapshot key: " + userSnapshot.getKey());
-                    Log.d("UserData", "Current user: " + currentUser);
-                    if (currentUser != null) {
-                        String userEmail = currentUser.getEmail();
-                        Log.d("UserEmail", "Current user email: " + userEmail);
+                boolean isUsernameFound = false;
 
-                        if (userEmail != null && contactEmails.contains(userEmail)) {
-                            Log.d("TaskFound", "Task found for user with email: " + userEmail);
-                            Map<String, tasks> userTasks = currentUser.getTasks();
-                            if (userTasks != null) {
-                                for (Map.Entry<String, tasks> entry : userTasks.entrySet()) {
-                                    tasks userTask = entry.getValue();
-                                    if (userTask.getName().equals(nameBeforeUpdate)) {
-                                        Log.d("TaskFound", "Found matching task: " + userTask.getName());
-                                        DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
-                                        userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
-                                        userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
-                                        userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
-                                        userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
-                                        userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
-                                    }
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        if (dataSnapshot.exists()) {
+                            User userr = userSnapshot.getValue(User.class);
+                            Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
+                            contactsMap = userr.getContacts();
+                            if (contactsMap != null) {
+                                for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
+                                    contactList.add(entry.getValue());
+                                    Log.d("LoginInfo", "contact " + entry.getValue().getEmail());
+
                                 }
                             }
+                                for (contacts entry:contactList) {
+                                    Log.d("ooooooooooooooooooooo", "ppoll" );
+                                    if (entry.getShared() == 1) {
+                                        Log.d("name", "" + entry.getName());
+                                        String email = entry.getEmail();
+                                        if (email != null && !email.isEmpty()) {
+                                            contactEmails.add(email);
+                                            Log.d("email", email);
+                                        }
+                                    }
+                                }
+                                // Now you can use the contactEmails list for further processing
+                            } else {
+                                Log.d("contacts", "Contacts map is null");
+                            }
+
+                            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Data");
+                            usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                        User currentUser = userSnapshot.getValue(User.class);
+                                        Log.d("UserData", "Snapshot key: " + userSnapshot.getKey());
+                                        Log.d("UserData", "Current user: " + currentUser);
+                                        if (currentUser != null) {
+                                            String userEmail = currentUser.getEmail();
+                                            Log.d("UserEmail", "Current user email: " + userEmail);
+                                            if (userEmail != null && contactEmails.contains(userEmail)) {
+                                                Log.d("maybveee", "Task found for user with email: " + userEmail);
+                                                Map<String, tasks> userTasks = currentUser.getTasks();
+                                                if (userTasks != null) {
+                                                    for (Map.Entry<String, tasks> entry : userTasks.entrySet()) {
+                                                        tasks userTask = entry.getValue();
+                                                        Log.d("TasfffkFound", "check " + userTask.getName());
+                                                        Log.d("ddd", "cjcj " + nameBeforeUpdate);
+                                                        if (userTask.getName().equals(nameBeforeUpdate)) {
+                                                            Log.d("TaskFound", "Found matching task: " + userTask.getName());
+                                                            DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
+                                                            userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
+                                                            userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
+                                                            userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
+                                                            userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
+                                                            userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("Firebase", "Error reading data from Firebase", error.toException());
+                                }
+                            });
                         }
                     }
+
                 }
-            }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Error reading data from Firebase", error.toException());
+
             }
         });
+
+
     }
 
 
