@@ -398,13 +398,15 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                         Log.d("Taskkkkkkkk", task.getName());
 
+                        task.setName(edtName.getText().toString());
+                        task.setNote(edtNote.getText().toString());
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
                             editForSharedContacts(user, task);
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
-                            userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
+                            userTasksRef.child(entry.getKey()).child("note").setValue(task.getNote());
                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
                             userTasksRef.child(entry.getKey()).child("date").setValue(task.getDate());
                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());

@@ -36,6 +36,7 @@ import java.util.concurrent.Executor;
 public class ShareAdapter
         extends RecyclerView.Adapter<ShareAdapter.ViewHolder>{
    int flag=0;
+    private int clickedPosition = -1;
     private List<contacts> contact;
     private contacts contactt;
     private SharedPreferences preferences;
@@ -68,7 +69,8 @@ public class ShareAdapter
         CardView cardView = holder.cardView;
         String foundKey=null;
         ImageButton share = cardView.findViewById(R.id.shareImage);
-        contactt = contact.get(holder.getAdapterPosition());
+        contactt = contact.get(position);
+        Log.d("LoginInfo", "elianaaa" + contact.get(position).getName());
         TextView namee = (TextView)cardView.findViewById(R.id.name);
         namee.setText(contact.get(position).getName());
         TextView emaill = (TextView)cardView.findViewById(R.id.email);
@@ -76,7 +78,8 @@ public class ShareAdapter
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShareDialogue();
+                clickedPosition = position;
+                ShareDialogue( clickedPosition);
 
             }
             });
@@ -97,7 +100,7 @@ public class ShareAdapter
         }
 
     }
-    public void ShareDialogue(){
+    public void ShareDialogue(int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.access_dialogue, null);
@@ -111,9 +114,13 @@ public class ShareAdapter
                 //BiometricPrompt biometricPrompt = getPrompt();
                 //biometricPrompt.authenticate(getPromptInfo());
                // if(flag==2) {
+
+
+                Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
                     findKey();
-                    searchtheuser();
+                    searchtheuser(position);
                     task.setShared(1);
+
                     if (view.isChecked() && edit.isChecked()) {
                         task.setAccess(1);
                     } else if (view.isChecked()) {
@@ -143,10 +150,12 @@ public class ShareAdapter
         for(Map.Entry<String,contacts> entry: contactsMap.entrySet()) {
             if(entry.getValue().getEmail().compareToIgnoreCase(contactt.getEmail())==0){
                 keycontact=entry.getKey();
+                Log.d("LoginInfo", "Keyyyyyyy" + keycontact);
+
             }
         }
     }
-    public void searchtheuser() {
+    public void searchtheuser(int position) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
         preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
@@ -154,7 +163,7 @@ public class ShareAdapter
         Gson gson = new Gson();
         User storeduser = gson.fromJson(userJson, User.class);
         name=storeduser.getName();
-        usersReference.orderByChild("email").equalTo(contactt.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersReference.orderByChild("email").equalTo(contact.get(position).getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isUsernameFound = false;

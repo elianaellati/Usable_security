@@ -472,11 +472,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.notification:
                 openNotificationIntent();
                 break;
+            case R.id.nav_logout:
+                openLogoutIntent();
+                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void  openLogoutIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
     private void openNotificationIntent() {
         Intent intent = new Intent(this, Notification.class);
@@ -501,7 +508,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //                    tasks task = taskSnapshot.getValue(tasks.class);
 //                    if (task != null) {
 //                        taskMap.put(taskSnapshot.getKey(), task);
-//                        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+//                        SharedPreferen ces preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
 //                        String userJson = preferences.getString("user", "");
 //                        User user = null;
 //                        if (!userJson.isEmpty()) {
