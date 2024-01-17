@@ -140,6 +140,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
         Date taskDate = task.getDate();
         Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = dateFormat.format(taskDate);
         calendar.setTime(taskDate);
 
         Calendar today = Calendar.getInstance();
@@ -156,7 +158,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                 // The task's date is tomorrow
                 edtDate.setText("Tomorrow");
             } else {
-                edtDate.setText(taskDate.toString());
+                edtDate.setText(formattedDate);
 
             }
         }
@@ -179,12 +181,12 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                 calendar.set(Calendar.YEAR, year);
                                 calendar.set(Calendar.MONTH, month);
                                 calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                                Date selectedDate = calendar.getTime(); // Get the updated date
 
-                                // Update the taskDate with the selected date
-                                task.setDate(calendar.getTime());
-
-                                // Update the UI to show the selected date
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                // Update the task object with the selected date
+                                task.setDate(selectedDate);
+                                Log.d("fffff", String.valueOf(task.getDate()));;
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                                 String selectedDateString = dateFormat.format(calendar.getTime());
                                 edtDate.setText(selectedDateString);
                             }
@@ -398,14 +400,16 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
                             editForSharedContacts(user, task);
+                            task.setName(edtName.getText().toString());
+                            task.setNote(edtNote.getText().toString());
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
                             userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
+                            userTasksRef.child(entry.getKey()).child("date").setValue(task.getDate());
                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
-                            task.setName(edtName.getText().toString());
-                            task.setNote(edtNote.getText().toString());
+
                             User updateuser = null;
                             updateuser = gson.fromJson(userJson, User.class);
                             updateuser.editTask(entry.getKey(), task);
@@ -536,6 +540,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
                                                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
                                                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
+                                                            userTasksRef.child(entry.getKey()).child("date").setValue(task.getDate());
                                                         }
                                                     }
                                                 }

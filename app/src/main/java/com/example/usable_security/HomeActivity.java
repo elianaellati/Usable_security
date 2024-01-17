@@ -93,8 +93,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Button simpleButton= findViewById(R.id.addButton);
         simpleButton.setBackgroundColor(Color.BLACK);
 
-
-
         Button addTaskButton = findViewById(R.id.addButton);
         addTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -596,10 +594,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     taskList.add(entry.getValue());
-
                                     // Log the task details along with the formatted date
                                     Log.d("LoginInfo", "Ba7000000000000 " + entry.getValue().getName() + " " + entry.getValue().getDate());
-
 
                                 }
                             }
@@ -619,7 +615,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
                 Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
                 for (tasks task : taskList) {
-                    if ( task.getShared() == 0) {
+                    if ( task.getShared() == 0 && task.getDate().equals(currentDate)) {
                         task.toString();
                         String taskId = task.getId();
                         Log.d("LoginInfo", "Aloooos " + task.getName());

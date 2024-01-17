@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 String password=Password.getText().toString();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference usersReference = database.getReference("Data");
+                   Log.d("LoginInfo", "Login ..... Username: " + username);
+                   Log.d("LoginInfo", "Login ..... Pass: " + password);
                 usersReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -15,6 +15,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class view extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
@@ -53,7 +58,10 @@ public class view extends AppCompatActivity implements NavigationView.OnNavigati
 
         taskName.setText(task.getName());
         noteText.setText(task.getNote());
-        dateEditText.setText(task.getDate().toString());
+        Date taskDate = task.getDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        String formattedDate = dateFormat.format(taskDate);
+        dateEditText.setText(formattedDate);
         timeEditText.setText(task.getTime());
         reminderEditText.setText(task.getReminder());
         repeatEditText.setText(task.getRepeat());
