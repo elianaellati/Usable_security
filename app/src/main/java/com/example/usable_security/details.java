@@ -395,9 +395,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     user = gson.fromJson(userJson, User.class);
                     Map<String, tasks> taskMap = user.getTasks();
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                        Log.d("Taskkkkkkkk", task.getName());
-
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
+                            Log.d("Taskkkkkkkk", task.getName());
                             editForSharedContacts(user, task);
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());

@@ -23,8 +23,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
@@ -39,6 +41,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     private tasks task;
     private AlertDialog detailsDialog;
     private AlertDialog viewDialog;
+
+
 
     public adapter_tasks(List<tasks> tasks) {
         this.tasks = tasks;
@@ -64,9 +68,21 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
 
         task = tasks.get(holder.getAdapterPosition());
 
+//        ImageButton starButton = cardView.findViewById(R.id.starButton);
+//        if(task.getImportant()){
+//            starButton.setImageResource(R.drawable.ic_star_filled);
+//            starButton.setTag("filled");
+//        }
 
+        ImageButton starButton = holder.cardView.findViewById(R.id.starButton);
+        if (task.getImportant()) {
+            starButton.setImageResource(R.drawable.ic_star_filled);
+            starButton.setTag("filled");
+        } else {
+            starButton.setImageResource(R.drawable.ic_star_outline);
+            starButton.setTag("outline");
+        }
 
-        ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 
         details.setOnClickListener(new View.OnClickListener() {
@@ -320,52 +336,53 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                 }
                 }
         });
-
-
-
-
         starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task = tasks.get(holder.getAdapterPosition());
                 if (starButton.getTag() == null || "outline".equals(starButton.getTag())) {
                     starButton.setImageResource(R.drawable.ic_star_filled);
                     starButton.setTag("filled");
                     task.setImportant(true);
-                    Log.d("hshshs",task.getImportant().toString());
+                    Log.d("hshshs", task.getImportant().toString());
                 } else {
                     starButton.setImageResource(R.drawable.ic_star_outline);
                     starButton.setTag("outline");
                     task.setImportant(false);
+                    Log.d("hereeeee", String.valueOf(task.getImportant()));
                 }
-
-
                 //tasks.set(holder.getAdapterPosition(),task);
                 //String ID=null;
-                SharedPreferences preferences= context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                SharedPreferences preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                 String userJson = preferences.getString("user", "");
-                User user=null;
+                User user = null;
 
                 if (!userJson.isEmpty()) {
                     Gson gson = new Gson();
                     user = gson.fromJson(userJson, User.class);
-                    Map<String,tasks>taskMap=user.getTasks();
-                    task = tasks.get(holder.getAdapterPosition());
-                    for(Map.Entry<String,tasks> entry: taskMap.entrySet()){
-                        Log.d("Taskkkkkkkk",task.getName());
+                    Map<String, tasks> taskMap = user.getTasks();
+                    for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                        Log.d("Taskkkkkkkk", task.getName());
                         String taskName = entry.getValue().getName();
-                        if (taskName != null && taskName.equalsIgnoreCase(task.getName())){
+                        if (taskName != null && taskName.equalsIgnoreCase(task.getName())) {
+                            Log.d("status", String.valueOf(task.getImportant()));
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
-                            userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant());
+                            userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant())
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("Firebase", "Database update successful");
+                                            } else {
+                                                Log.e("Firebase", "Database update failed: " + task.getException());
+                                            }
+                                        }
+                                    });
                         }
                     }
                 }
-
-
-
-
             }
         });
-
 
 
         CheckBox circularCheckbox = cardView.findViewById(R.id.circular_checkbox);
@@ -374,7 +391,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
         circularCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                task = tasks.get(holder.getAdapterPosition());
                 if (isChecked) {
                     // Checkbox is checked, change its color to green
                     circularCheckbox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#00796B")));
@@ -415,8 +432,6 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     public int getItemCount() {
         return tasks.size();
     }
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
 
