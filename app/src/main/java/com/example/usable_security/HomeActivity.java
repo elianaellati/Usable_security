@@ -51,6 +51,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -620,18 +622,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
 
 
-                Log.d("LoginInfo", "Elianaaaaaaaaaaaaa");
+
                 // List<tasks> taskList = new ArrayList<>(taskMap.values());
-                Calendar currentCalendar = Calendar.getInstance();
-                int currentYear = currentCalendar.get(Calendar.YEAR);
-                int currentMonth = currentCalendar.get(Calendar.MONTH);
-                int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
-                Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
+                LocalDate currentDate = LocalDate.now();
                 for (tasks task : taskList) {
-                    if ( task.getShared() == 0 && task.getDate().equals(currentDate)) {
+                    Date taskDate = task.getDate();
+                    LocalDate localTaskDate = taskDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    if ( task.getShared() == 0 && localTaskDate.equals(currentDate)) {
                         task.toString();
                         String taskId = task.getId();
-                        Log.d("LoginInfo", "Aloooos " + task.getName());
+                        Log.d("LoginInfo", "fffffdad " + task.getName());
                         todayTasks.add(task);
                     }
                 }

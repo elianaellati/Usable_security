@@ -29,7 +29,7 @@ public class ReminderReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
                 .setSmallIcon(R.drawable.notify)
                 .setContentTitle("Reminder")
-                .setContentText("Task: " + task.name + "at: " + task.getTime())
+                .setContentText("Task: " + task.name + ", At: " + task.getTime())
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
