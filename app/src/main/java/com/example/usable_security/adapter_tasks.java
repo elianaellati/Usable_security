@@ -1,5 +1,6 @@
 package com.example.usable_security;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,11 +63,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
         TextView namee = cardView.findViewById(R.id.name);
         namee.setText(tasks.get(position).getName());
         Log.d("userId", id[0]);
-
         task = tasks.get(holder.getAdapterPosition());
-
-
-
         ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 

@@ -11,6 +11,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -66,6 +67,7 @@ import java.util.TimeZone;
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+
     Map<String,tasks> taskMap=new HashMap<>();
 
     private ReminderUtils reminderUtils = new ReminderUtils();
@@ -76,6 +78,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.homeactivity);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // This method will be invoked when the user performs a swipe-to-refresh
+            displayTasks();
+            Log.d("LoginInfo", "Refreshhh " );
+
+            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+        });
         displayTasks();
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
@@ -622,19 +632,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
 
 
-
                 // List<tasks> taskList = new ArrayList<>(taskMap.values());
                 LocalDate currentDate = LocalDate.now();
                 for (tasks task : taskList) {
-                    Date taskDate = task.getDate();
+                    Date taskDate = new Date(String.valueOf(task.getDate()));  // Assuming task.getDate() returns a long timestamp
                     LocalDate localTaskDate = taskDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    if ( task.getShared() == 0 && localTaskDate.equals(currentDate)) {
-                        task.toString();
+                    Log.d("LoginInfo", "fffffdad " + task.getName() + " :" + localTaskDate);
+
+                    if (task.getShared() == 0 && localTaskDate.equals(currentDate)) {
+                        // Your task processing logic
                         String taskId = task.getId();
                         Log.d("LoginInfo", "fffffdad " + task.getName());
                         todayTasks.add(task);
                     }
                 }
+
 
             }
 
