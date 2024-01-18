@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -351,6 +352,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     task.setImportant(false);
                     Log.d("hereeeee", String.valueOf(task.getImportant()));
                 }
+
+
                 //tasks.set(holder.getAdapterPosition(),task);
                 //String ID=null;
                 SharedPreferences preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
@@ -381,8 +384,13 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                         }
                     }
                 }
+
+
+
+
             }
         });
+
 
 
         CheckBox circularCheckbox = cardView.findViewById(R.id.circular_checkbox);
@@ -432,6 +440,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     public int getItemCount() {
         return tasks.size();
     }
+
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
 

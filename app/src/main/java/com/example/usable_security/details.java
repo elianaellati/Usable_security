@@ -51,7 +51,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class details extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
     EditText edtName;
     EditText edtNote;
     EditText edtDate;
@@ -387,7 +386,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         edtBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.d("LoginInfo", ":Here Testingggggg");
                 String userJson = preferences.getString("user", "");
                 User user = null;
                 if (!userJson.isEmpty()) {
