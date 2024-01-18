@@ -1,4 +1,5 @@
 package com.example.usable_security;
+
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
@@ -61,7 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class DisplayTask extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Map<String,tasks> taskMap=new HashMap<>();
@@ -71,7 +72,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.homeactivity);
+        setContentView(R.layout.displaytask);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
         displayTasks();
@@ -82,8 +83,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      //  ActionBar actionBar;
-       // actionBar = getSupportActionBar();
+        //  ActionBar actionBar;
+        // actionBar = getSupportActionBar();
 
 
         ColorDrawable colorDrawable
@@ -108,22 +109,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
 
                 task.setTime(selectedTime);
-                Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DisplayTask.this, selectedTime, Toast.LENGTH_SHORT).show();
 
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-                LayoutInflater inflater = HomeActivity.this.getLayoutInflater();
+                AlertDialog.Builder builder = new AlertDialog.Builder(DisplayTask.this);
+                LayoutInflater inflater = DisplayTask.this.getLayoutInflater();
                 View titleView = inflater.inflate(R.layout.title_dialogue, null);
                 builder.setCustomTitle(titleView);
 
-                final EditText input = new EditText(HomeActivity.this);
+                final EditText input = new EditText(DisplayTask.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setHint("Enter task title");
-                LinearLayout layout = new LinearLayout(HomeActivity.this);
+                LinearLayout layout = new LinearLayout(DisplayTask.this);
                 layout.setOrientation(LinearLayout.VERTICAL);
                 layout.addView(input);
 
-                LinearLayout iconLayout = new LinearLayout(HomeActivity.this);
+                LinearLayout iconLayout = new LinearLayout(DisplayTask.this);
                 iconLayout.setOrientation(LinearLayout.HORIZONTAL);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -134,7 +135,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 layout.addView(iconLayout);
 
                 // Create an ImageButton for the clock icon
-                ImageButton clockButton = new ImageButton(HomeActivity.this);
+                ImageButton clockButton = new ImageButton(DisplayTask.this);
 
                 clockButton.setImageResource(R.drawable.clock);
                 clockButton.setBackgroundColor(Color.WHITE);
@@ -151,7 +152,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         int hour = calendar.get(Calendar.HOUR_OF_DAY);
                         int minute = calendar.get(Calendar.MINUTE);
                         TimePickerDialog timePickerDialog = new TimePickerDialog(
-                                HomeActivity.this,
+                                DisplayTask.this,
                                 new TimePickerDialog.OnTimeSetListener() {
                                     @Override
                                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -160,7 +161,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         // For example:
                                         String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                                         task.setTime(selectedTime);
-                                        Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(DisplayTask.this, selectedTime, Toast.LENGTH_SHORT).show();
                                     }
                                 },
                                 hour,
@@ -177,7 +178,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 iconLayout.addView(clockButton);
 
 
-                ImageButton repeat = new ImageButton(HomeActivity.this);
+                ImageButton repeat = new ImageButton(DisplayTask.this);
                 repeat.setImageResource(R.drawable.repeat);
                 repeat.setBackgroundColor(Color.WHITE);
                 repeat.setLayoutParams(params);
@@ -188,10 +189,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         LayoutInflater inflater = getLayoutInflater();
                         View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
                         Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
-
                         // Create an ArrayAdapter using the string array and a default spinner layout
                         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                                HomeActivity.this,
+                                DisplayTask.this,
                                 R.array.repeat,
                                 android.R.layout.simple_spinner_item
                         );
@@ -200,7 +200,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         // Apply the adapter to the spinner
                         spinner.setAdapter(adapter);
 
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(HomeActivity.this);
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayTask.this);
                         dialogBuilder.setView(dialogView)
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -208,14 +208,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         String selectedItem = (String) spinner.getSelectedItem();
                                         if (selectedItem.equals("custom")) {
                                             // Create an EditText for entering the number of days
-                                            EditText daysEditText = new EditText(HomeActivity.this);
+                                            EditText daysEditText = new EditText(DisplayTask.this);
                                             daysEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                                             daysEditText.setHint("Enter number of days");
 
                                             // Create a Spinner for selecting the unit (daily, weekly, monthly, yearly)
-                                            Spinner unitSpinner = new Spinner(HomeActivity.this);
+                                            Spinner unitSpinner = new Spinner(DisplayTask.this);
                                             ArrayAdapter<CharSequence> unitAdapter = ArrayAdapter.createFromResource(
-                                                    HomeActivity.this,
+                                                    DisplayTask.this,
                                                     R.array.repeat_units,
                                                     android.R.layout.simple_spinner_item
                                             );
@@ -223,13 +223,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             unitSpinner.setAdapter(unitAdapter);
 
                                             // Create a LinearLayout to contain the EditText and Spinner
-                                            LinearLayout customRepeatLayout = new LinearLayout(HomeActivity.this);
+                                            LinearLayout customRepeatLayout = new LinearLayout(DisplayTask.this);
                                             customRepeatLayout.setOrientation(LinearLayout.VERTICAL);
                                             customRepeatLayout.addView(daysEditText);
                                             customRepeatLayout.addView(unitSpinner);
 
                                             // Show the custom repeat input dialog with the EditText and Spinner
-                                            AlertDialog.Builder customRepeatInputDialogBuilder = new AlertDialog.Builder(HomeActivity.this);
+                                            AlertDialog.Builder customRepeatInputDialogBuilder = new AlertDialog.Builder(DisplayTask.this);
                                             customRepeatInputDialogBuilder.setTitle("Custom Repeat")
                                                     .setMessage("Enter custom repeat details:")
                                                     .setView(customRepeatLayout)
@@ -239,7 +239,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setRepeat(days+" "+unit);
-                                                            Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(DisplayTask.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                             onCustomRepeatSelected(Integer.parseInt(days),unit,task);
                                                         }
                                                     })
@@ -254,7 +254,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         } else {
                                             task.setRepeat(selectedItem);
                                             onRepeatSelected(selectedItem,task);
-                                            Toast.makeText(HomeActivity.this, "Repeat every " + selectedItem, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(DisplayTask.this, "Repeat every " + selectedItem, Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 })
@@ -274,7 +274,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 iconLayout.addView(repeat);
 
 
-                ImageButton notify = new ImageButton(HomeActivity.this);
+                ImageButton notify = new ImageButton(DisplayTask.this);
                 notify.setImageResource(R.drawable.notify);
                 notify.setBackgroundColor(Color.WHITE);
                 notify.setLayoutParams(params);
@@ -291,7 +291,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                         // Create an ArrayAdapter using the string array and a default spinner layout
                         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                                HomeActivity.this,
+                                DisplayTask.this,
                                 R.array.reminders,
                                 android.R.layout.simple_spinner_item
                         );
@@ -300,7 +300,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         // Apply the adapter to the spinner
                         spinner.setAdapter(adapter);
 
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(HomeActivity.this);
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DisplayTask.this);
                         dialogBuilder.setView(dialogView)
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
@@ -318,14 +318,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                                         if (notify.equals("custom")) {
                                             // Create an EditText for entering the number of days
-                                            EditText daysEditText = new EditText(HomeActivity.this);
+                                            EditText daysEditText = new EditText(DisplayTask.this);
                                             daysEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                                             daysEditText.setHint("Enter number of days");
 
                                             // Create a Spinner for selecting the unit (daily, weekly, monthly, yearly)
-                                            Spinner unitSpinner = new Spinner(HomeActivity.this);
+                                            Spinner unitSpinner = new Spinner(DisplayTask.this);
                                             ArrayAdapter<CharSequence> unitAdapter = ArrayAdapter.createFromResource(
-                                                    HomeActivity.this,
+                                                    DisplayTask.this,
                                                     R.array.remind_units,
                                                     android.R.layout.simple_spinner_item
                                             );
@@ -333,13 +333,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                             unitSpinner.setAdapter(unitAdapter);
 
                                             // Create a LinearLayout to contain the EditText and Spinner
-                                            LinearLayout customRepeatLayout = new LinearLayout(HomeActivity.this);
+                                            LinearLayout customRepeatLayout = new LinearLayout(DisplayTask.this);
                                             customRepeatLayout.setOrientation(LinearLayout.VERTICAL);
                                             customRepeatLayout.addView(daysEditText);
                                             customRepeatLayout.addView(unitSpinner);
 
                                             // Show the custom repeat input dialog with the EditText and Spinner
-                                            AlertDialog.Builder customRepeatInputDialogBuilder = new AlertDialog.Builder(HomeActivity.this);
+                                            AlertDialog.Builder customRepeatInputDialogBuilder = new AlertDialog.Builder(DisplayTask.this);
                                             customRepeatInputDialogBuilder.setTitle("Custom Reminder")
                                                     .setMessage("Enter custom reminder details:")
                                                     .setView(customRepeatLayout)
@@ -349,10 +349,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setReminder(days+" "+unit);
-                                                            Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(DisplayTask.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
                                                             int requestCode1 = 1;
-                                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
+                                                            ReminderManager.setReminder(DisplayTask.this, timeInMillis, task,requestCode1);
                                                         }
                                                     })
                                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -365,10 +365,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                     .show();
                                         } else if(!notify.equals("custom") && !notify.equals("none")) {
                                             task.setReminder(notify);
-                                            Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(DisplayTask.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
                                             int requestCode1 = 1;
-                                            ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
+                                            ReminderManager.setReminder(DisplayTask.this, timeInMillis, task,requestCode1);
 
                                         }
                                     }
@@ -465,6 +465,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.my_day:
+                openMydayIntent();
+                break;
             case R.id.assigned:
                 openAssignedIntent();
                 break;
@@ -474,17 +477,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_logout:
                 openLogoutIntent();
                 break;
-            case R.id.tasks:
-                openTasksIntent();
-                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-    private void  openTasksIntent() {
-        Intent intent = new Intent(this, DisplayTask.class);
+    private void  openMydayIntent() {
+        Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
     private void  openLogoutIntent() {
@@ -613,8 +613,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             }
                         }
-                        recycler.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
-                        adapter_tasks adapter = new adapter_tasks(todayTasks);
+                        recycler.setLayoutManager(new LinearLayoutManager(DisplayTask.this));
+                        DisplayAdapter adapter = new  DisplayAdapter (todayTasks);
                         recycler.setAdapter(adapter);
                     }
                 }
@@ -628,7 +628,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
                 Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
                 for (tasks task : taskList) {
-                    if ( task.getShared() == 0 && task.getDate().equals(currentDate)) {
+                    if (task.getShared() == 0) {
                         task.toString();
                         String taskId = task.getId();
                         Log.d("LoginInfo", "Aloooos " + task.getName());
@@ -642,8 +642,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-       });
-        }
+        });
+    }
     public void onCustomRepeatSelected(int customRepeatInterval, String customRepeatUnit,tasks task) {
         // Calculate the next due date based on the custom repeat interval and unit
         Calendar calendar = Calendar.getInstance();
@@ -719,10 +719,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Date nextDueDate = calendar.getTime();
         tasks newTask=new tasks();
         newTask.setName(task.name);
-        newTask.setNote(task.note);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(task.repeat);
-        newTask.setReminder(task.reminder);
         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
         DatabaseReference newTaskRef = userTasksRef.push();
         newTaskRef.setValue(newTask);

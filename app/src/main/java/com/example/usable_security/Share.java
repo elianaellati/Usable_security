@@ -53,7 +53,6 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         recycler.setLayoutManager(new LinearLayoutManager(this));
         ShareAdapter adapter = new ShareAdapter(contact,task,contactsMap);
         recycler.setAdapter(adapter);
-
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

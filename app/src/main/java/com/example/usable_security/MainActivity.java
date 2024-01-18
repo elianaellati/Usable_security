@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         boolean isUsernameFound = false;
-
                         if (dataSnapshot.exists()) {
                             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                 User user = userSnapshot.getValue(User.class);
-
+                                Log.d("LoginInfo", "ba88888 " +user.getName());
                                 if (user != null && user.getPassword().equals(password)) {
+
                                     String userId =  userSnapshot.getKey();
                                     User.key=userId;
                                     SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
