@@ -390,27 +390,24 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
                 String userJson = preferences.getString("user", "");
                 User user = null;
-
                 if (!userJson.isEmpty()) {
                     Gson gson = new Gson();
                     user = gson.fromJson(userJson, User.class);
                     Map<String, tasks> taskMap = user.getTasks();
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                         Log.d("Taskkkkkkkk", task.getName());
-                        task.setName(edtName.getText().toString());
-                        task.setNote(edtNote.getText().toString());
+
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
                             editForSharedContacts(user, task);
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
-                            userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
+                            userTasksRef.child(entry.getKey()).child("name").setValue(task.getName());
                             userTasksRef.child(entry.getKey()).child("note").setValue(task.getNote());
                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
                             userTasksRef.child(entry.getKey()).child("date").setValue(task.getDate());
                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
-
                             User updateuser = null;
                             updateuser = gson.fromJson(userJson, User.class);
                             updateuser.editTask(entry.getKey(), task);
@@ -418,7 +415,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("user", userrJson);
                             editor.apply();
-
                             Intent intent = new Intent(details.this, HomeActivity.class);
                             startActivity(intent);
                         }

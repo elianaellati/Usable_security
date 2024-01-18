@@ -327,7 +327,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
         starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (starButton.getTag() == null || starButton.getTag().equals("outline")) {
+                if (starButton.getTag() == null || "outline".equals(starButton.getTag())) {
                     starButton.setImageResource(R.drawable.ic_star_filled);
                     starButton.setTag("filled");
                     task.setImportant(true);
@@ -353,7 +353,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                     for(Map.Entry<String,tasks> entry: taskMap.entrySet()){
                         Log.d("Taskkkkkkkk",task.getName());
                         String taskName = entry.getValue().getName();
-                        if (taskName != null && entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
+                        if (taskName != null && taskName.equalsIgnoreCase(task.getName())){
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant());
                         }
