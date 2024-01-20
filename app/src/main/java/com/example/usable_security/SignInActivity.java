@@ -191,7 +191,7 @@ public class SignInActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Email verification sent, handle the success (e.g., show a message to the user)
                         Log.d(TAG, "Email verification sent.");
-                        addUserToDatabase(name, username, email,password);
+                     //   addUserToDatabase(name, username, email,password);
                         // Schedule a task to check email verification status after one minute
                         checkEmailVerificationStatus(user, name, username, email, password);
                     } else {
@@ -230,16 +230,13 @@ public class SignInActivity extends AppCompatActivity {
             user.reload().addOnCompleteListener(reloadTask -> {
                 if (reloadTask.isSuccessful()) {
                     FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
-                    if (reloadedUser != null && reloadedUser.isEmailVerified()) {
-                        // The user has verified their email within one minute
-                        // Add the user to the database here
+                    if (reloadedUser != null && reloadedUser.isEmailVerified() && flag==2) {
+                        Log.e(TAG, "Ana hpooooooooooooooooon");
                         addUserToDatabase(name, username, email, password);
-
+                        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                        startActivity(intent);
                     } else {
-                        // The user's email is not verified within one minute
-                        // You can handle this case by prompting the user to verify their email again or providing an option to resend the verification email
                         Log.e(TAG, "Email not verified within one minute");
-
                     }
                 } else {
                     // Failed to reload user

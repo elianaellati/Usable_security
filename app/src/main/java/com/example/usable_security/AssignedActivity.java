@@ -194,6 +194,12 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
             case R.id.nav_logout:
                 openLogoutIntent();
                 break;
+            case R.id.tasks:
+                openTasksIntent();
+                break;
+            case R.id.notification:
+                openNotificationIntent();
+                break;
 
         }
 
@@ -210,6 +216,17 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
     }
     private void openMyDayIntent() {
         Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
+    private void openNotificationIntent() {
+        Intent intent = new Intent(this, Notification.class);
+        startActivity(intent);
+    }
+
+
+    private void  openTasksIntent() {
+        Intent intent = new Intent(this, DisplayTask.class);
         startActivity(intent);
     }
 

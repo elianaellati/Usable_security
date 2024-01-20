@@ -442,7 +442,15 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
             case R.id.assigned:
                 openAssignedIntent();
                 break;
-
+            case R.id.notification:
+                openNotificationIntent();
+                break;
+            case R.id.nav_logout:
+                openLogoutIntent();
+                break;
+            case R.id.tasks:
+                openTasksIntent();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -456,6 +464,21 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
     private void openMyDayIntent() {
         Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
+    private void  openTasksIntent() {
+        Intent intent = new Intent(this, DisplayTask.class);
+        startActivity(intent);
+    }
+
+    private void openNotificationIntent() {
+        Intent intent = new Intent(this, Notification.class);
+        startActivity(intent);
+    }
+
+    private void  openLogoutIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 

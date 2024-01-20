@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,9 +41,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        TextInputEditText passwordEditText = findViewById(R.id.EditPassword);
+        TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
+
+        passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    passwordInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (passwordEditText.getText().toString().isEmpty()) {
+                        passwordInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+
+
         EditText Password=findViewById(R.id.EditPassword);
-        Password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        Password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+//        Password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+//        Password.setTransformationMethod(PasswordTransformationMethod.getInstance());
         TextView loginLink = findViewById(R.id.signupLink);
         loginLink.setOnClickListener(new View.OnClickListener() {
             @Override

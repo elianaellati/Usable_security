@@ -35,7 +35,7 @@
                     android:gravity="start"
                     android:text="My Day"
                     android:textColor="#601903"
-                    android:textSize="50sp"
+                    android:textSize="40sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -45,7 +45,7 @@
                     android:gravity="end|center_vertical"
                     android:text=""
                     android:textColor="#601903"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
