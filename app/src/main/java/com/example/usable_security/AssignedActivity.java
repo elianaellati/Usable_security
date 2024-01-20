@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -30,17 +31,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class  AssignedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
 
+
+    List<contacts> filteredContacts = new ArrayList<>();
     public ActionBarDrawerToggle actionBarDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assigned_page);
+        SearchView searchView = findViewById(R.id.searchView);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -61,7 +66,7 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         });
 
     }
-    public void displayContacts(){
+   /* public void displayContacts(){
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         User user=null;
@@ -91,7 +96,85 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
             Adapter adapter = new Adapter(name, email);
             recycler.setAdapter(adapter);
         }
+    }*/
+   public void displayContacts() {
+       SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+       String userJson = preferences.getString("user", "");
+       User user = null;
+       if (!userJson.isEmpty()) {
+           Gson gson = new Gson();
+           user = gson.fromJson(userJson, User.class);
+           Log.d("Info", "EMAIl found:" + user.getUsername());
+       }
+
+       RecyclerView recycler = findViewById(R.id.recycler_view);
+       SearchView searchView = findViewById(R.id.searchView);
+       Map<String, contacts> contactsMap = user.contacts;
+
+       List<contacts> allContacts = new ArrayList<>(contactsMap.values());
+       List<contacts> filteredContacts = new ArrayList<>(allContacts);
+
+       String[] name = new String[filteredContacts.size()];
+       String[] email = new String[filteredContacts.size()];
+
+       for (int i = 0; i < filteredContacts.size(); i++) {
+           contacts contact = filteredContacts.get(i);
+           name[i] = contact.getName();
+           email[i] = contact.getEmail();
+       }
+
+       recycler.setLayoutManager(new LinearLayoutManager(this));
+       Adapter adapter = new Adapter(name, email);
+       recycler.setAdapter(adapter);
+
+       searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+           @Override
+           public boolean onQueryTextSubmit(String query) {
+
+               return false;
+           }
+
+           @Override
+           public boolean onQueryTextChange(String newText) {
+
+               newText = newText.toLowerCase();
+               filteredContacts.clear();
+
+               if (newText.isEmpty()) {
+                   filteredContacts.addAll(allContacts);
+               } else {
+
+                   for (contacts contact : allContacts) {
+                       if (contact.getName().toLowerCase().contains(newText) ||
+                               contact.getEmail().toLowerCase().contains(newText)) {
+                           filteredContacts.add(contact);
+                       }
+                   }
+               }
+               updateRecyclerView(filteredContacts);
+               return true;
+           }
+       });
+   }
+
+    private void updateRecyclerView(List<contacts> contactsList) {
+        String[] name = new String[contactsList.size()];
+        String[] email = new String[contactsList.size()];
+
+        for (int i = 0; i < contactsList.size(); i++) {
+            contacts contact = contactsList.get(i);
+            name[i] = contact.getName();
+            email[i] = contact.getEmail();
+        }
+
+        Adapter adapter = new Adapter(name, email);
+        RecyclerView recycler = findViewById(R.id.recycler_view);
+        recycler.setAdapter(adapter);
     }
+
+
+
+
     private void showEmailInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -120,7 +203,6 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
                                     Log.d("Info", "EMAIl found:" + user.getUsername());
                                     Log.d("Info", "EMAIl found:" + id);
                                     contacts contact = new contacts(user.getName(), user.getEmail());
-
                                     SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                     String userJson = preferences.getString("user", "");
                                     Gson gson = new Gson();
