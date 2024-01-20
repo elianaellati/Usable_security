@@ -477,6 +477,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.my_day:
+                openMyDayIntent() ;
+                break;
             case R.id.assigned:
                 openAssignedIntent();
                 break;
@@ -503,6 +506,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+    private void openMyDayIntent() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
     private void openNotificationIntent() {
         Intent intent = new Intent(this, Notification.class);
         startActivity(intent);
@@ -511,85 +519,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, AssignedActivity.class);
         startActivity(intent);
     }
-
-
-
-
-//    public void displayTasks() {
-//
-//        DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
-//        userTasksRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Map<String, tasks> taskMap = new HashMap<>();
-//                for (DataSnapshot taskSnapshot : dataSnapshot.getChildren()) {
-//                    tasks task = taskSnapshot.getValue(tasks.class);
-//                    if (task != null) {
-//                        taskMap.put(taskSnapshot.getKey(), task);
-//                        SharedPreferen ces preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-//                        String userJson = preferences.getString("user", "");
-//                        User user = null;
-//                        if (!userJson.isEmpty()) {
-//                            Gson gson = new Gson();
-//                            user = gson.fromJson(userJson, User.class);
-//                        }
-//                        user.setTasks(taskMap);
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // Failed to read value
-//                Log.w(TAG, "Failed to read value.", databaseError.toException());
-//            }
-//        });
-//
-//        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-//        String userJson = preferences.getString("user", "");
-//        User user = null;
-//        if (!userJson.isEmpty()) {
-//            Gson gson = new Gson();
-//            user = gson.fromJson(userJson, User.class);
-//        }
-//        RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
-//        Map<String, tasks> tasksMap = user.getTasks();
-//        if (tasksMap != null) {
-//            List<tasks> taskList = new ArrayList<>(tasksMap.values());
-//        Calendar currentCalendar = Calendar.getInstance();
-//        List<tasks> todayTasks = new ArrayList<>();
-//
-//        int currentYear = currentCalendar.get(Calendar.YEAR);
-//        int currentMonth = currentCalendar.get(Calendar.MONTH);
-//        int currentDayOfMonth = currentCalendar.get(Calendar.DAY_OF_MONTH);
-//        Date currentDate = new Date(currentYear - 1900, currentMonth, currentDayOfMonth);
-//            for (tasks task : taskList) {
-//
-//                Calendar taskCalendar = Calendar.getInstance();
-//                taskCalendar.setTime(task.getDate());
-//                int taskYear = taskCalendar.get(Calendar.YEAR);
-//                int taskMonth = taskCalendar.get(Calendar.MONTH);
-//                int taskDayOfMonth = taskCalendar.get(Calendar.DAY_OF_MONTH);
-//                Date taskDate = new Date(taskYear - 1900, taskMonth, taskDayOfMonth);
-//
-//                if (taskDate==currentDate  && task.getShared()==0) {
-//                    task.toString();
-//                    todayTasks.add(task);
-//                }
-//                else{
-//                    Log.d("jfjfjfjfjj",task.getName()+ ":::"+ task.getDate());
-//                }
-//            }
-//            recycler.setLayoutManager(new LinearLayoutManager(this));
-//            adapter_tasks adapter = new adapter_tasks(todayTasks);
-//            if(!todayTasks.isEmpty()){
-//                Log.d("ksksksk","DDDDD");
-//            }
-//            recycler.setAdapter(adapter);
-//        }
-//
-//    }
 
     public void displayTasks() {
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);

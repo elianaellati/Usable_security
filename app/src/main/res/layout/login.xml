@@ -14,8 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="153dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/welcome"
@@ -35,26 +34,46 @@
         android:layout_height="wrap_content"
         android:text="Username"
         android:textSize="22dp"
-        android:layout_marginTop="60dp"
+        app:boxBackgroundMode="none"
+        app:boxStrokeWidth="0dp"
+        android:layout_marginTop="50dp"
         android:textColor="#070707"
         android:layout_marginLeft="40dp"
         android:textStyle="bold"/>
-    <EditText
-        android:id="@+id/usernameEditText"
+<!--    <EditText-->
+<!--        android:id="@+id/usernameEditText"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="45dp"-->
+<!--        android:hint="Enter your username"-->
+<!--        android:layout_marginLeft="35dp"-->
+<!--        android:layout_marginRight="35dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:background="@drawable/shape"-->
+<!--        android:padding="10dp"-->
+<!--        />-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/usernameInputLayout"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="none"
+        app:boxStrokeWidth="0dp"
         android:hint="Enter your username"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="35dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
+        app:passwordToggleEnabled="false">
 
-        android:background="@drawable/shape"
-        android:padding="10dp"
-
-        />
-
-
-
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:padding="12dp"
+            android:inputType="text"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/password"
@@ -66,24 +85,39 @@
         android:textColor="#070707"
         android:layout_marginLeft="40dp"
         android:textStyle="bold"/>
-    <EditText
-        android:id="@+id/EditPassword"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your Password"
+        app:boxBackgroundMode="none"
+        app:boxStrokeWidth="0dp"
+        android:hint="Enter your password"
         android:layout_marginLeft="35dp"
         android:layout_marginRight="35dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/shape"
-        android:padding="10dp"
-        />
+        android:layout_marginTop="0dp"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleDrawable="@drawable/eye"
+        app:passwordToggleTint="@color/black">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/EditPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape"
+            android:padding="10dp"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/buttonlogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="35dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="35dp"
         android:layout_marginBottom="10dp"
         android:background="@color/cardview_dark_background"
