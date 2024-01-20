@@ -42,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+        TextInputEditText usernameEditText = findViewById(R.id.usernameEditText);
         TextInputEditText passwordEditText = findViewById(R.id.EditPassword);
         TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
+        TextInputLayout usernameInputLayout = findViewById(R.id.usernameInputLayout);
 
         passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -55,6 +57,21 @@ public class MainActivity extends AppCompatActivity {
                     // When the EditText loses focus, restore the hint if no text is entered
                     if (passwordEditText.getText().toString().isEmpty()) {
                         passwordInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+
+        usernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    usernameInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (usernameEditText.getText().toString().isEmpty()) {
+                        usernameInputLayout.setHintEnabled(true);
                     }
                 }
             }
@@ -84,50 +101,60 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseReference usersReference = database.getReference("Data");
                    Log.d("LoginInfo", "Login ..... Username: " + username);
                    Log.d("LoginInfo", "Login ..... Pass: " + password);
-                usersReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean isUsernameFound = false;
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                Log.d("LoginInfo", "ba88888 " +user.getName());
-                                if (user != null && user.getPassword().equals(password)) {
+                   if (!username.equals("") && !password.equals("")) {
+                       usersReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                               boolean isUsernameFound = false;
 
-                                    String userId =  userSnapshot.getKey();
-                                    User.key=userId;
-                                    SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = preferences.edit();
-                                    editor.clear();
-                                    Gson gson = new Gson();
-                                    String userJson = gson.toJson(user);
-                                    editor.putString("user", userJson);
-                                    editor.apply();
-                                    Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
+                               if (dataSnapshot.exists()) {
+                                   for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                       User user = userSnapshot.getValue(User.class);
+                                       Log.d("LoginInfo", "ba88888 " + user.getName());
+                                       if (user != null) {
+                                           if (user.getPassword().equals(password)) {
 
-                                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                    startActivity(intent);
-                                    isUsernameFound = true;
-                                    break; // No need to continue checking other users
-                                }
-                            }
+                                               String userId = userSnapshot.getKey();
+                                               User.key = userId;
+                                               SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                                               SharedPreferences.Editor editor = preferences.edit();
+                                               editor.clear();
+                                               Gson gson = new Gson();
+                                               String userJson = gson.toJson(user);
+                                               editor.putString("user", userJson);
+                                               editor.apply();
+                                               Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
+                                               Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                               startActivity(intent);
+                                               isUsernameFound = true;
+                                               break; // No need to continue checking other users
+                                           } else {
+                                               Toast.makeText(MainActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
+                                           }
+                                       }
+                                   }
+//                                if (!isUsernameFound) {
+//                                    // Password does not match or the username is found but with incorrect password
+//                                    Log.d("LoginInfo", "Incorrect password for username: " + password);
+//                                    Toast.makeText(MainActivity.this, "Incorrect password" , Toast.LENGTH_SHORT).show();
+//                                }
+                               } else {
+                                   // Username does not exist in the database
+                                   Log.d("LoginInfo", "Username not found: " + username);
+                                   Toast.makeText(MainActivity.this, "Username not found: " + username, Toast.LENGTH_SHORT).show();
+                               }
+                           }
 
-                            if (!isUsernameFound) {
-                                // Password does not match or the username is found but with incorrect password
-                                Log.d("LoginInfo", "Incorrect password for username: " + password);
-                            }
-                        } else {
-                            // Username does not exist in the database
-                            Log.d("LoginInfo", "Username not found: " + username);
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle errors here
-                        Log.e("FirebaseError", "Error: " + databaseError.getMessage());
-                    }
-                });
+                           @Override
+                           public void onCancelled(@NonNull DatabaseError databaseError) {
+                               // Handle errors here
+                               Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+                           }
+                       });
+                   } else {
+                           Toast.makeText(MainActivity.this, "Check input fields", Toast.LENGTH_SHORT).show();
+                       }
 
             }
     });

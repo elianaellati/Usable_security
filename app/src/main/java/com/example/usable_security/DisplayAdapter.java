@@ -74,6 +74,14 @@ public class DisplayAdapter extends RecyclerView.Adapter< DisplayAdapter.ViewHol
         ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 
+        if (task.getImportant()) {
+            starButton.setImageResource(R.drawable.ic_star_filled);
+            starButton.setTag("filled");
+        } else {
+            starButton.setImageResource(R.drawable.ic_star_outline);
+            starButton.setTag("outline");
+        }
+
         details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -328,6 +336,7 @@ public class DisplayAdapter extends RecyclerView.Adapter< DisplayAdapter.ViewHol
         starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task = tasks.get(holder.getAdapterPosition());
                 if (starButton.getTag() == null || starButton.getTag().equals("outline")) {
                     starButton.setImageResource(R.drawable.ic_star_filled);
                     starButton.setTag("filled");
@@ -372,6 +381,7 @@ public class DisplayAdapter extends RecyclerView.Adapter< DisplayAdapter.ViewHol
         circularCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                task = tasks.get(holder.getAdapterPosition());
                 if (isChecked) {
                     // Checkbox is checked, change its color to green
                     circularCheckbox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#00796B")));
