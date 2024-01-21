@@ -2,7 +2,9 @@ package com.example.usable_security;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -28,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -334,6 +337,7 @@ public class SignInActivity extends AppCompatActivity {
                     if (reloadedUser != null && reloadedUser.isEmailVerified() && flag==2) {
                         Log.e(TAG, "Ana hpooooooooooooooooon");
                         addUserToDatabase(name, username, email, password);
+
                         Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
                         startActivity(intent);
                     } else {
@@ -356,6 +360,15 @@ public class SignInActivity extends AppCompatActivity {
         String userId = usersReference.push().getKey();
         User user = new User(name,username,password,email);
         usersReference.child(userId).setValue(user);
+        User.key = userId;
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        editor.putString("user", userJson);
+        editor.apply();
+        Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
 
     }
 
