@@ -2,7 +2,9 @@ package com.example.usable_security;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +24,13 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,10 +49,80 @@ public class SignInActivity extends AppCompatActivity {
         TextView loginLink = findViewById(R.id.login);
          status=findViewById(R.id.status);
         EditText Password = findViewById(R.id.EditPassword);
-        Password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        Password.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
         Button signup = findViewById(R.id.buttonsignup);
+
+        TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
+        TextInputEditText passwordEditText = findViewById(R.id.EditPassword);
+
+        TextInputEditText usernameEditText = findViewById(R.id.usernameEditText);
+        TextInputLayout usernameInputLayout = findViewById(R.id.usernameInputLayout);
+
+        TextInputEditText nameEditText = findViewById(R.id.nameEditText);
+        TextInputLayout nameInputLayout = findViewById(R.id.nameInputLayout);
+
+        TextInputEditText emailEditText = findViewById(R.id.emailEditText);
+        TextInputLayout emailInputLayout = findViewById(R.id.emailInputLayout);
+
+        usernameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    usernameInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (usernameEditText.getText().toString().isEmpty()) {
+                        usernameInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+
+        passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    passwordInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (passwordEditText.getText().toString().isEmpty()) {
+                        passwordInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+
+        nameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    nameInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (nameEditText.getText().toString().isEmpty()) {
+                        nameInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+        emailEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    // When the EditText gains focus, clear the hint
+                    emailInputLayout.setHintEnabled(false);
+                } else {
+                    // When the EditText loses focus, restore the hint if no text is entered
+                    if (emailEditText.getText().toString().isEmpty()) {
+                        emailInputLayout.setHintEnabled(true);
+                    }
+                }
+            }
+        });
+
         loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +131,7 @@ public class SignInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Button btn = findViewById(R.id.buttonverify);
+        ImageButton btn = findViewById(R.id.buttonverify);
         btn.setOnClickListener(view -> {
             BiometricPrompt biometricPrompt = getPrompt();
             biometricPrompt.authenticate(getPromptInfo());
@@ -111,20 +187,48 @@ public class SignInActivity extends AppCompatActivity {
             String email = Email.getText().toString();
             String password = Password.getText().toString();
 
-            // Create a new user with email and password
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // Sign up success, send verification email to the user
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if (user != null) {
-                                sendEmailVerification(user, name,username,email,password);
+            if (name.isEmpty()) {
+                TextView errorMessageTextView = findViewById(R.id.errorMessageTextView1);
+                errorMessageTextView.setText("Name is required");
+                errorMessageTextView.setVisibility(View.VISIBLE);
+            }
+
+            if (username.isEmpty()) {
+                TextView errorMessageTextView = findViewById(R.id.errorMessageTextView2);
+                errorMessageTextView.setText("Username is required");
+                errorMessageTextView.setVisibility(View.VISIBLE);
+            }
+            if (email.isEmpty()) {
+                TextView errorMessageTextView = findViewById(R.id.errorMessageTextView3);
+                errorMessageTextView.setText("Email is required");
+                errorMessageTextView.setVisibility(View.VISIBLE);
+            }
+            if (password.isEmpty()) {
+                TextView errorMessageTextView = findViewById(R.id.errorMessageTextView4);
+                errorMessageTextView.setText("Password is required");
+                errorMessageTextView.setVisibility(View.VISIBLE);
+            }
+
+            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("")) {
+
+                // Create a new user with email and password
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // Sign up success, send verification email to the user
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                if (user != null) {
+                                    sendEmailVerification(user, name, username, email, password);
+                                }
+                            } else {
+                                // Sign up failed, handle the error (e.g., display an error message)
+                                Log.e(TAG, "Failed to sign up: " + task.getException().getMessage());
+                                status.setText(task.getException().getMessage());
                             }
-                        } else {
-                            // Sign up failed, handle the error (e.g., display an error message)
-                            Log.e(TAG, "Failed to sign up: " + task.getException());
-                        }
-                    });
+                        });
+            }else {
+                Toast.makeText(SignInActivity.this, "Check input fields", Toast.LENGTH_SHORT).show();
+            }
         });
 
 
@@ -233,6 +337,7 @@ public class SignInActivity extends AppCompatActivity {
                     if (reloadedUser != null && reloadedUser.isEmailVerified() && flag==2) {
                         Log.e(TAG, "Ana hpooooooooooooooooon");
                         addUserToDatabase(name, username, email, password);
+
                         Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
                         startActivity(intent);
                     } else {
@@ -255,6 +360,15 @@ public class SignInActivity extends AppCompatActivity {
         String userId = usersReference.push().getKey();
         User user = new User(name,username,password,email);
         usersReference.child(userId).setValue(user);
+        User.key = userId;
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        editor.putString("user", userJson);
+        editor.apply();
+        Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
 
     }
 

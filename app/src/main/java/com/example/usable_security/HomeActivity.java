@@ -415,7 +415,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         currentCalendar.set(Calendar.MINUTE, 0);
                         currentCalendar.set(Calendar.SECOND, 0);
                         currentCalendar.set(Calendar.MILLISECOND, 0);
-
                         Date currentDate = currentCalendar.getTime();
                         task.setDate(currentDate);
                         Log.d("Dateeeee",String.valueOf(task.getDate()));
@@ -424,7 +423,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
                         String taskId = newTaskRef.getKey();
-                        Log.d("Tskkk",taskId);
+
                         Log.d("Adddedddddddddddddd",taskId);
                         displayTasks();
                         task.setId(taskId);
@@ -577,9 +576,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         User user = null;
+
         if (!userJson.isEmpty()) {
             Gson gson = new Gson();
             user = gson.fromJson(userJson, User.class);
+            Log.d("LoginInfo", "user: "+user.getName() );
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -593,9 +594,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         if (dataSnapshot.exists()) {
                             User userr = userSnapshot.getValue(User.class);
-                            Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
+
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     if(entry.getValue().getCompleted()==false) {
                                         taskList.add(entry.getValue());
@@ -604,35 +605,42 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         ++count;
                                     }
                                     // Log the task details along with the formatted date
+                                    Log.d("LoginInfo", "halooo " + userr.getEmail());
                                     Log.d("LoginInfo", "Ba7000000000000 " + entry.getValue().getName() + " " + entry.getValue().getDate());
 
                                 }
                             }
                         }
-                        recycler.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
-                        adapter_tasks adapter = new adapter_tasks(todayTasks);
-                        recycler.setAdapter(adapter);
+
                     }
                 }
 
-
-                // List<tasks> taskList = new ArrayList<>(taskMap.values());
-                LocalDate currentDate = LocalDate.now();
-                for (tasks task : taskList) {
-                    Date taskDate = new Date(String.valueOf(task.getDate()));  // Assuming task.getDate() returns a long timestamp
-                    LocalDate localTaskDate = taskDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    Log.d("LoginInfo", "fffffdad " + task.getName() + " :" + localTaskDate);
-
-                    if (task.getShared() == 0 && localTaskDate.equals(currentDate)) {
-                        // Your task processing logic
-                        String taskId = task.getId();
-                        Log.d("LoginInfo", "fffffdad " + task.getName());
-                        todayTasks.add(task);
+                    // List<tasks> taskList = new ArrayList<>(taskMap.values());
+                    LocalDate currentDate = LocalDate.now();
+                    for (tasks task : taskList) {
+                        Date taskDate = new Date(String.valueOf(task.getDate()));  // Assuming task.getDate() returns a long timestamp
+                        LocalDate localTaskDate = taskDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        Log.d("LoginInfo", "fffffdad " + task.getName() + " :" + localTaskDate);
+                        if (task.getShared() == 0 && localTaskDate.equals(currentDate)) {
+                            // Your task processing logic
+                            String taskId = task.getId();
+                            Log.d("LoginInfo", "fffffdad " + task.getName());
+                            todayTasks.add(task);
+                        }
                     }
+                recycler.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
+                adapter_tasks adapter = new adapter_tasks(todayTasks);
+                recycler.setAdapter(adapter);
+
+                ImageView imageView = findViewById(R.id.imageView);
+                if(todayTasks.isEmpty()){
+                    imageView.setVisibility(View.VISIBLE);
+                }
+                else{
+                    imageView.setVisibility(View.GONE);
+                }
                 }
 
-
-            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

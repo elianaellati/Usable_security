@@ -16,7 +16,9 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background">
+            android:background="@drawable/backg">
+
+
 
             <LinearLayout
                 android:id="@+id/headerLayout"
@@ -34,8 +36,10 @@
                     android:layout_weight="1"
                     android:gravity="start"
                     android:text="My Day"
-                    android:textColor="#601903"
-                    android:textSize="40sp"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/teal_700"
+                    android:textSize="50sp"
+                    android:fontFamily="@font/dancing"
                     android:textStyle="bold" />
 
                 <TextView
@@ -44,10 +48,24 @@
                     android:layout_height="wrap_content"
                     android:gravity="end|center_vertical"
                     android:text=""
-                    android:textColor="#601903"
-                    android:textSize="20sp"
+                    android:textColor="@color/teal_700"
+                    android:textSize="25sp"
+                    android:layout_marginLeft="10dp"
+                    android:fontFamily="@font/dancing"
                     android:textStyle="bold" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="200dp"
+                android:layout_height="210dp"
+                android:src="@drawable/notasks"
+                android:layout_marginTop="50dp"
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:layout_margin="16dp"
+                android:layout_gravity="center"
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_viewTasks"
