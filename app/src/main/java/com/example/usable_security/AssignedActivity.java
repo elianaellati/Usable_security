@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -37,7 +42,7 @@ import java.util.Map;
 
 public class  AssignedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
-
+    private MenuItem notificationMenuItem;
 
     List<contacts> filteredContacts = new ArrayList<>();
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -224,6 +229,10 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
                                         SharedPreferences.Editor editor = preferences.edit();
                                         editor.putString("user",  userrJson);
                                         editor.apply();
+                                    }else{
+                                        // For Java
+                                        Toast.makeText(getApplicationContext(), "Contact is already Exist", Toast.LENGTH_SHORT).show();
+
                                     }
 
                                     displayContacts();
@@ -259,11 +268,38 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_bar, menu);
+        notificationMenuItem = menu.findItem(R.id.notification);
+        return true;
+    }
+
+
+
+    private void updateNotificationItem(String newTitle) {
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        Menu menu = navigationView.getMenu();
+        MenuItem notificationItem = menu.findItem(R.id.notification);
+
+        if (notificationItem != null) {
+            notificationItem.setTitle(newTitle);
+            SpannableString spannableString = new SpannableString(newTitle);
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+            notificationItem.setTitle(spannableString);
+
+        }
+    }
+
+
+
+
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

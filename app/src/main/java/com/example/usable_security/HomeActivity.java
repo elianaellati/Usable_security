@@ -23,6 +23,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 import android.view.Gravity;
@@ -66,9 +69,10 @@ import java.util.TimeZone;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public DrawerLayout drawerLayout;
+    private MenuItem notificationMenuItem;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-
     Map<String,tasks> taskMap=new HashMap<>();
+    static int count=0;
 
     private ReminderUtils reminderUtils = new ReminderUtils();
 
@@ -93,11 +97,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
       //  ActionBar actionBar;
        // actionBar = getSupportActionBar();
-
-
         ColorDrawable colorDrawable
                 = new ColorDrawable(Color.parseColor("#0F9D58"));
 
@@ -464,15 +467,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            updateNotificationItem("Notification"+"("+count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_bar, menu);
+        notificationMenuItem = menu.findItem(R.id.notification);
+        return true;
+    }
+
+
+
+        private void updateNotificationItem(String newTitle) {
+            NavigationView navigationView = findViewById(R.id.navigation_bar);
+            Menu menu = navigationView.getMenu();
+            MenuItem notificationItem = menu.findItem(R.id.notification);
+
+            if (notificationItem != null) {
+                notificationItem.setTitle(newTitle);
+                SpannableString spannableString = new SpannableString(newTitle);
+                spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+                notificationItem.setTitle(spannableString);
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -480,11 +522,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 openMyDayIntent() ;
                 break;
             case R.id.assigned:
+
                 openAssignedIntent();
                 break;
+
             case R.id.notification:
+
                 openNotificationIntent();
                 break;
+
             case R.id.nav_logout:
                 openLogoutIntent();
                 break;
@@ -497,12 +543,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
     private void  openTasksIntent() {
         Intent intent = new Intent(this, DisplayTask.class);
         startActivity(intent);
     }
     private void  openLogoutIntent() {
         Intent intent = new Intent(this, MainActivity.class);
+        Log.d("LoginInfo", "Refreshhh " +count);
         startActivity(intent);
     }
     private void openMyDayIntent() {
@@ -520,6 +569,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void displayTasks() {
+        count=0;
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> todayTasks = new ArrayList<>();
         List<tasks> taskList = new ArrayList<>();
@@ -548,7 +598,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if (taskMap != null) {
 
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                                    taskList.add(entry.getValue());
+                                    if(entry.getValue().getCompleted()==false) {
+                                        taskList.add(entry.getValue());
+                                    }
+                                    if(entry.getValue().getShared()==1){
+                                        ++count;
+                                    }
                                     // Log the task details along with the formatted date
                                     Log.d("LoginInfo", "halooo " + userr.getEmail());
                                     Log.d("LoginInfo", "Ba7000000000000 " + entry.getValue().getName() + " " + entry.getValue().getDate());
@@ -662,7 +717,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 throw new IllegalArgumentException("Invalid repeat option: " + selectedRepeatOption);
         }
 
-        // Calculate the next due date based on the selected repeat option
         Calendar calendar = Calendar.getInstance();
         calendar.add(getCalendarUnitFromRepeatUnit(repeatUnit), repeatInterval);
         Date nextDueDate = calendar.getTime();

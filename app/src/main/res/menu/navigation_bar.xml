@@ -1,5 +1,5 @@
-
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/my_day"
@@ -13,8 +13,10 @@
         <item
             android:id="@+id/notification"
             android:icon="@drawable/noti"
-            android:title="Notification"
-            />
+            android:title=""
+            app:actionLayout="@layout/notification_layout"
+            app:showAsAction="always" />
+
 
 
         <item

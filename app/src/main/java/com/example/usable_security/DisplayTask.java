@@ -12,6 +12,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -23,6 +24,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.util.Log;
 import android.view.Gravity;
@@ -66,7 +70,8 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Map<String,tasks> taskMap=new HashMap<>();
-
+    private MenuItem notificationMenuItem;
+    int count=0;
     private ReminderUtils reminderUtils = new ReminderUtils();
 
     @Override
@@ -75,6 +80,14 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.displaytask);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // This method will be invoked when the user performs a swipe-to-refresh
+            displayTasks();
+            Log.d("LoginInfo", "Refreshhh " );
+
+            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+        });
         displayTasks();
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
@@ -450,11 +463,38 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            updateNotificationItem("Notification"+"("+count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_bar, menu);
+        notificationMenuItem = menu.findItem(R.id.notification);
+        return true;
+    }
+
+
+
+    private void updateNotificationItem(String newTitle) {
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        Menu menu = navigationView.getMenu();
+        MenuItem notificationItem = menu.findItem(R.id.notification);
+
+        if (notificationItem != null) {
+            notificationItem.setTitle(newTitle);
+            SpannableString spannableString = new SpannableString(newTitle);
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+            notificationItem.setTitle(spannableString);
+
+        }
+    }
+
+
+
+
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -599,8 +639,12 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                                    taskList.add(entry.getValue());
-                                    // Log the task details along with the formatted date
+                                    if(entry.getValue().getCompleted()==false) {
+                                        taskList.add(entry.getValue());
+                                    }
+                                    if(entry.getValue().getShared()==1){
+                                        ++count;
+                                    }
                                     Log.d("LoginInfo", "Ba7000000000000 " + entry.getValue().getName() + " " + entry.getValue().getDate());
 
                                 }

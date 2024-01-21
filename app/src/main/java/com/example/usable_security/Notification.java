@@ -3,9 +3,15 @@ package com.example.usable_security;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -14,6 +20,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -29,13 +36,14 @@ import java.util.Map;
 
 public class Notification extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
-
+    private MenuItem notificationMenuItem;
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notification);
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -43,6 +51,7 @@ public class Notification extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         Gson gson = new Gson();
@@ -75,6 +84,12 @@ public class Notification extends AppCompatActivity implements NavigationView.On
                     recycler.setLayoutManager(new LinearLayoutManager(Notification.this));
                     NotificationAdapter adapter = new NotificationAdapter(taskk);
                     recycler.setAdapter(adapter);
+
+                    swipeRefreshLayout.setOnRefreshListener(() -> {
+
+                        recycler.setAdapter(adapter);
+                        swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+                    });
                 }
             }
 
@@ -83,20 +98,48 @@ public class Notification extends AppCompatActivity implements NavigationView.On
                 // Handle onCancelled
             }
         });
-        Log.d("MenuItemClicked", "Item IDddfdrfrffffff: " + taskk.size());
+
+
         RecyclerView recycler = findViewById(R.id.recycler_view);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         NotificationAdapter adapter = new NotificationAdapter(taskk);
         recycler.setAdapter(adapter);
+
     }
+
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_bar, menu);
+        notificationMenuItem = menu.findItem(R.id.notification);
+        return true;
+    }
+
+
+
+    private void updateNotificationItem(String newTitle) {
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        Menu menu = navigationView.getMenu();
+        MenuItem notificationItem = menu.findItem(R.id.notification);
+
+        if (notificationItem != null) {
+            notificationItem.setTitle(newTitle);
+            SpannableString spannableString = new SpannableString(newTitle);
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+            notificationItem.setTitle(spannableString);
+
+        }
+    }
+
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
