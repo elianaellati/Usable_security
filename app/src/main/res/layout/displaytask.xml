@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background">
+        android:background="@drawable/backg">
 
         <LinearLayout
             android:id="@+id/headerLayout"
@@ -29,18 +29,10 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:text="Tasks"
-                android:textColor="#601903"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/teal_700"
                 android:textSize="50sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/currentDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end|center_vertical"
-                android:text=""
-                android:textColor="#601903"
-                android:textSize="25sp"
+                android:fontFamily="@font/dancing"
                 android:textStyle="bold" />
         </LinearLayout>
 
