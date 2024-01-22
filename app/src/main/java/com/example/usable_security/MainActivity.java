@@ -54,7 +54,7 @@ static long duaration=60;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         status = findViewById(R.id.status);
-        forgotPassword = findViewById(R.id.forgotPassword);
+        forgotPassword = findViewById(R.id.forgotpassword);
 
 
         TextInputEditText usernameEditText = findViewById(R.id.usernameEditText);
@@ -126,55 +126,6 @@ static long duaration=60;
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference usersReference = database.getReference("Data");
 
-                   if (!email.equals("") && !password.equals("")) {
-                       usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
-                           @Override
-                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                               boolean isUsernameFound = false;
-
-                               if (dataSnapshot.exists()) {
-                                   for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                       User user = userSnapshot.getValue(User.class);
-                                       Log.d("LoginInfo", "ba88888 " + user.getName());
-                                       if (user != null) {
-                                           if (user.getPassword().equals(password)) {
-
-                                               String userId = userSnapshot.getKey();
-                                               User.key = userId;
-                                               SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-                                               SharedPreferences.Editor editor = preferences.edit();
-                                               editor.clear();
-                                               Gson gson = new Gson();
-                                               String userJson = gson.toJson(user);
-                                               editor.putString("user", userJson);
-                                               editor.apply();
-                                               Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
-                                               Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                               startActivity(intent);
-                                               isUsernameFound = true;
-                                               break; // No need to continue checking other users
-                                           } else {
-                                               ++attempt;
-                                               if(attempt==count){
-                                                   Intent intent = new Intent(MainActivity.this, lock.class);
-                                                   startActivity(intent);
-                                               }
-                                               Toast.makeText(MainActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
-                                           }
-                                       }
-                                   }
-//                                if (!isUsernameFound) {
-//                                    // Password does not match or the username is found but with incorrect password
-//                                    Log.d("LoginInfo", "Incorrect password for username: " + password);
-//                                    Toast.makeText(MainActivity.this, "Incorrect password" , Toast.LENGTH_SHORT).show();
-//                                }
-                               } else {
-                                   // Username does not exist in the database
-
-                                   Toast.makeText(MainActivity.this, "Username not found: " + username, Toast.LENGTH_SHORT).show();
-                               }
-                           }
-
                 if (email.isEmpty()) {
                     TextView errorMessageTextView = findViewById(R.id.errorMessageTextView2);
                     errorMessageTextView.setText("Username is required");
@@ -232,8 +183,13 @@ static long duaration=60;
                                             }
                                         });
                                     } else {
-                                        // Authentication failed
+                                        ++attempt;
                                         status.setText("Incorrect username or password");
+                                        if(attempt==count) {
+                                            Intent intent = new Intent(MainActivity.this, lock.class);
+                                            startActivity(intent);
+
+                                        }
                                     }
                                 }
                             });
@@ -243,6 +199,61 @@ static long duaration=60;
         });
     }
 }
+
+                  /* if (!email.equals("") && !password.equals("")) {
+                           usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+@Override
+public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        boolean isUsernameFound = false;
+
+        if (dataSnapshot.exists()) {
+        for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+        User user = userSnapshot.getValue(User.class);
+        Log.d("LoginInfo", "ba88888 " + user.getName());
+        if (user != null) {
+        if (user.getPassword().equals(password)) {
+
+        String userId = userSnapshot.getKey();
+        User.key = userId;
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        editor.putString("user", userJson);
+        editor.apply();
+        Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
+        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        startActivity(intent);
+        isUsernameFound = true;
+        break; // No need to continue checking other users
+        } else {
+        ++attempt;
+        if(attempt==count){
+        Intent intent = new Intent(MainActivity.this, lock.class);
+        startActivity(intent);
+        }
+        Toast.makeText(MainActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
+        }
+        }
+        }
+//                                if (!isUsernameFound) {
+//                                    // Password does not match or the username is found but with incorrect password
+//                                    Log.d("LoginInfo", "Incorrect password for username: " + password);
+//                                    Toast.makeText(MainActivity.this, "Incorrect password" , Toast.LENGTH_SHORT).show();
+//                                }
+        } else {
+        // Username does not exist in the database
+
+        Toast.makeText(MainActivity.this, "Username not found: " + username, Toast.LENGTH_SHORT).show();
+        }
+        }
+
+
+
+
+
+
 //                       usersReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
 //                           @Override
 //                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -293,4 +304,4 @@ static long duaration=60;
 //                               // Handle errors here
 //                               Log.e("FirebaseError", "Error: " + databaseError.getMessage());
 //                           }
-//                       });
+//                      */

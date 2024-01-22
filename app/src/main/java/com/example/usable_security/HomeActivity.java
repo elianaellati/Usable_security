@@ -563,6 +563,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void displayTasks() {
+
         count=0;
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> todayTasks = new ArrayList<>();
@@ -570,11 +571,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         User user = null;
-
         if (!userJson.isEmpty()) {
             Gson gson = new Gson();
             user = gson.fromJson(userJson, User.class);
-            Log.d("LoginInfo", "user: "+user.getName() );
+            Log.d("LoginInfo", "user:ppppp"+user.getName() );
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -590,7 +590,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             User userr = userSnapshot.getValue(User.class);
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
-
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     if(entry.getValue().getCompleted()==false) {
                                         taskList.add(entry.getValue());
