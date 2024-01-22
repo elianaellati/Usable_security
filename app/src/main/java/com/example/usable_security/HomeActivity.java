@@ -121,11 +121,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                 int minute = calendar.get(Calendar.MINUTE);
                 String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
-
                 task.setTime(selectedTime);
-                Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
-
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                 LayoutInflater inflater = HomeActivity.this.getLayoutInflater();
                 View titleView = inflater.inflate(R.layout.title_dialogue, null);
@@ -175,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         // For example:
                                         String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                                         task.setTime(selectedTime);
-                                        Toast.makeText(HomeActivity.this, selectedTime, Toast.LENGTH_SHORT).show();
+
                                     }
                                 },
                                 hour,
@@ -254,7 +250,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setRepeat(days+" "+unit);
-                                                            Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
+                                                           // Toast.makeText(HomeActivity.this, "Repeat every " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                             onCustomRepeatSelected(Integer.parseInt(days),unit,task);
                                                         }
                                                     })
@@ -269,7 +265,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         } else {
                                             task.setRepeat(selectedItem);
                                             onRepeatSelected(selectedItem,task);
-                                            Toast.makeText(HomeActivity.this, "Repeat every " + selectedItem, Toast.LENGTH_SHORT).show();
+
                                         }
                                     }
                                 })
@@ -364,7 +360,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                             String days = daysEditText.getText().toString();
                                                             String unit = (String) unitSpinner.getSelectedItem();
                                                             task.setReminder(days+" "+unit);
-                                                            Toast.makeText(HomeActivity.this, "Remind before " + days + " " + unit, Toast.LENGTH_SHORT).show();
                                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), "custom", Integer.parseInt(days),unit,task.time);
                                                             int requestCode1 = 1;
                                                             ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
@@ -380,7 +375,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                                     .show();
                                         } else if(!notify.equals("custom") && !notify.equals("none")) {
                                             task.setReminder(notify);
-                                            Toast.makeText(HomeActivity.this, "Remind before " + notify, Toast.LENGTH_SHORT).show();
+
                                             long timeInMillis = reminderUtils.calculateReminderTime(task.getDate(), task.getReminder(),0,"", task.time);
                                             int requestCode1 = 1;
                                             ReminderManager.setReminder(HomeActivity.this, timeInMillis, task,requestCode1);
@@ -417,18 +412,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         currentCalendar.set(Calendar.MILLISECOND, 0);
                         Date currentDate = currentCalendar.getTime();
                         task.setDate(currentDate);
-                        Log.d("Dateeeee",String.valueOf(task.getDate()));
                         String id=User.key;
+                        Log.d("keyyyyyyyyyy",id);
                         DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("tasks");
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
                         String taskId = newTaskRef.getKey();
 
-                        Log.d("Adddedddddddddddddd",taskId);
                         displayTasks();
                         task.setId(taskId);
                         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         String userJson = preferences.getString("user", "");
+                        Log.d("Adddedddddddddddddd",taskId);
                         User updateuser=null;
                         if (!userJson.isEmpty()) {
                             Gson gson = new Gson();
@@ -438,6 +433,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             String userrJson = gson.toJson( updateuser);
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("user",  userrJson);
+
                             editor.apply();
                             displayTasks();
                         }
