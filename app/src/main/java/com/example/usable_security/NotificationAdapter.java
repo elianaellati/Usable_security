@@ -72,7 +72,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String userJson = preferences.getString("user", "");
         Gson gson = new Gson();
         User storeduser = gson.fromJson(userJson, User.class);
-
         usersReference.orderByChild("email").equalTo(storeduser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,7 +121,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 editor.putString("user", userrJson);
                 editor.apply();
                HomeActivity.count= HomeActivity.count-1;
-
                 removeTask(holder.getAdapterPosition());
                     }
 

@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,12 +18,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.biometric.BiometricPrompt;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,12 +40,18 @@ import java.util.concurrent.Executor;
 public class ShareAdapter
         extends RecyclerView.Adapter<ShareAdapter.ViewHolder>{
    int flag=0;
+    CheckBox vieww;
+    private BiometricPrompt biometricPrompt;
+    CheckBox edit;
+    int counter=0;
     private int clickedPosition = -1;
+    User storeduser ;
     private List<contacts> contact;
     private contacts contactt;
     private SharedPreferences preferences;
     private Context context;
     private tasks task;
+    int attempt=0;
     private String keycontact;
     private String name;
     Map<String, contacts> contactsMap;
@@ -79,7 +89,8 @@ public class ShareAdapter
             @Override
             public void onClick(View v) {
                 clickedPosition = position;
-                ShareDialogue( clickedPosition);
+
+                    ShareDialogue(clickedPosition);
 
             }
             });
@@ -105,32 +116,58 @@ public class ShareAdapter
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.access_dialogue, null);
         builder.setView(dialogView);
-        CheckBox view = dialogView.findViewById(R.id.view);
-        CheckBox edit = dialogView.findViewById(R.id.edit);
+         vieww = dialogView.findViewById(R.id.view);
+        edit = dialogView.findViewById(R.id.edit);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //BiometricPrompt biometricPrompt = getPrompt();
-                //biometricPrompt.authenticate(getPromptInfo());
-               // if(flag==2) {
+              //      BiometricPrompt biometricPrompt = getPrompt(position);
+              //      biometricPrompt.authenticate(getPromptInfo());
+               //     if(flag==2){
+                        Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
+                        findKey();
+                        searchtheuser(position);
+                        task.setShared(1);
+
+                        if (vieww.isChecked() && edit.isChecked()) {
+                            task.setAccess(1);
+                        } else if (vieww.isChecked()) {
+                            Log.d("LoginInfo", "Incorrect password for username: ");
+                            task.setAccess(0);
+                        } else {
+                            task.setAccess(1);
+                        }
+
+                  //  }
 
 
-                Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
+
+              /*  if(attempt!=2) {
+                    PasswordDialogue(position);
+                }
+              //  BiometricPrompt biometricPrompt = getPrompt(position);
+             //   biometricPrompt.authenticate(getPromptInfo());*/
+            /*  if (flag == 2) {
+
+
+                    Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
                     findKey();
                     searchtheuser(position);
                     task.setShared(1);
 
-                    if (view.isChecked() && edit.isChecked()) {
+                    if (vieww.isChecked() && edit.isChecked()) {
                         task.setAccess(1);
-                    } else if (view.isChecked()) {
+                    } else if (vieww.isChecked()) {
                         Log.d("LoginInfo", "Incorrect password for username: ");
                         task.setAccess(0);
                     } else {
                         task.setAccess(1);
                     }
-                }
-          //  }
+                }*/
+
+            }
+
         });
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -161,7 +198,7 @@ public class ShareAdapter
         preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         Gson gson = new Gson();
-        User storeduser = gson.fromJson(userJson, User.class);
+        storeduser = gson.fromJson(userJson, User.class);
         name=storeduser.getName();
         usersReference.orderByChild("email").equalTo(contact.get(position).getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -211,34 +248,46 @@ public class ShareAdapter
 
         });
     }
-    private BiometricPrompt getPrompt() {
+    private BiometricPrompt getPrompt(int position) {
 
-        Executor executor = ContextCompat.getMainExecutor(context);
-        BiometricPrompt.AuthenticationCallback callback = new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-                flag = 1;
-                notifyUser(errString.toString());
-            }
+            Executor executor = ContextCompat.getMainExecutor(context);
+            BiometricPrompt.AuthenticationCallback callback = new BiometricPrompt.AuthenticationCallback() {
 
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                flag = 2;
-                notifyUser("Authentication Succeeded!");
-            }
+                @Override
+                public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                    super.onAuthenticationError(errorCode, errString);
+                    Log.d("LoginInfo", "CODE" +errString);
+                    ++counter;
+                    if(counter==3) {
+                        PasswordDialogue(position);
+                        biometricPrompt.cancelAuthentication();
+                    }
+                }
 
-            @Override
-            public void onAuthenticationFailed() {
-                flag = 1;
-                super.onAuthenticationFailed();
-                notifyUser("Authentication Failed!");
-            }
-        };
+                @Override
+                public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                    super.onAuthenticationSucceeded(result);
+                    flag = 2;
 
-        return new BiometricPrompt((FragmentActivity) context, executor, callback);
+                }
+
+                @Override
+                public void onAuthenticationFailed() {
+                     ++counter;
+                    super.onAuthenticationFailed();
+                    if(counter==3) {
+                        PasswordDialogue(position);
+                        biometricPrompt.cancelAuthentication();
+                    }
+
+
+                }
+            };
+
+            biometricPrompt = new BiometricPrompt((FragmentActivity) context, executor, callback);
+        return biometricPrompt;
     }
+
 
     private BiometricPrompt.PromptInfo getPromptInfo() {
         return new BiometricPrompt.PromptInfo.Builder()
@@ -247,8 +296,133 @@ public class ShareAdapter
                 .setNegativeButtonText("Cancel")
                 .build();
     }
-    private void notifyUser(String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+    private void attemptcounter(String message,int position) {
+        if(message!=null){
+            Log.d("LoginInfo", "COUNTER" + counter);
+            Log.d("LoginInfo", "MESSAGE" + message);
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            ++counter;
+        }
+        if(counter==3){
+            PasswordDialogue(position);
+            biometricPrompt.cancelAuthentication();
+        }
+
     }
+    public void PasswordDialogue(int position){
+        preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        Gson gson = new Gson();
+        storeduser = gson.fromJson(userJson, User.class);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.password_dialogue, null);
+        builder.setView(dialogView);
+        EditText Password = dialogView.findViewById(R.id.passw);
+        builder.setPositiveButton("OK", null); // Set the listener to null initially
+        builder.setCancelable(false);
+        AlertDialog dialog = builder.create();
+     if(attempt!=2) {
+     dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+         @Override
+         public void onShow(DialogInterface dialogInterface) {
+             Button positiveButton = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
+
+             positiveButton.setOnClickListener(new View.OnClickListener() {
+                 @Override
+                 public void onClick(View view) {
+                     String password = Password.getText().toString();
+                     FirebaseDatabase database = FirebaseDatabase.getInstance();
+                     DatabaseReference usersReference = database.getReference("Data");
+                     if (!password.equals("") && attempt != 2) {
+                         usersReference.orderByChild("username").equalTo(storeduser.getUsername()).addListenerForSingleValueEvent(new ValueEventListener() {
+                             @Override
+                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                 boolean isUsernameFound = false;
+                                 if (dataSnapshot.exists()) {
+                                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                         User user = userSnapshot.getValue(User.class);
+                                         Log.d("LoginInfo", "ba88888 " + user.getName());
+                                         if (user != null) {
+                                             if (user.getPassword().equals(password)) {
+                                                 Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
+                                                 findKey();
+                                                 searchtheuser(position);
+                                                 task.setShared(1);
+
+                                                 if (vieww.isChecked() && edit.isChecked()) {
+                                                     task.setAccess(1);
+                                                 } else if (vieww.isChecked()) {
+                                                     Log.d("LoginInfo", "Incorrect password for username: ");
+                                                     task.setAccess(0);
+                                                 } else {
+                                                     task.setAccess(1);
+                                                 }
+                                                 attempt = 2;
+                                                 // Dismiss the dialog only if the condition is met
+                                                 if (attempt == 2) {
+                                                     dialog.dismiss();
+                                                 }
+                                             } else {
+                                                 ++attempt;
+                                                 if (attempt == 2) {
+                                                     dialog.dismiss();
+                                                     showAttemptDialog();
+                                                 }
+                                                 Password.setText(""); // Clear the password field
+                                             }
+                                         }
+                                     }
+                                 } else {
+
+                                 }
+                             }
+
+                             @Override
+                             public void onCancelled(@NonNull DatabaseError databaseError) {
+                                 // Handle errors here
+                                 Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+                             }
+                         });
+                     }
+                 }
+             });
+         }
+     });
+
+     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+         @Override
+         public void onClick(DialogInterface dialog, int which) {
+             dialog.cancel();
+         }
+     });
+ }
+
+        dialog.show();
+
+
+    }
+    private void showAttemptDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.CustomAlertDialogTheme));
+
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.attempt, null);
+        builder.setView(dialogView);
+        builder.setCancelable(false);
+
+     new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Code to be executed after the delay
+                Intent intent = new Intent(context, lock.class);
+                context.startActivity(intent);
+            }
+        },  3*1000);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
 
 }

@@ -15,18 +15,6 @@
         xmlns:tools="http://schemas.android.com/tools">
 
 
-        <SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:queryHint="Search"
-            android:iconifiedByDefault="false"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            />
         <TextView
             android:id="@+id/addButton"
             android:layout_width="wrap_content"
@@ -35,7 +23,6 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/teal_700"
-            android:layout_below="@id/searchView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp" />
 
@@ -52,7 +39,7 @@
     </RelativeLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_bar"
-        android:layout_width="wrap_content"
+       android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"

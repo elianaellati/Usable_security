@@ -543,8 +543,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
     private void  openTasksIntent() {
         Intent intent = new Intent(this, DisplayTask.class);
         startActivity(intent);

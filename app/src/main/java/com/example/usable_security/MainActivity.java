@@ -35,12 +35,16 @@ import java.util.concurrent.Executor;
 
 // ... imports ...
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity {
+static int attempt=0;
+static int count=3;
+static long duaration=60;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
 
         TextInputEditText usernameEditText = findViewById(R.id.usernameEditText);
         TextInputEditText passwordEditText = findViewById(R.id.EditPassword);
@@ -129,6 +133,11 @@ public class MainActivity extends AppCompatActivity {
                                                isUsernameFound = true;
                                                break; // No need to continue checking other users
                                            } else {
+                                               ++attempt;
+                                               if(attempt==count){
+                                                   Intent intent = new Intent(MainActivity.this, lock.class);
+                                                   startActivity(intent);
+                                               }
                                                Toast.makeText(MainActivity.this, "Incorrect password", Toast.LENGTH_SHORT).show();
                                            }
                                        }
