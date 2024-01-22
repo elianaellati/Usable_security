@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -26,7 +27,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -42,13 +48,26 @@ public class SignInActivity extends AppCompatActivity {
     int flag = 0;
 
     TextView status;
+
+    EditText Name;
+    EditText Username;
+    EditText Email;
+    EditText Password;
+
+
+    String name;
+    String username;
+    String email;
+    String password;
+    String emailLink = "https://www.example.com/finishSignUp?cartId=1234";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView loginLink = findViewById(R.id.login);
-         status=findViewById(R.id.status);
-        EditText Password = findViewById(R.id.EditPassword);
+        status = findViewById(R.id.status);
+        Password = findViewById(R.id.EditPassword);
 
         Button signup = findViewById(R.id.buttonsignup);
 
@@ -139,9 +158,9 @@ public class SignInActivity extends AppCompatActivity {
         //  signup.setOnClickListener(view -> {
 
 //
-        EditText Name = findViewById(R.id.nameEditText);
-        EditText Username = findViewById(R.id.usernameEditText);
-        EditText Email = findViewById(R.id.emailEditText);
+        Name = findViewById(R.id.nameEditText);
+        Username = findViewById(R.id.usernameEditText);
+        Email = findViewById(R.id.emailEditText);
 //
 //
 //
@@ -182,10 +201,10 @@ public class SignInActivity extends AppCompatActivity {
 
         signup.setOnClickListener(view -> {
             // Get user input (name, email, password, etc.)
-            String name = Name.getText().toString();
-            String username = Username.getText().toString();
-            String email = Email.getText().toString();
-            String password = Password.getText().toString();
+            String name = Name.getText().toString().trim();
+            String username = Username.getText().toString().trim();
+            String email = Email.getText().toString().trim();
+            String password = Password.getText().toString().trim();
 
             if (name.isEmpty()) {
                 TextView errorMessageTextView = findViewById(R.id.errorMessageTextView1);
@@ -226,8 +245,6 @@ public class SignInActivity extends AppCompatActivity {
                                 status.setText(task.getException().getMessage());
                             }
                         });
-            }else {
-                Toast.makeText(SignInActivity.this, "Check input fields", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -276,56 +293,36 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    private void sendEmailVerification(FirebaseUser user) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "Email sent.");
-                    } else {
-                        // Handle the case where sending email verification fails
-                        Log.e(TAG, "Failed to send email verification.", task.getException());
-                    }
-                });
-    }
+//    private void sendEmailVerification(FirebaseUser user) {
+//        user.sendEmailVerification()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        Log.d(TAG, "Email sent.");
+//                    } else {
+//                        // Handle the case where sending email verification fails
+//                        Log.e(TAG, "Failed to send email verification.", task.getException());
+//                    }
+//                });
+//    }
 
 
     private void sendEmailVerification(FirebaseUser user, String name, String username, String email, String password) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Email verification sent, handle the success (e.g., show a message to the user)
-                        Log.d(TAG, "Email verification sent.");
-                     //   addUserToDatabase(name, username, email,password);
-                        // Schedule a task to check email verification status after one minute
-                        checkEmailVerificationStatus(user, name, username, email, password);
-                    } else {
-                        // Email verification failed, handle the error (e.g., show a message to the user)
-                        Log.e(TAG, "Failed to send email verification: " + task.getException());
-                    }
-                });
+        if (!user.isEmailVerified()) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Email verification sent, handle the success (e.g., show a message to the user)
+                            Log.d(TAG, "Email verification sent.");
+                            //   addUserToDatabase(name, username, email,password);
+                            // Schedule a task to check email verification status after one minute
+                            checkEmailVerificationStatus(user, name, username, email, password);
+                        } else {
+                            // Email verification failed, handle the error (e.g., show a message to the user)
+                            Log.e(TAG, "Failed to send email verification: " + task.getException());
+                        }
+                    });
+        }
     }
-
-//    private void checkEmailVerificationStatus(FirebaseUser user, String name, String username, String email, String password) {
-//        user.reload().addOnCompleteListener(reloadTask -> {
-//            if (reloadTask.isSuccessful()) {
-//                FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
-//                if (reloadedUser != null && reloadedUser.isEmailVerified()) {
-//                    // The user has verified their email within one minute
-//                    // Add the user to the database here
-//                    addUserToDatabase(name, username, email, password);
-//                    Log.e(TAG,"ADDED");
-//                } else {
-//                    // The user's email is not verified yet
-//                    // You can handle this case by prompting the user to verify their email again or providing an option to resend the verification email
-//                    Log.e(TAG, "Email not verified within one minute, consider resending verification email");
-//                }
-//            } else {
-//                // Failed to reload user
-//                Log.e(TAG, "Failed to reload user: " + reloadTask.getException());
-//                // Handle the error
-//            }
-//        });
-//    }
 
 
     private void checkEmailVerificationStatus(FirebaseUser user, String name, String username, String email, String password) {
@@ -334,7 +331,7 @@ public class SignInActivity extends AppCompatActivity {
             user.reload().addOnCompleteListener(reloadTask -> {
                 if (reloadTask.isSuccessful()) {
                     FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
-                    if (reloadedUser != null && reloadedUser.isEmailVerified() && flag==2) {
+                    if (reloadedUser != null && reloadedUser.isEmailVerified() && flag == 2) {
                         Log.e(TAG, "Ana hpooooooooooooooooon");
                         addUserToDatabase(name, username, email, password);
 
@@ -342,6 +339,7 @@ public class SignInActivity extends AppCompatActivity {
                         startActivity(intent);
                     } else {
                         Log.e(TAG, "Email not verified within one minute");
+                        showResendEmailDialog(email, name, username, password);
                     }
                 } else {
                     // Failed to reload user
@@ -353,12 +351,12 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    private void  addUserToDatabase(String name, String username, String email, String password) {
+    private void addUserToDatabase(String name, String username, String email, String password) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
         String userId = usersReference.push().getKey();
-        User user = new User(name,username,password,email);
+        User user = new User(name, username, password, email);
         usersReference.child(userId).setValue(user);
         User.key = userId;
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
@@ -370,6 +368,87 @@ public class SignInActivity extends AppCompatActivity {
         editor.apply();
         Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
 
+    }
+
+    private void showResendEmailDialog(String email, String name, String username, String password) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Resend Email Verification")
+                .setMessage("Haven't received the verification email? Click below to resend.")
+                .setPositiveButton("Resend", (dialog, which) -> {
+                    // Resend the verification email
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        resendVerificationEmail(user.getEmail());
+                    } else {
+                        // Handle the case where the user is null or not signed in
+                        Toast.makeText(SignInActivity.this, "User not signed in", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    // Cancel the dialog
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+
+//    private void resendEmailVerification(FirebaseUser user) {
+//        user.sendEmailVerification()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        // Email verification sent successfully
+//                        Log.d(TAG, "Email verification resent.");
+//                        Toast.makeText(this, "Email verification resent", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        // Email verification sending failed
+//                        Log.e(TAG, "Failed to resend email verification: " + task.getException());
+//                        if (task.getException() instanceof FirebaseTooManyRequestsException) {
+//                            // Handle the case where too many requests have been made
+//                            // Wait and try again later
+//                            Toast.makeText(this, "Too many requests. Please try again later.", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            // Handle other types of exceptions
+//                            Toast.makeText(this, "Failed to resend email verification", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//    }
+
+//    private void resendEmailVerification(FirebaseUser user) {
+//        AuthCredential credential = EmailAuthProvider.getCredentialWithLink(email, emailLink);
+//
+//// Re-authenticate the user with the credential
+//        FirebaseAuth.getInstance().getCurrentUser().reauthenticate(credential)
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        if (task.isSuccessful()) {
+//                            // User has been successfully re-authenticated
+//                            Log.d(TAG, "User re-authenticated successfully");
+//                        } else {
+//                            // Re-authentication failed
+//                            Log.e(TAG, "Failed to re-authenticate user: " + task.getException());
+//                        }
+//                    }
+//                });
+//
+//    }
+
+    private void resendVerificationEmail(String email) {
+        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(),
+                                "Verification email sent to " + email,
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("Verification", "Verification email sent to " + email);
+                    } else {
+                        Log.e(TAG, "sendEmailVerification", task.getException());
+                        Toast.makeText(getApplicationContext(),
+                                "Failed to send verification email.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

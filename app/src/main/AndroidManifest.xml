@@ -105,6 +105,12 @@
             android:name=".view"
             android:exported="true">
         </activity>
+
+
+        <activity
+            android:name=".forgotPassword"
+            android:exported="true">
+        </activity>
     </application>
 
 

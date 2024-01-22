@@ -39,7 +39,6 @@
                     android:layout_marginLeft="10dp"
                     android:textColor="@color/teal_700"
                     android:textSize="50sp"
-                    android:fontFamily="@font/dancing"
                     android:textStyle="bold" />
 
                 <TextView
@@ -51,7 +50,6 @@
                     android:textColor="@color/teal_700"
                     android:textSize="25sp"
                     android:layout_marginLeft="10dp"
-                    android:fontFamily="@font/dancing"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -82,8 +80,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="#f00"
-                android:drawableLeft="@drawable/add"
+                android:background="@color/teal_700"
+                android:drawableLeft="@drawable/add2"
                 android:padding="10dp"
                 android:text="Add Task"
                 android:textSize="25sp" />

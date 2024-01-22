@@ -458,13 +458,6 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
 
 
 
-        TextView txtView = findViewById(R.id.currentDate);
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
-        txtView.setText(currentDate);
-
-
     }
 
     @Override
