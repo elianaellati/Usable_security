@@ -160,10 +160,21 @@ public class Notification extends AppCompatActivity implements NavigationView.On
                 openTasksIntent();
                 break;
 
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+            case R.id.important:
+                openImportantIntent();
+                break;
+
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
     }
     private void  openTasksIntent() {
         Intent intent = new Intent(this, DisplayTask.class);
@@ -183,6 +194,10 @@ public class Notification extends AppCompatActivity implements NavigationView.On
     }
     private void openMyDayIntent() {
         Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
         startActivity(intent);
     }
 

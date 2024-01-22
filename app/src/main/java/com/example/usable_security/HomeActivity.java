@@ -496,22 +496,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.my_day:
@@ -533,11 +517,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.tasks:
                 openTasksIntent();
                 break;
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+
+            case R.id.important:
+                openImportantIntent();
+                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
     }
     private void  openTasksIntent() {
         Intent intent = new Intent(this, DisplayTask.class);
@@ -559,6 +555,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
     private void openAssignedIntent() {
         Intent intent = new Intent(this, AssignedActivity.class);
+        startActivity(intent);
+    }
+
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
         startActivity(intent);
     }
 

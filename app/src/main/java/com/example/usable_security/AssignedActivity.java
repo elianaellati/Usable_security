@@ -318,11 +318,18 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
             case R.id.notification:
                 openNotificationIntent();
                 break;
+            case R.id.completed:
+                openCompletedIntent();
+                break;
 
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
+        startActivity(intent);
     }
     private void openLogoutIntent() {
         Intent intent = new Intent(this, MainActivity.class);

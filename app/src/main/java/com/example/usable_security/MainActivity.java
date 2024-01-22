@@ -166,6 +166,9 @@ static long duaration=60;
                                                             editor.putString("user", userJson);
                                                             editor.apply();
                                                             Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
+
+
+
                                                             Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                                             startActivity(intent);
                                                             finish();

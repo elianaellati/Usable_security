@@ -451,10 +451,25 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
             case R.id.tasks:
                 openTasksIntent();
                 break;
+
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+            case R.id.important:
+                openImportantIntent();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
+    }
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
+        startActivity(intent);
     }
 
     private void openAssignedIntent() {

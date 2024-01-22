@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
             setContentView(R.layout.forgot_password);
 
             //Initializaton
-            btnBack = findViewById(R.id.btnForgotPasswordBack);
+
             btnReset = findViewById(R.id.btnReset);
             edtEmail = findViewById(R.id.emailEditText);
             progressBar = findViewById(R.id.forgetPasswordProgressbar);
@@ -52,14 +52,6 @@ import com.google.firebase.auth.FirebaseAuth;
                 }
             });
 
-
-            //Back Button Code
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
 
         }
 
