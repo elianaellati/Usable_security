@@ -66,6 +66,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView loginLink = findViewById(R.id.login);
+        User.key=null;
         status = findViewById(R.id.status);
         Password = findViewById(R.id.EditPassword);
 
@@ -135,7 +136,8 @@ public class SignInActivity extends AppCompatActivity {
                     emailInputLayout.setHintEnabled(false);
                 } else {
                     // When the EditText loses focus, restore the hint if no text is entered
-                    if (emailEditText.getText().toString().isEmpty()) {
+                    if (emailEditText.getText().
+                            toString().isEmpty()) {
                         emailInputLayout.setHintEnabled(true);
                     }
                 }
@@ -228,7 +230,7 @@ public class SignInActivity extends AppCompatActivity {
                 errorMessageTextView.setVisibility(View.VISIBLE);
             }
 
-            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("")) {
+            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("") && flag == 2) {
 
                 // Create a new user with email and password
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
@@ -332,8 +334,7 @@ public class SignInActivity extends AppCompatActivity {
                 if (reloadTask.isSuccessful()) {
                     FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (reloadedUser != null && reloadedUser.isEmailVerified() && flag == 2) {
-                        Log.e(TAG, "Ana hpooooooooooooooooon");
-                        addUserToDatabase(name, username, email, password);
+                        addUserToDatabase(name, username, email);
 
                         Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
                         startActivity(intent);
@@ -351,25 +352,29 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
-    private void addUserToDatabase(String name, String username, String email, String password) {
-
+    private void addUserToDatabase(String name, String username, String email) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
+
+        // Generate a unique user ID
         String userId = usersReference.push().getKey();
-        User user = new User(name, username, password, email);
-        usersReference.child(userId).setValue(user);
-        User.key = userId;
+
+        User user = new User(name, username,email);
+
+
+        // Store the user information in SharedPreferences
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
+        usersReference.child(userId).setValue(user);
+        User.key = userId;
+        Log.d("LoginInfo", "IDDD" + User.key);
         Gson gson = new Gson();
         String userJson = gson.toJson(user);
         editor.putString("user", userJson);
-        editor.apply();
+        editor.commit();
         Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
-
     }
-
     private void showResendEmailDialog(String email, String name, String username, String password) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Resend Email Verification")
