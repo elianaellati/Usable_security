@@ -58,8 +58,6 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.complete);
-        ActionBar actionBar;
-        actionBar = getSupportActionBar();
         com=findViewById(R.id.no_completed);
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -75,6 +73,20 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ColorDrawable colorDrawable
@@ -111,6 +123,10 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+
+                                    if(entry.getValue().getShared()==1){
+                                        ++count;
+                                    }
 //                                    if (entry.getValue().getCompleted() == true) {
                                         taskList.add(entry.getValue());
 
@@ -231,13 +247,6 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
     }
 
 

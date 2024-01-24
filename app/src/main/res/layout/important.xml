@@ -72,6 +72,7 @@
                 android:textColor="#A66E4040"
                 android:padding="16dp"
                 android:textStyle="bold"
+                android:fontFamily="@font/dancing"
                 android:background="#B4FFFFFF"
                 android:layout_marginLeft="65dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -92,6 +93,7 @@
         app:itemIconSize="24dp"
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
+        app:headerLayout="@layout/user_profile"
         app:menu="@menu/navigation_bar"
         app:itemTextAppearance="@style/MyNavigationItemStyle" />
 

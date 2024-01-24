@@ -69,6 +69,7 @@
                 android:visibility="visible"
                 android:layout_marginTop="405dp"
                 android:textColor="#A66E4040"
+                android:fontFamily="@font/dancing"
                 android:padding="16dp"
                 android:textStyle="bold"
                 android:background="#B4FFFFFF"
@@ -93,6 +94,7 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
+        app:headerLayout="@layout/user_profile"
         app:itemTextAppearance="@style/MyNavigationItemStyle" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -53,13 +53,8 @@ public class SignInActivity extends AppCompatActivity {
     EditText Username;
     EditText Email;
     EditText Password;
+    TextView bio;
 
-
-    String name;
-    String username;
-    String email;
-    String password;
-    String emailLink = "https://www.example.com/finishSignUp?cartId=1234";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +64,7 @@ public class SignInActivity extends AppCompatActivity {
         User.key=null;
         status = findViewById(R.id.status);
         Password = findViewById(R.id.EditPassword);
-
+        bio=findViewById(R.id.bio);
         Button signup = findViewById(R.id.buttonsignup);
 
         TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
@@ -228,6 +223,10 @@ public class SignInActivity extends AppCompatActivity {
                 TextView errorMessageTextView = findViewById(R.id.errorMessageTextView4);
                 errorMessageTextView.setText("Password is required");
                 errorMessageTextView.setVisibility(View.VISIBLE);
+            }
+
+            if(flag==0){
+                bio.setVisibility(View.VISIBLE);
             }
 
             if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("") && flag == 2) {

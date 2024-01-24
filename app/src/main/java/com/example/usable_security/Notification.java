@@ -52,10 +52,21 @@ public class Notification extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
 
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Gson gson = new Gson();
         User user = gson.fromJson(userJson, User.class);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -128,12 +139,6 @@ public class Notification extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
-    }
 
 
 

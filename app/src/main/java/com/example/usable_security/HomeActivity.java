@@ -80,8 +80,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homeactivity);
-        ActionBar actionBar;
-        actionBar = getSupportActionBar();
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // This method will be invoked when the user performs a swipe-to-refresh
@@ -94,9 +92,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+       }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
       //  ActionBar actionBar;
@@ -141,7 +152,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
-                params.setMargins(30, 0, 60, 0);
+                params.setMargins(60, 0, 100, 0);
                 layout.addView(iconLayout);
 
                 // Create an ImageButton for the clock icon
@@ -472,16 +483,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
-    }
 
 
 
-        private void updateNotificationItem(String newTitle) {
+    private void updateNotificationItem(String newTitle) {
             NavigationView navigationView = findViewById(R.id.navigation_bar);
             Menu menu = navigationView.getMenu();
             MenuItem notificationItem = menu.findItem(R.id.notification);
@@ -564,7 +569,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void displayTasks() {
-
         count=0;
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> todayTasks = new ArrayList<>();
@@ -626,7 +630,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 adapter_tasks adapter = new adapter_tasks(todayTasks);
                 recycler.setAdapter(adapter);
 
-                ImageView imageView = findViewById(R.id.imageView);
+                TextView imageView = findViewById(R.id.imageView);
                 if(todayTasks.isEmpty()){
                     imageView.setVisibility(View.VISIBLE);
                 }

@@ -59,6 +59,26 @@
             android:text="Add Task"
             android:textSize="25sp" />
 
+
+        <TextView
+            android:id="@+id/no_important"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Tasks created yet!"
+            android:textSize="28sp"
+            android:visibility="gone"
+            android:layout_marginTop="405dp"
+            android:textColor="#A66E4040"
+            android:padding="16dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/dancing"
+            android:background="#B4FFFFFF"
+            android:layout_marginLeft="150dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"/>
+
     </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <com.google.android.material.navigation.NavigationView
@@ -72,6 +92,7 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
+        app:headerLayout="@layout/user_profile"
         app:itemTextAppearance="@style/MyNavigationItemStyle" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

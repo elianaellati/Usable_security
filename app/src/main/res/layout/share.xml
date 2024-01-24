@@ -46,7 +46,7 @@
             android:visibility="visible"
             android:layout_marginTop="405dp"
             android:textColor="#A66E4040"
-            android:padding="16dp"
+            android:padding="16dp" android:fontFamily="@font/dancing"
             android:textStyle="bold"
             android:background="#B4FFFFFF"
             android:layout_marginLeft="65dp"
@@ -67,6 +67,7 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
+        app:headerLayout="@layout/user_profile"
         app:itemTextAppearance="@style/MyNavigationItemStyle"
         />
 

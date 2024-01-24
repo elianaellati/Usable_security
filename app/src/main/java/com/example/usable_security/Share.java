@@ -45,11 +45,22 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent intent = getIntent();
-        tasks task = (tasks) intent.getSerializableExtra("task");
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+        Intent intent = getIntent();
+        tasks task = (tasks) intent.getSerializableExtra("task");
+
         User user=null;
         if (!userJson.isEmpty()) {
             Gson gson = new Gson();
@@ -70,15 +81,6 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
             share.setVisibility(View.GONE);
         }
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

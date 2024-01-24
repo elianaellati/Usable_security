@@ -41,18 +41,6 @@ android:layout_marginTop="5dp"
     android:textColor="#070707"
 android:layout_marginLeft="40dp"
 android:textStyle="bold"/>
-<!--<EditText-->
-<!--android:id="@+id/nameEditText"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:hint="Enter your name"-->
-<!--    android:background="@drawable/shape"-->
-<!--    android:padding="10dp"-->
-<!--    android:layout_marginLeft="35dp"-->
-<!--android:layout_marginRight="35dp"-->
-<!--android:layout_marginTop="10dp"-->
-<!--    />-->
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/nameInputLayout"
@@ -244,20 +232,14 @@ android:textStyle="bold"/>
         android:layout_marginBottom="2dp"
         />
 
-
-<!--    <Button-->
-<!--        android:id="@+id/buttonverify"-->
-<!--        android:layout_width="141dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="35dp"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:layout_marginRight="35dp"-->
-<!--        android:layout_marginBottom="15dp"-->
-<!--        android:background="@drawable/buttonshape"-->
-<!--        android:padding="10dp"-->
-<!--        android:text="Touch Id"-->
-<!--        android:textSize="19dp"-->
-<!--        android:textStyle="bold" />-->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="0dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="0dp">
 
     <ImageButton
         android:id="@+id/buttonverify"
@@ -265,12 +247,28 @@ android:textStyle="bold"/>
         android:layout_height="60dp"
         android:layout_marginLeft="35dp"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="35dp"
+        android:layout_marginRight="5dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/fingerprintscan"
         android:contentDescription="Touch ID"
         android:padding="10dp" />
 
+        <TextView
+            android:id="@+id/bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please add your finger print!"
+            android:textColor="@color/red"
+            android:layout_marginLeft="0dp"
+            android:visibility="gone"
+            android:layout_marginRight="35dp"
+            android:clickable="true"
+            android:textSize="15sp"
+            android:layout_marginTop="20dp"
+            android:focusable="true"
+           />
+
+    </LinearLayout>
     <Button
         android:id="@+id/buttonsignup"
         android:layout_width="match_parent"

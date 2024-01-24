@@ -60,6 +60,19 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -121,6 +134,9 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
 
        if(contactsMap.isEmpty()){
            cont.setVisibility(View.VISIBLE);
+       }
+       else{
+           cont.setVisibility(View.GONE);
        }
 
        List<contacts> allContacts = new ArrayList<>(contactsMap.values());
@@ -279,13 +295,6 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
     }
 
 

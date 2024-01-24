@@ -72,6 +72,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
     Map<String,tasks> taskMap=new HashMap<>();
     private MenuItem notificationMenuItem;
     int count=0;
+    TextView notask;
     private ReminderUtils reminderUtils = new ReminderUtils();
 
     @Override
@@ -86,20 +87,31 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
             displayTasks();
             Log.d("LoginInfo", "Refreshhh " );
 
+
             swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
         });
         displayTasks();
+        notask=findViewById(R.id.no_important);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //  ActionBar actionBar;
-        // actionBar = getSupportActionBar();
-
-
         ColorDrawable colorDrawable
                 = new ColorDrawable(Color.parseColor("#0F9D58"));
 
@@ -469,12 +481,6 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
-    }
 
 
 
@@ -685,6 +691,13 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                         Log.d("LoginInfo", "Aloooos " + task.getName());
                         todayTasks.add(task);
                     }
+                }
+
+                if(todayTasks.isEmpty()){
+                    notask.setVisibility(View.VISIBLE);
+                }
+                else {
+                    notask.setVisibility(View.GONE);
                 }
 
             }

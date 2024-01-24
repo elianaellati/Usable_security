@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
+    android:orientation="vertical"
     tools:ignore="HardcodedText">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -48,23 +49,10 @@
                     android:gravity="end|center_vertical"
                     android:text=""
                     android:textColor="#D56E4040"
-                    android:textSize="25sp"
+                    android:textSize="20sp"
                     android:layout_marginLeft="10dp"
                     android:textStyle="bold" />
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="200dp"
-                android:layout_height="210dp"
-                android:src="@drawable/notasks"
-                android:layout_marginTop="50dp"
-                android:visibility="gone"
-                android:layout_centerInParent="true"
-                android:layout_margin="16dp"
-                android:layout_gravity="center"
-                />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_viewTasks"
                 android:layout_width="match_parent"
@@ -86,6 +74,26 @@
                 android:text="Add Task"
                 android:textSize="25sp" />
 
+
+            <TextView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="405dp"
+                android:layout_marginBottom="16dp"
+                android:background="#B4FFFFFF"
+                android:padding="16dp"
+                android:text="&quot;Your future is created by what you today.&quot;"
+                android:fontFamily="@font/dancing"
+                android:textColor="#A66E4040"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -100,6 +108,7 @@
         app:itemIconSize="24dp"
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
+        app:headerLayout="@layout/user_profile"
         app:menu="@menu/navigation_bar"
         app:itemTextAppearance="@style/MyNavigationItemStyle" />
 
