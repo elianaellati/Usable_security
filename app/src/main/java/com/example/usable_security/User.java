@@ -10,7 +10,7 @@ import java.util.Map;
 public class User {
 
     private String username;
-    private String password;
+
     private String email;
     private  String name;
 
@@ -33,9 +33,7 @@ public class User {
         this.username = username;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+
 
     public void setEmail(String email) {
         this.email = email;
@@ -59,9 +57,7 @@ public class User {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
+
 
     public String getEmail() {
         return email;
@@ -84,10 +80,10 @@ public class User {
 
 
 
-    public User(String name, String username, String password, String email) {
+    public User(String name, String username,String email) {
         this.name = name;
         this.username = username;
-        this.password = password;
+
         this.email = email;
 
     }

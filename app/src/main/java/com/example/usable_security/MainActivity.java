@@ -172,7 +172,7 @@ static long duaration=60;
                                                             return; // No need to continue checking other users
                                                         }
                                                     }
-                                                // Handle the case where the user data is not found
+
                                                 Log.d("LoginInfo", "User data not found");
                                             }
 
