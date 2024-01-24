@@ -111,6 +111,16 @@
             android:name=".forgotPassword"
             android:exported="true">
         </activity>
+
+        <activity
+            android:name=".completeActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".importantActivity"
+            android:exported="true">
+        </activity>
     </application>
 
 

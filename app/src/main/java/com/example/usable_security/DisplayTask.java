@@ -510,11 +510,25 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
             case R.id.nav_logout:
                 openLogoutIntent();
                 break;
-
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+            case R.id.important:
+                openImportantIntent();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
+    }
+
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
+        startActivity(intent);
     }
     private void  openMydayIntent() {
         Intent intent = new Intent(this, HomeActivity.class);
