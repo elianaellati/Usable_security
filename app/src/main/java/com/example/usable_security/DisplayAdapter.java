@@ -92,6 +92,7 @@ public class DisplayAdapter extends RecyclerView.Adapter< DisplayAdapter.ViewHol
                     View dialogView = inflater.inflate(R.layout.dialogue_details, null);
                     builder.setView(dialogView);
 
+
                     ImageView editImage = dialogView.findViewById(R.id.editImage);
                     TextView editText = dialogView.findViewById(R.id.editText);
                     editImage.setImageResource(R.drawable.edit_icon);

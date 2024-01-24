@@ -10,6 +10,7 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backg"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <SearchView
@@ -23,6 +24,7 @@
         android:layout_marginEnd="16dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
+        android:textStyle="bold"
         />
     <Button
         android:id="@+id/addButton"
@@ -42,6 +44,24 @@
         tools:listitem="@layout/assigned"
         android:scrollbars="vertical"
         />
+
+    <TextView
+        android:id="@+id/no_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add your friends, colleagues to share with them your tasks"
+        android:textSize="28sp"
+        android:visibility="gone"
+        android:layout_marginTop="405dp"
+        android:textColor="#A66E4040"
+        android:padding="16dp"
+        android:textStyle="bold"
+        android:background="#B4FFFFFF"
+        android:layout_marginLeft="65dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
 
 </RelativeLayout>
     <com.google.android.material.navigation.NavigationView

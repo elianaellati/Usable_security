@@ -10,6 +10,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -30,12 +32,14 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
     public DrawerLayout drawerLayout;
     private MenuItem notificationMenuItem;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    TextView share;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.share);
         drawerLayout = findViewById(R.id.my_drawer_layout);
+        share=findViewById(R.id.no_share);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         NavigationView navigationView = findViewById(R.id.navigation_bar);
@@ -57,6 +61,15 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         recycler.setLayoutManager(new LinearLayoutManager(this));
         ShareAdapter adapter = new ShareAdapter(contact,task,contactsMap);
         recycler.setAdapter(adapter);
+
+
+        if(contact.isEmpty()){
+            share.setVisibility(View.VISIBLE);
+        }
+        else{
+            share.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -111,12 +124,26 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
                 openNotificationIntent();
                 break;
 
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+            case R.id.important:
+                openImportantIntent();
+                break;
+
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
+    }
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
+        startActivity(intent);
+    }
     private void openLogoutIntent() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

@@ -11,6 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/backg"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
@@ -19,11 +20,11 @@
             android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Share With Your Contacts"
-            android:textSize="18sp"
+            android:text="Share with your contacts"
+            android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="@color/teal_700"
-            android:layout_centerHorizontal="true"
+            android:textColor="#D56E4040"
+            android:paddingLeft="10dp"
             android:layout_marginTop="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -36,11 +37,29 @@
             android:scrollbars="vertical"
             />
 
+        <TextView
+            android:id="@+id/no_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You don't have any contacts to share yet! Head to the assign page and add some friends."
+            android:textSize="28sp"
+            android:visibility="visible"
+            android:layout_marginTop="405dp"
+            android:textColor="#A66E4040"
+            android:padding="16dp"
+            android:textStyle="bold"
+            android:background="#B4FFFFFF"
+            android:layout_marginLeft="65dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"/>
+
     </RelativeLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_bar"
        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:itemIconPadding="8dp"

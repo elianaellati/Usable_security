@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,12 +46,14 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
     private MenuItem notificationMenuItem;
 
     List<contacts> filteredContacts = new ArrayList<>();
+    TextView cont;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.assigned_page);
         SearchView searchView = findViewById(R.id.searchView);
+        cont=findViewById(R.id.no_contact);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -115,6 +118,10 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
        RecyclerView recycler = findViewById(R.id.recycler_view);
        SearchView searchView = findViewById(R.id.searchView);
        Map<String, contacts> contactsMap = user.contacts;
+
+       if(contactsMap.isEmpty()){
+           cont.setVisibility(View.VISIBLE);
+       }
 
        List<contacts> allContacts = new ArrayList<>(contactsMap.values());
        List<contacts> filteredContacts = new ArrayList<>(allContacts);

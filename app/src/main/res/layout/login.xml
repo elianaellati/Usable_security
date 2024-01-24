@@ -23,8 +23,10 @@
             android:layout_marginTop="130dp"
             android:padding="10dp"
             android:text="Task Management"
+            android:textStyle="bold"
             android:textColor="#070707"
             android:textSize="50dp"
+
             android:fontFamily="@font/dancing"
              />
     </LinearLayout>
@@ -130,7 +132,7 @@
         android:id="@+id/forgotpassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/red"
+        android:textColor="@color/teal_700"
         android:textSize="16sp"
         android:layout_marginLeft="35dp"
         android:layout_marginTop="16dp"

@@ -38,6 +38,7 @@ public class Notification extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawerLayout;
     private MenuItem notificationMenuItem;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    TextView share;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class Notification extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.notification);
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         drawerLayout = findViewById(R.id.my_drawer_layout);
+        share=findViewById(R.id.no_share);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         NavigationView navigationView = findViewById(R.id.navigation_bar);
@@ -84,6 +86,15 @@ public class Notification extends AppCompatActivity implements NavigationView.On
                     recycler.setLayoutManager(new LinearLayoutManager(Notification.this));
                     NotificationAdapter adapter = new NotificationAdapter(taskk);
                     recycler.setAdapter(adapter);
+
+                    if(taskk.isEmpty()){
+                        share.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        share.setVisibility(View.GONE);
+                    }
+
+
 
                     swipeRefreshLayout.setOnRefreshListener(() -> {
 

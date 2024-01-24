@@ -11,6 +11,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
@@ -46,6 +48,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
     private MenuItem notificationMenuItem;
     Map<String, tasks> taskMap = new HashMap<>();
     static int count=0;
+    TextView imp;
 
     private ReminderUtils reminderUtils = new ReminderUtils();
 
@@ -64,6 +67,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
             swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
         });
         displayTasks();
+        imp=findViewById(R.id.no_important);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -133,6 +137,13 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
                         Log.d("LoginInfo", "fffffdad " + task.getName());
                        importantTasks.add(task);
                     }
+                }
+
+                if(importantTasks.isEmpty()){
+                    imp.setVisibility(View.VISIBLE);
+                }
+                else{
+                    imp.setVisibility(View.GONE);
                 }
 
 

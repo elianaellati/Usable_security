@@ -35,7 +35,7 @@
                     android:layout_weight="1"
                     android:text="Important"
                     android:paddingLeft="10dp"
-                    android:textColor="#71354A"
+                    android:textColor="#D56E4040"
                     android:textSize="40sp"
                     android:textStyle="bold" />
 
@@ -60,6 +60,24 @@
                 tools:listitem="@layout/item_complete"
                 />
 
+
+            <TextView
+                android:id="@+id/no_important"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&quot;Your most important work is always ahead of you,never behind you&quot;"
+                android:textSize="28sp"
+                android:visibility="visible"
+                android:layout_marginTop="405dp"
+                android:textColor="#A66E4040"
+                android:padding="16dp"
+                android:textStyle="bold"
+                android:background="#B4FFFFFF"
+                android:layout_marginLeft="65dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="16dp"/>
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

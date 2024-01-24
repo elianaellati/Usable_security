@@ -11,6 +11,9 @@ package com.example.usable_security;
         import android.util.Log;
         import android.view.Menu;
         import android.view.MenuItem;
+        import android.view.View;
+        import android.widget.ImageView;
+        import android.widget.TextView;
 
 
         import androidx.annotation.NonNull;
@@ -46,6 +49,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
     private MenuItem notificationMenuItem;
     Map<String, tasks> taskMap = new HashMap<>();
     static int count=0;
+    TextView com;
 
     private ReminderUtils reminderUtils = new ReminderUtils();
 
@@ -56,6 +60,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
         setContentView(R.layout.complete);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
+        com=findViewById(R.id.no_completed);
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             displayTasks();
@@ -115,9 +120,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
                                 }
                             }
                         }
-                        recycler.setLayoutManager(new LinearLayoutManager(completeActivity.this));
-                        adapter_completed adapter = new adapter_completed(completedTasks);
-                        recycler.setAdapter(adapter);
+
                     }
                 }
 
@@ -136,6 +139,19 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
                         completedTasks.add(task);
                     }
                 }
+
+                recycler.setLayoutManager(new LinearLayoutManager(completeActivity.this));
+                adapter_completed adapter = new adapter_completed(completedTasks);
+                recycler.setAdapter(adapter);
+
+
+                if(completedTasks.isEmpty()){
+                    com.setVisibility(View.VISIBLE);
+                }
+                else{
+                    com.setVisibility(View.GONE);
+                }
+
 
 
             }

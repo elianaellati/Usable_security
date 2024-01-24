@@ -50,13 +50,13 @@
 
         <ImageButton
             android:id="@+id/shareImage"
-            android:layout_width="20dp"
-            android:layout_height="48dp"
+            android:layout_width="72dp"
+            android:layout_height="76dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="8dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/share_icon" />
+            android:src="@drawable/share2" />
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
