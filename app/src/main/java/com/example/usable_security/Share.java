@@ -45,6 +45,7 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
     Gson gson = new Gson();
     tasks task;
     Map<String,contacts> contacct=new HashMap<>();
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,19 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
         Intent intent = getIntent();
         task = (tasks) intent.getSerializableExtra("task");
 

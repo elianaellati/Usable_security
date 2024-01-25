@@ -74,6 +74,19 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ColorDrawable colorDrawable
@@ -83,6 +96,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
     }
 
     public void displayTasks() {
+
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> importantTasks = new ArrayList<>();
         List<tasks> taskList = new ArrayList<>();
@@ -109,6 +123,10 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+
+                                    if(entry.getValue().getShared()==1){
+                                        ++count;
+                                    }
                                     if (entry.getValue().getCompleted() == false) {
                                         taskList.add(entry.getValue());
                                     }
@@ -223,13 +241,6 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
     }
 
 

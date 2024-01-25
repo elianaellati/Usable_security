@@ -44,7 +44,7 @@
             android:id="@+id/no_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Shared Tasks Found"
+            android:text="No Shared Tasks Found."
             android:textSize="28sp"
             android:visibility="visible"
             android:layout_marginTop="405dp"
@@ -52,7 +52,8 @@
             android:padding="16dp"
             android:textStyle="bold"
             android:background="#B4FFFFFF"
-            android:layout_marginLeft="65dp"
+            android:layout_marginLeft="150dp"
+            android:fontFamily="@font/dancing"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,6 +71,7 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
+        app:headerLayout="@layout/user_profile"
         app:itemTextAppearance="@style/MyNavigationItemStyle"
         />
 

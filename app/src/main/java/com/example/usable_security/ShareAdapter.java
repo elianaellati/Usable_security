@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +67,7 @@ public class ShareAdapter
     private String keycontact;
     private String name;
     Map<String, contacts> contactsMap;
+    private TextInputLayout emailInputLayout;
 
     public ShareAdapter(List<contacts> contact, tasks task, Map<String, contacts> contactsMap) {
         this.contactsMap = contactsMap;
@@ -339,6 +343,30 @@ public class ShareAdapter
         View dialogView = inflater.inflate(R.layout.password_dialogue, null);
         builder.setView(dialogView);
         EditText Password = dialogView.findViewById(R.id.EditPassword);
+        emailInputLayout = dialogView.findViewById(R.id.passw);
+
+        Password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Not needed, but must be implemented due to the TextWatcher interface
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Not needed, but must be implemented due to the TextWatcher interface
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0) {
+                    // If there is text in the EditText, remove the hint from the TextInputLayout
+                    emailInputLayout.setHint(null);
+                } else {
+                    // If the EditText is empty, restore the hint in the TextInputLayout
+                    emailInputLayout.setHint("Enter your password");
+                }
+            }
+        });
 
         builder.setPositiveButton("OK", null);
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

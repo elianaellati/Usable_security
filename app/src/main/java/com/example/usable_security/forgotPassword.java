@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
     public class forgotPassword extends AppCompatActivity {
@@ -25,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
         ProgressBar progressBar;
         FirebaseAuth mAuth;
         String strEmail;
+        private TextInputLayout emailInputLayout;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +36,37 @@ import com.google.firebase.auth.FirebaseAuth;
             setContentView(R.layout.forgot_password);
 
             //Initializaton
-
+            emailInputLayout = findViewById(R.id.emailInputLayout);
             btnReset = findViewById(R.id.btnReset);
             edtEmail = findViewById(R.id.emailEditText);
             progressBar = findViewById(R.id.forgetPasswordProgressbar);
 
             mAuth = FirebaseAuth.getInstance();
+
+
+
+            edtEmail.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // Not needed, but must be implemented due to the TextWatcher interface
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // Not needed, but must be implemented due to the TextWatcher interface
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    if (editable.length() > 0) {
+                        // If there is text in the EditText, remove the hint from the TextInputLayout
+                        emailInputLayout.setHint(null);
+                    } else {
+                        // If the EditText is empty, restore the hint in the TextInputLayout
+                        emailInputLayout.setHint("Enter your Email");
+                    }
+                }
+            });
 
             //Reset Button Listener
             btnReset.setOnClickListener(new View.OnClickListener() {

@@ -15,9 +15,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/backg"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:background="@drawable/backg">
 
 
         <TextView
@@ -50,7 +48,7 @@
             android:visibility="visible"
             android:layout_marginTop="405dp"
             android:textColor="#A66E4040"
-            android:padding="16dp"
+            android:padding="16dp" android:fontFamily="@font/dancing"
             android:textStyle="bold"
             android:background="#B4FFFFFF"
             android:layout_marginLeft="65dp"
@@ -63,7 +61,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_bar"
-       android:layout_width="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
@@ -72,6 +70,7 @@
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
         app:menu="@menu/navigation_bar"
+        app:headerLayout="@layout/user_profile"
         app:itemTextAppearance="@style/MyNavigationItemStyle"
         />
 
