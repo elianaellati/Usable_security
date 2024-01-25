@@ -147,7 +147,7 @@ public class ShareAdapter
                biometricPrompt.authenticate(getPromptInfo());
 
 
-                if (flag == 2) {
+            /*    if (flag == 2) {
                     Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
                     findKey();
                     searchtheuser(position);
@@ -162,7 +162,7 @@ public class ShareAdapter
                         task.setAccess(1);
                     }
 
-                }
+                }*/
 
 
 
@@ -300,6 +300,19 @@ public class ShareAdapter
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 flag = 2;
+                Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
+                findKey();
+                searchtheuser(position);
+                task.setShared(1);
+
+                if (vieww.isChecked() && edit.isChecked()) {
+                    task.setAccess(1);
+                } else if (vieww.isChecked()) {
+                    Log.d("LoginInfo", "Incorrect password for username: ");
+                    task.setAccess(0);
+                } else {
+                    task.setAccess(1);
+                }
 
             }
 
