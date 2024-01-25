@@ -95,15 +95,7 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
-    }
-
-
+    
 
     private void updateNotificationItem(String newTitle) {
         NavigationView navigationView = findViewById(R.id.navigation_bar);

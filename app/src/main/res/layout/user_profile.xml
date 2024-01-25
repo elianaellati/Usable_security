@@ -18,6 +18,7 @@
         android:text=""
         android:textSize="18sp"
         android:layout_gravity="center"
+        android:layout_marginBottom="4dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:textColor="@android:color/white" />
 

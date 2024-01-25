@@ -58,7 +58,7 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
 
     Map<String, contacts> contactsMap=new HashMap<>();
    static  SharedPreferences preferences;
-     static String userJson;
+     static String userJson=null;
     List<contacts> filteredContacts = new ArrayList<>();
     List<contacts> allContacts= new ArrayList<>();
     TextView cont;
@@ -80,9 +80,8 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         actionBarDrawerToggle.syncState();
         View headerView = navigationView.getHeaderView(0);
         TextView textViewUsername = headerView.findViewById(R.id.user_name);
-
-        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        String userJson = preferences.getString("user", "");
+        preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        userJson = preferences.getString("user", "");
 
 
         if (!userJson.isEmpty()) {
@@ -114,8 +113,8 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
        List<contacts>contactlist= new ArrayList<>();
        FirebaseDatabase database = FirebaseDatabase.getInstance();
        DatabaseReference usersReference = database.getReference("Data");
+       userJson=preferences.getString("user","");
        if (!userJson.isEmpty()) {
-
            user = gson.fromJson(userJson, User.class);
            Log.d("Info", "ELIANANANANANANANANANANANANAN" + user.getUsername());
        }
@@ -339,12 +338,9 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_bar, menu);
-        notificationMenuItem = menu.findItem(R.id.notification);
-        return true;
-    }
+
+
+
 
 
 

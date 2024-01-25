@@ -114,7 +114,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isUsernameFound = false;
-
+                count=0;
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         if (dataSnapshot.exists()) {

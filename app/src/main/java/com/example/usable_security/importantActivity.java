@@ -114,7 +114,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean isUsernameFound = false;
-
+              count=0;
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         if (dataSnapshot.exists()) {
@@ -237,7 +237,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+count+")");
+            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
