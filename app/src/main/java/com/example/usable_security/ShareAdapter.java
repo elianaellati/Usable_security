@@ -288,7 +288,6 @@ public class ShareAdapter
                     biometricPrompt.cancelAuthentication();
                 }
                 if (errorCode == BiometricPrompt.ERROR_LOCKOUT) {
-                    ++counter;
                     PasswordDialogue(position);
                 }
             }

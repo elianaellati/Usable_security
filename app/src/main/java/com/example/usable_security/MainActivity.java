@@ -185,6 +185,8 @@ static long duaration=60;
                                                 Log.e("FirebaseError", "Error: " + databaseError.getMessage());
                                             }
                                         });
+
+
                                     } else {
                                         ++attempt;
                                         status.setText("Incorrect username or password");

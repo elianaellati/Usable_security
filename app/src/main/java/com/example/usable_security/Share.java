@@ -20,19 +20,31 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class  Share extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
     private MenuItem notificationMenuItem;
+    Map<String, contacts> contactsMap=new HashMap<>();
     public ActionBarDrawerToggle actionBarDrawerToggle;
     TextView share;
+    User user = null;
+    Gson gson = new Gson();
+    tasks task;
+    Map<String,contacts> contacct=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,28 +59,18 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
-        tasks task = (tasks) intent.getSerializableExtra("task");
-        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        String userJson = preferences.getString("user", "");
-        User user=null;
-        if (!userJson.isEmpty()) {
-            Gson gson = new Gson();
-            user = gson.fromJson(userJson, User.class);
-        }
-        RecyclerView recycler = findViewById(R.id.recycler_view);
-        Map<String, contacts> contactsMap = user.contacts;
-        List<contacts> contact = new ArrayList<>(contactsMap.values());
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-        ShareAdapter adapter = new ShareAdapter(contact,task,contactsMap);
-        recycler.setAdapter(adapter);
+        task = (tasks) intent.getSerializableExtra("task");
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        displayContacts();
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+
+            displayContacts();
+            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+        });
 
 
-        if(contact.isEmpty()){
-            share.setVisibility(View.VISIBLE);
-        }
-        else{
-            share.setVisibility(View.GONE);
-        }
 
     }
 
@@ -135,6 +137,57 @@ public class  Share extends AppCompatActivity implements NavigationView.OnNaviga
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public void displayContacts() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+        if (!userJson.isEmpty()) {
+            user = gson.fromJson(userJson, User.class);
+            Log.d("Info", "ELIANANANANANANANANANANANANAN" + user.getUsername());
+        }
+
+        usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        User userr = userSnapshot.getValue(User.class);
+                        if (userr != null) {
+                            contacct = userr.getContacts();
+                            user.setContacts(contacct);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            String updatedUserJson = gson.toJson(user);
+                            editor.putString("user", updatedUserJson);
+                            editor.apply();
+                        }
+                    }
+                }
+                RecyclerView recycler = findViewById(R.id.recycler_view);
+                Map<String, contacts> contactsMap = user.getContacts();
+                List<contacts> contact = new ArrayList<>(contactsMap.values());
+                recycler.setLayoutManager(new LinearLayoutManager(Share.this));
+                ShareAdapter adapter = new ShareAdapter(contact,task,contactsMap);
+                recycler.setAdapter(adapter);
+
+
+                if(contact.isEmpty()){
+                    share.setVisibility(View.VISIBLE);
+                }
+                else{
+                    share.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors here
+                Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+            }
+        });
     }
     private void  openImportantIntent() {
         Intent intent = new Intent(this, importantActivity.class);

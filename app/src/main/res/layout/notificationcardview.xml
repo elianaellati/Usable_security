@@ -17,7 +17,7 @@
         <ImageButton
             android:id="@+id/shareImage"
             android:layout_width="72dp"
-            android:layout_height="76dp"
+            android:layout_height="50dp"
             android:background="@android:color/transparent"
             android:src="@drawable/share2" />
         <LinearLayout
@@ -30,19 +30,22 @@
 
 
             <TextView
+                android:layout_marginLeft="70dp"
                 android:id="@+id/contactname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/teal_700"
                 android:paddingBottom="8dp" />
 
             <TextView
+                android:layout_marginLeft="70dp"
                 android:id="@+id/task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
+                android:layout_marginBottom="10dp"
                 android:textStyle="bold"
                 android:textColor="@color/teal_700"
                />

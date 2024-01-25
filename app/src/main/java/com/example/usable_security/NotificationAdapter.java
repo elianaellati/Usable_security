@@ -59,13 +59,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(NotificationAdapter.ViewHolder holder, int position) {
         CardView cardView = holder.cardView;
         String foundKey = null;
+        String access=null;
         Button accept = cardView.findViewById(R.id.btnAccept);
         Button reject = cardView.findViewById(R.id.btnReject);
         task = tasks.get(holder.getAdapterPosition());
         TextView namee = (TextView) cardView.findViewById(R.id.contactname);
-        namee.setText("     Shared From " + tasks.get(position).getShareduser());
+        namee.setText(tasks.get(position).getShareduser());
         TextView task = (TextView) cardView.findViewById(R.id.task);
-        task.setText("     " + "Task " + tasks.get(position).getName());
+        if(tasks.get(position).getAccess()==0){
+           access="viewing" ;
+        }else{
+            access="editing";
+        }
+        task.setText("Share with you " + tasks.get(position).getName()+" task, and gave you "+access+" access.");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
         preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);

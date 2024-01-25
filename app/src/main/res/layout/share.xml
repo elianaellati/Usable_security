@@ -8,6 +8,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="HardcodedText">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,6 +60,7 @@
             android:layout_marginBottom="16dp"/>
 
     </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_bar"
        android:layout_width="wrap_content"

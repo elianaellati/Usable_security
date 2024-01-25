@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -18,17 +20,19 @@ import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.usable_security.R;
+import com.google.android.gms.common.images.WebImage;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,21 +42,34 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class  AssignedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
+    static User user = null;
+    static Gson gson = new Gson();
+    static User updateuser;
+
+    Map<String, contacts> contacct=new HashMap<>();
     private MenuItem notificationMenuItem;
 
+    Map<String, contacts> contactsMap=new HashMap<>();
+   static  SharedPreferences preferences;
+     static String userJson;
     List<contacts> filteredContacts = new ArrayList<>();
+    List<contacts> allContacts= new ArrayList<>();
     TextView cont;
+    SearchView searchView;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Map<String,contacts> contacct=new HashMap<>();
+
         setContentView(R.layout.assigned_page);
-        SearchView searchView = findViewById(R.id.searchView);
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         cont=findViewById(R.id.no_contact);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
@@ -61,8 +78,13 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
+        preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        userJson = preferences.getString("user", "");
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            displayContacts();
+            Log.d("LoginInfo", "Refreshhh " );
+            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+        });
         displayContacts();
 
         Button add =findViewById(R.id.addButton);
@@ -74,71 +96,82 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         });
 
     }
-   /* public void displayContacts(){
-        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-        String userJson = preferences.getString("user", "");
-        User user=null;
-        if (!userJson.isEmpty()) {
-
-            Gson gson = new Gson();
-             user = gson.fromJson(userJson, User.class);
-            Log.d("Info", "EMAIl found:" + user.getUsername());
-        }
-        RecyclerView recycler = findViewById(R.id.recycler_view);
-        if(!user.contacts.isEmpty()) {
-            Map<String, contacts> contactsMap = user.contacts;
-            String[] name = new String[contactsMap.size()];
-            String[] email = new String[contactsMap.size()];
-            int i = 0;
-            for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
-                String contactId = entry.getKey();
-                contacts contactt = entry.getValue();
-                String contactName = contactt.getName();
-                String contactEmail = contactt.getEmail();
-                Log.d("LoginInfo", "Login successful. Username: " + contactEmail);
-                name[i] = contactName;
-                email[i] = contactEmail;
-                ++i;
-            }
-            recycler.setLayoutManager(new LinearLayoutManager(this));
-            Adapter adapter = new Adapter(name, email);
-            recycler.setAdapter(adapter);
-        }
-    }*/
    public void displayContacts() {
-       SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-       String userJson = preferences.getString("user", "");
-       User user = null;
+       List<contacts>contactlist= new ArrayList<>();
+       FirebaseDatabase database = FirebaseDatabase.getInstance();
+       DatabaseReference usersReference = database.getReference("Data");
        if (!userJson.isEmpty()) {
-           Gson gson = new Gson();
+
            user = gson.fromJson(userJson, User.class);
-           Log.d("Info", "EMAIl found:" + user.getUsername());
+           Log.d("Info", "ELIANANANANANANANANANANANANAN" + user.getUsername());
        }
 
-       RecyclerView recycler = findViewById(R.id.recycler_view);
-       SearchView searchView = findViewById(R.id.searchView);
-       Map<String, contacts> contactsMap = user.contacts;
+       usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+           @Override
+           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-       if(contactsMap.isEmpty()){
-           cont.setVisibility(View.VISIBLE);
-       }
+               if (dataSnapshot.exists()) {
 
-       List<contacts> allContacts = new ArrayList<>(contactsMap.values());
-       List<contacts> filteredContacts = new ArrayList<>(allContacts);
+                   for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                       User userr = userSnapshot.getValue(User.class);
+                       contacct = userr.getContacts();
+                       if (contacct != null) {
+                           for (Map.Entry<String, contacts> entry : contacct.entrySet()) {
+                            contactlist.add(entry.getValue());
+                           }
 
-       String[] name = new String[filteredContacts.size()];
-       String[] email = new String[filteredContacts.size()];
+                       }
+                   }
+               }
+               user.setContacts(contacct);
+               SharedPreferences.Editor editor = preferences.edit();
+               String updatedUserJson = gson.toJson(user);
+               editor.putString("user", updatedUserJson);
+               editor.apply();
+               if(contactlist.isEmpty()){
+                   Log.d("Info", "233333333333");
+                   cont.setVisibility(View.VISIBLE);
+               }
+               else{
+                   cont.setVisibility(View.GONE);
+               }
+               RecyclerView recycler = findViewById(R.id.recycler_view);
+               recycler.setLayoutManager(new LinearLayoutManager(AssignedActivity.this));
+               Adapter adapter = new Adapter(contactlist);
+               recycler.setAdapter(adapter);
+                searchView = findViewById(R.id.searchView);
 
-       for (int i = 0; i < filteredContacts.size(); i++) {
+                allContacts = new ArrayList<>(contactlist);
+                filteredContacts = new ArrayList<>(allContacts);
+
+           }
+
+
+           @Override
+           public void onCancelled(@NonNull DatabaseError databaseError) {
+               // Handle errors here
+               Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+           }
+       });
+     /* if(contactsMap != null && !contactsMap.isEmpty()) {
+           for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
+               contactlist.add(entry.getValue());
+           }
+       }*/
+
+
+
+       //String[] name = new String[filteredContacts.size()];
+      // String[] email = new String[filteredContacts.size()];
+
+      /* for (int i = 0; i < filteredContacts.size(); i++) {
            contacts contact = filteredContacts.get(i);
            name[i] = contact.getName();
            email[i] = contact.getEmail();
-       }
+       }*/
 
-       recycler.setLayoutManager(new LinearLayoutManager(this));
-       Adapter adapter = new Adapter(name, email);
-       recycler.setAdapter(adapter);
 
+       searchView = findViewById(R.id.searchView);
        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
            @Override
            public boolean onQueryTextSubmit(String query) {
@@ -170,16 +203,9 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
    }
 
     private void updateRecyclerView(List<contacts> contactsList) {
-        String[] name = new String[contactsList.size()];
-        String[] email = new String[contactsList.size()];
 
-        for (int i = 0; i < contactsList.size(); i++) {
-            contacts contact = contactsList.get(i);
-            name[i] = contact.getName();
-            email[i] = contact.getEmail();
-        }
 
-        Adapter adapter = new Adapter(name, email);
+        Adapter adapter = new Adapter(contactsList);
         RecyclerView recycler = findViewById(R.id.recycler_view);
         recycler.setAdapter(adapter);
     }
@@ -191,84 +217,102 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.email_dialogue, null);
+        TextView status = dialogView.findViewById(R.id.status);
         builder.setView(dialogView);
+                EditText editTextEmail = dialogView.findViewById(R.id.editEmail);
 
-        EditText editTextEmail = dialogView.findViewById(R.id.editEmail);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String enteredEmail = editTextEmail.getText().toString();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference usersReference = database.getReference("Data");
-                usersReference.orderByChild("email").equalTo(enteredEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+                builder.setPositiveButton("OK", null);
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean isEmailFound= false;
-
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                if (user != null  ) {
-                                    isEmailFound = true;
-                                    String id=User.key;
-                                    Log.d("Info", "EMAIl found:" + user.getUsername());
-                                    Log.d("Info", "EMAIl found:" + id);
-                                    contacts contact = new contacts(user.getName(), user.getEmail());
-                                    SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-                                    String userJson = preferences.getString("user", "");
-                                    Gson gson = new Gson();
-                                    int flagg=0;
-                                    User  updateuser = gson.fromJson(userJson, User.class);
-                                    Map<String,contacts> contacct=updateuser.getContacts();
-                                    for(Map.Entry<String,contacts> entry: contacct.entrySet() ){
-                                        if(entry.getValue().getEmail().compareToIgnoreCase(enteredEmail)==0){
-                                            flagg=1;
-                                        }
-                                    }
-                                    if (updateuser.getEmail().compareToIgnoreCase(enteredEmail)!=0 && flagg==0 ) {
-                                        DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
-                                        DatabaseReference newContactRef = userContactsRef.push();
-                                        Log.d("Info", "Elianaaaaaaaaaaaaa" + user.getUsername());
-                                        newContactRef.setValue(contact);
-                                        updateuser.addContactToMap(newContactRef.getKey(),contact);
-                                        String userrJson = gson.toJson( updateuser);
-                                        SharedPreferences.Editor editor = preferences.edit();
-                                        editor.putString("user",  userrJson);
-                                        editor.apply();
-                                    }else{
-                                        // For Java
-                                        Toast.makeText(getApplicationContext(), "Contact is already Exist", Toast.LENGTH_SHORT).show();
-
-                                    }
-
-                                    displayContacts();
-                                }
-                            }
-
-                        } else {
-                            // Username does not exist in the database
-                            Log.d("Info", "EMAIl not found: " + enteredEmail);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle errors here
-                        Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
                 });
-            }
-        });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+                builder.setCancelable(false);
+              AlertDialog dialog = builder.create();
+               dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                     @Override
+                                     public void onShow(DialogInterface dialogInterface) {
+                                         Button positiveButton = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
+                                         positiveButton.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View view) {
+                                                 String enteredEmail = editTextEmail.getText().toString();
+                                                 usersReference.orderByChild("email").equalTo(enteredEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                     @Override
+                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        AlertDialog dialog = builder.create();
+                                                         Log.d("Info", "EMAIl found:0000000" + enteredEmail);
+                                                         if (dataSnapshot.exists()) {
+                                                             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                                                 User user = userSnapshot.getValue(User.class);
+                                                                   if (user != null  ) {
+                                                                     String id=User.key;
+                                                                     Log.d("Info", "EMAIl found:0000000" + user.getUsername());
+                                                                     Log.d("Info", "EMAIl found:9999999" + id);
+                                                                     contacts contact = new contacts(user.getName(), user.getEmail());
+                                                                     int flagg=0;
+                                                                    updateuser = gson.fromJson(userJson, User.class);
+                                                                     Map<String,contacts> contacct=updateuser.getContacts();
+                                                                     for(Map.Entry<String,contacts> entry: contacct.entrySet() ){
+                                                                         Log.d("Info", "GLOOOOOOO" + user.getEmail());
+                                                                         Log.d("Info", "5555555555555555555" + entry.getValue().getEmail());
+                                                                         if(entry.getValue().getEmail().compareToIgnoreCase(enteredEmail)==0){
+                                                                             flagg=1;
+                                                                         }
+                                                                     }
+
+
+                                                                     if(flagg==1){
+                                                                         AlreadyExistDialog();
+                                                                     }
+                                                                     if (updateuser.getEmail().compareToIgnoreCase(enteredEmail)!=0 && flagg==0 ) {
+                                                                         DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(id).child("contacts");
+                                                                         DatabaseReference newContactRef = userContactsRef.push();
+                                                                         Log.d("Info", "Elianaaaaaaaaaaaaa" + user.getUsername());
+                                                                         newContactRef.setValue(contact);
+                                                                         updateuser.addContactToMap(newContactRef.getKey(),contact);
+                                                                         String userrJson = gson.toJson( updateuser);
+                                                                         SharedPreferences.Editor editor = preferences.edit();
+                                                                         editor.putString("user",  userrJson);
+                                                                         editor.apply();
+                                                                         ADDEDDialog();
+                                                                     }
+
+                                                                      dialog.dismiss();
+
+                                                                       status.setText("");
+                                                                 }
+                                                             displayContacts();
+
+                                                             }
+
+                                                         }
+
+
+                                                         else {
+                                                             status.setText("Email address not found");
+                                                             editTextEmail.setText("");
+                                                         }
+                                                     }
+
+                                                     @Override
+                                                     public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                         // Handle errors here
+                                                         Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+                                                     }
+                                                 });
+
+
+                                             }
+                                         });
+
+                                             }
+                                         });
+
         dialog.show();
     }
 
@@ -303,11 +347,6 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
 
         }
     }
-
-
-
-
-
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.my_day:
@@ -361,6 +400,80 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
         Intent intent = new Intent(this, DisplayTask.class);
         startActivity(intent);
     }
+    private void AlreadyExistDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.exist, null);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+
+                builder.setView(dialogView);
+                builder.setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+
+                alertDialog.show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (alertDialog != null && alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
+
+                    }
+                }, 2*1000);
+
+
+            }
+        });
+    }
+
+    private void ADDEDDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.add, null);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+
+                builder.setView(dialogView);
+                builder.setCancelable(false);
+                AlertDialog alertDialog = builder.create();
+
+                alertDialog.show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (alertDialog != null && alertDialog.isShowing()) {
+                            alertDialog.dismiss();
+                        }
+
+                    }
+                }, 2*1000);
+
+
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

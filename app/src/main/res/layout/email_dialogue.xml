@@ -21,7 +21,21 @@
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="2dp"
         android:inputType="textEmailAddress"
-        android:hint="   Enter an email" />
+        android:hint="Enter an email" />
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/red"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="2dp"
+        android:clickable="true"
+        android:textSize="18dp"
+        android:focusable="true"
+        android:textStyle="bold"/>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.usable_security;
 
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ public class User {
     public Map<String, contacts> getContacts() {
         return contacts;
     }
+
     public void setContacts(Map<String, contacts> contacts) {
         this.contacts = contacts;
     }
@@ -100,6 +102,13 @@ public class User {
     public void removeTaskFromMap(String taskId, tasks task) {
         tasks.remove(taskId, task);
     }
+    public void removecontactsFromMap(String contactId, contacts contact) {
+        Log.d("LoginInfo", "787878787878779898898"+contact.getEmail());
+        contacts.remove(contactId,contact);
+        setContacts(contacts);
+    }
+
+
 
     public void editTask(String taskId, tasks updatedTask) {
             tasks.put(taskId, updatedTask);
