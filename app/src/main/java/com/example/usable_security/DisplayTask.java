@@ -70,7 +70,6 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Map<String,tasks> taskMap=new HashMap<>();
-    private MenuItem notificationMenuItem;
     int count=0;
     TextView notask;
     private ReminderUtils reminderUtils = new ReminderUtils();
@@ -95,6 +94,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener( this);
         actionBarDrawerToggle.syncState();

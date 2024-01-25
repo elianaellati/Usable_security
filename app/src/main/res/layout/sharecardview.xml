@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/iv_image"
-            android:layout_width="120dp"
-            android:layout_height="80dp"
+            android:layout_width="86dp"
+            android:layout_height="86dp"
 
             android:src="@drawable/person" />
 
@@ -50,8 +50,8 @@
 
         <ImageButton
             android:id="@+id/shareImage"
-            android:layout_width="72dp"
-            android:layout_height="76dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="8dp"

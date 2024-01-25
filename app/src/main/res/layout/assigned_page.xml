@@ -55,6 +55,7 @@
         android:layout_marginTop="405dp"
         android:textColor="#A66E4040"
         android:padding="16dp"
+        android:fontFamily="@font/dancing"
         android:textStyle="bold"
         android:background="#B4FFFFFF"
         android:layout_marginLeft="65dp"
