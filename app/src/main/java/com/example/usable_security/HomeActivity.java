@@ -72,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private MenuItem notificationMenuItem;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     Map<String,tasks> taskMap=new HashMap<>();
+    static Map<String ,tasks>Latertasks=new HashMap<>();
     static int count=0;
 
     String name="";
@@ -636,6 +637,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         if (dataSnapshot.exists()) {
                             User userr = userSnapshot.getValue(User.class);
                             taskMap = userr.getTasks();
+                            Latertasks=userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     if(entry.getValue().getCompleted()==false) {

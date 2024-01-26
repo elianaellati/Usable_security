@@ -227,6 +227,7 @@
         app:itemIconSize="24dp"
         android:background="@color/teal_700"
         app:itemTextColor="@android:color/white"
+        app:headerLayout="@layout/user_profile"
         app:menu="@menu/navigation_bar"
         app:itemTextAppearance="@style/MyNavigationItemStyle"
         />

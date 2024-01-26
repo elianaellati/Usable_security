@@ -1,10 +1,16 @@
 package com.example.usable_security;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +20,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,6 +53,17 @@ public class view extends AppCompatActivity implements NavigationView.OnNavigati
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
         Intent intent = getIntent();
         tasks task = (tasks) intent.getSerializableExtra("task");
         taskName=findViewById(R.id.taskName);
@@ -71,10 +89,24 @@ public class view extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
             Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private void updateNotificationItem(String newTitle) {
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        Menu menu = navigationView.getMenu();
+        MenuItem notificationItem = menu.findItem(R.id.notification);
+
+        if (notificationItem != null) {
+            notificationItem.setTitle(newTitle);
+            SpannableString spannableString = new SpannableString(newTitle);
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+            notificationItem.setTitle(spannableString);
+
+        }
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -84,6 +116,23 @@ public class view extends AppCompatActivity implements NavigationView.OnNavigati
                 break;
             case R.id.assigned:
                 openAssignedIntent();
+                break;
+
+            case R.id.notification:
+                openNotificationIntent();
+                break;
+            case R.id.nav_logout:
+                openLogoutIntent();
+                break;
+            case R.id.tasks:
+                openTasksIntent();
+                break;
+
+            case R.id.completed:
+                openCompletedIntent();
+                break;
+            case R.id.important:
+                openImportantIntent();
                 break;
 
         }
@@ -101,5 +150,27 @@ public class view extends AppCompatActivity implements NavigationView.OnNavigati
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
+    private void  openImportantIntent() {
+        Intent intent = new Intent(this, importantActivity.class);
+        startActivity(intent);
+    }
+    private void openCompletedIntent() {
+        Intent intent = new Intent(this, completeActivity.class);
+        startActivity(intent);
+    }
 
+    private void  openTasksIntent() {
+        Intent intent = new Intent(this, DisplayTask.class);
+        startActivity(intent);
+    }
+
+    private void openNotificationIntent() {
+        Intent intent = new Intent(this, Notification.class);
+        startActivity(intent);
+    }
+
+    private void  openLogoutIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 }

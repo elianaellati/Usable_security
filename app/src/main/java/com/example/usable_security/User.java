@@ -103,7 +103,7 @@ public class User {
         tasks.remove(taskId, task);
     }
     public void removecontactsFromMap(String contactId, contacts contact) {
-        Log.d("LoginInfo", "787878787878779898898"+contact.getEmail());
+
         contacts.remove(contactId,contact);
         setContacts(contacts);
     }
@@ -111,6 +111,7 @@ public class User {
 
 
     public void editTask(String taskId, tasks updatedTask) {
+        Log.d("LoginInfo", "787878787878779898898"+updatedTask.getName());
             tasks.put(taskId, updatedTask);
         }
 

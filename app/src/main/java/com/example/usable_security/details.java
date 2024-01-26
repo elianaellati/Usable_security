@@ -6,9 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log; // Import Log class for logging
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -80,6 +85,17 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
         NavigationView navigationView = findViewById(R.id.navigation_bar);
         navigationView.setNavigationItemSelectedListener(this);
         actionBarDrawerToggle.syncState();
+        View headerView = navigationView.getHeaderView(0);
+        TextView textViewUsername = headerView.findViewById(R.id.user_name);
+        SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+
+
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            User user = gson.fromJson(userJson, User.class);
+            textViewUsername.setText(user.getEmail());
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         tasks task = (tasks) intent.getSerializableExtra("task");
@@ -390,13 +406,19 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                 String userJson = preferences.getString("user", "");
                 User user = null;
                 if (!userJson.isEmpty()) {
+                    Log.d("LoginInfo", ":Here Testingggggg");
                     Gson gson = new Gson();
                     user = gson.fromJson(userJson, User.class);
-                    Map<String, tasks> taskMap = user.getTasks();
+                    Map<String, tasks> taskMap = HomeActivity.Latertasks;
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                        Log.d("LoginInfo", "task name" + entry.getValue().getName());
+
+                    }
+                    for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                        Log.d("LoginInfo", "task.getName()"+entry.getValue().getName());
+                        Log.d("LoginInfo", ":Here Testingggggg"+task.getName());
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
                             Log.d("Taskkkkkkkk", task.getName());
-                            editForSharedContacts(user, task);
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
@@ -428,12 +450,25 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            Log.d("MenuItemClicked", "Item ID: " + item.getItemId());
+            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateNotificationItem(String newTitle) {
+        NavigationView navigationView = findViewById(R.id.navigation_bar);
+        Menu menu = navigationView.getMenu();
+        MenuItem notificationItem = menu.findItem(R.id.notification);
+
+        if (notificationItem != null) {
+            notificationItem.setTitle(newTitle);
+            SpannableString spannableString = new SpannableString(newTitle);
+            spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spannableString.length(), 0);
+            notificationItem.setTitle(spannableString);
+
+        }
+    }
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.my_day:

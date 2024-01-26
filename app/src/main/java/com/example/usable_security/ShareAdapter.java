@@ -144,10 +144,10 @@ public class ShareAdapter
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-              // BiometricPrompt biometricPrompt = getPrompt(position);
-              // biometricPrompt.authenticate(getPromptInfo());
+               BiometricPrompt biometricPrompt = getPrompt(position);
+               biometricPrompt.authenticate(getPromptInfo());
 
-                PasswordDialogue(position);
+               // PasswordDialogue(position);
 
             /*    if (flag == 2) {
                     Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
