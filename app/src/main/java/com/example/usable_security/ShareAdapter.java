@@ -216,7 +216,6 @@ public class ShareAdapter
             }
         }
     }
-
     public void searchtheuser(int position) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
@@ -334,7 +333,7 @@ public class ShareAdapter
             public void onAuthenticationFailed() {
                 ++counter;
                 super.onAuthenticationFailed();
-                if (counter == 3) {
+                if (counter >= 3) {
                     PasswordDialogue(position);
                     biometricPrompt.cancelAuthentication();
                 }
@@ -409,6 +408,7 @@ public class ShareAdapter
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
+
                 auth = FirebaseAuth.getInstance();
                 Button positiveButton = ((AlertDialog) dialogInterface).getButton(AlertDialog.BUTTON_POSITIVE);
 
@@ -444,6 +444,7 @@ public class ShareAdapter
                                                                         }
                                                                         attempt = 2;
                                                                         dialog.dismiss();
+                                                                        attempt=0;
 
                                                                     } else {
                                                                         ++attempt;

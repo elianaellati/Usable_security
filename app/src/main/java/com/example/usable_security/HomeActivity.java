@@ -85,12 +85,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // This method will be invoked when the user performs a swipe-to-refresh
-            displayTasks();
-            Log.d("LoginInfo", "Refreshhh " );
-
-            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+            displayTasks(new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    // Update the notification item with the count
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                    swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+                }
+            });
         });
-        displayTasks();
+
+// Initial display of tasks when the activity starts
+        displayTasks(new DisplayTasksCallback() {
+            @Override
+            public void onTasksDisplayed(int count) {
+                updateNotificationItem("Notification" + "(" + count + ")");
+            }
+        });
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -432,8 +443,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         DatabaseReference newTaskRef = userTasksRef.push();
                         newTaskRef.setValue(task);
                         String taskId = newTaskRef.getKey();
+                        displayTasks(new DisplayTasksCallback() {
+                            @Override
+                            public void onTasksDisplayed(int count) {
+                              //
+                                //  updateNotificationItem("Notification" + "(" + count + ")");
+                            }
+                        });
 
-                        displayTasks();
+                    //    displayTasks();
                         task.setId(taskId);
                         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         String userJson = preferences.getString("user", "");
@@ -449,9 +467,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             editor.putString("user",  userrJson);
 
                             editor.apply();
-                            displayTasks();
+                            displayTasks(new DisplayTasksCallback() {
+                                @Override
+                                public void onTasksDisplayed(int count) {
+
+                               //     updateNotificationItem("Notification" + "(" + count + ")");
+                                }
+                            });
+                     //       displayTasks();
                         }
-                        displayTasks();
+                        displayTasks(new DisplayTasksCallback() {
+                            @Override
+                            public void onTasksDisplayed(int count) {
+                                updateNotificationItem("Notification" + "(" + count + ")");
+                            }
+                        });
+                    //    displayTasks();
 
                     }
                 });
@@ -477,15 +508,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+    interface DisplayTasksCallback {
+        void onTasksDisplayed(int count);
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+count+")");
+            // Call displayTasks with a callback
+            displayTasks(new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
 
@@ -571,7 +610,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    public void displayTasks() {
+    public void displayTasks(final DisplayTasksCallback callback) {
         count=0;
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> todayTasks = new ArrayList<>();
@@ -616,7 +655,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     }
                 }
-
+                callback.onTasksDisplayed(count);
                     // List<tasks> taskList = new ArrayList<>(taskMap.values());
                     LocalDate currentDate = LocalDate.now();
                     for (tasks task : taskList) {

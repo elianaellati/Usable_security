@@ -126,7 +126,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("user", userrJson);
                 editor.apply();
-               HomeActivity.count= HomeActivity.count-1;
+                HomeActivity.count= HomeActivity.count-1;
                 removeTask(holder.getAdapterPosition());
                     }
 

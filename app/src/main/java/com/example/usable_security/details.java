@@ -501,7 +501,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
     private void editForSharedContacts(User user, tasks task) {
         Log.d("hello", "hieiei");
         Log.d("name", "" + user.getName());
-
         List<contacts> contactList = new ArrayList<>();
         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
@@ -509,7 +508,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
             Gson gson = new Gson();
             user = gson.fromJson(userJson, User.class);
         }
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersReference = database.getReference("Data");
         usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
