@@ -80,16 +80,26 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.displaytask);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
+
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // This method will be invoked when the user performs a swipe-to-refresh
-            displayTasks();
-            Log.d("LoginInfo", "Refreshhh " );
-
-
-            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+            displayTasks(new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    // Update the notification item with the count
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                    swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+                }
+            });
         });
-        displayTasks();
+        displayTasks(new DisplayTasksCallback() {
+            @Override
+            public void onTasksDisplayed(int count) {
+                updateNotificationItem("Notification" + "(" + count + ")");
+            }
+        });
+
         notask=findViewById(R.id.no_important);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
@@ -436,7 +446,13 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                         String taskId = newTaskRef.getKey();
                         Log.d("Tskkk",taskId);
                         Log.d("Adddedddddddddddddd",taskId);
-                        displayTasks();
+                        displayTasks(new DisplayTasksCallback() {
+                            @Override
+                            public void onTasksDisplayed(int count) {
+                                //
+                                //  updateNotificationItem("Notification" + "(" + count + ")");
+                            }
+                        });
                         task.setId(taskId);
                         SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                         String userJson = preferences.getString("user", "");
@@ -450,9 +466,15 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("user",  userrJson);
                             editor.apply();
-                            displayTasks();
+                            displayTasks(new DisplayTasksCallback() {
+                                @Override
+                                public void onTasksDisplayed(int count) {
+                                    //
+                                    //  updateNotificationItem("Notification" + "(" + count + ")");
+                                }
+                            });
                         }
-                        displayTasks();
+                       // displayTasks();
 
                     }
                 });
@@ -472,14 +494,24 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
 
     }
 
+    interface DisplayTasksCallback {
+        void onTasksDisplayed(int count);
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+count+")");
+            // Call displayTasks with a callback
+            displayTasks( new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 
@@ -632,7 +664,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
 //
 //    }
 
-    public void displayTasks() {
+    public void displayTasks(final DisplayTask.DisplayTasksCallback callback) {
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> todayTasks = new ArrayList<>();
         List<tasks> taskList = new ArrayList<>();
@@ -676,7 +708,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                     }
                 }
 
-
+                callback.onTasksDisplayed(count);
                 Log.d("LoginInfo", "Elianaaaaaaaaaaaaa");
                 // List<tasks> taskList = new ArrayList<>(taskMap.values());
                 Calendar currentCalendar = Calendar.getInstance();
