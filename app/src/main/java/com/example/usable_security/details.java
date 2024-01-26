@@ -430,7 +430,19 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             userTasksRef.child(entry.getKey()).child("time").setValue(task.getTime());
                             User updateuser = null;
                             updateuser = gson.fromJson(userJson, User.class);
-                            updateuser.editTask(entry.getKey(), task);
+
+// Update the tasks in the User object
+                            updateuser.setTasks(HomeActivity.Latertasks);
+
+// Convert the updated User object back to JSON
+                            String updatedUserJson = gson.toJson(updateuser);
+
+// Save the updated User JSON to SharedPreferences
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("user", updatedUserJson);
+                            editor.apply();
+
+
                             Intent intent = new Intent(details.this, HomeActivity.class);
                             startActivity(intent);
                         }

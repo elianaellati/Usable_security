@@ -281,8 +281,11 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                         Gson gson = new Gson();
                                         user = gson.fromJson(userJson, User.class);
                                         Map<String, tasks> taskMap = user.getTasks();
+
                                         for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
+                                            Log.d("deleted","bfgf"+entry.getValue().getName());
                                             if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
+
                                                 DatabaseReference userTasksRef = FirebaseDatabase.getInstance()
                                                         .getReference()
                                                         .child("Data")

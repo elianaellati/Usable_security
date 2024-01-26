@@ -135,6 +135,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
                             User userr = userSnapshot.getValue(User.class);
                             Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
                             taskMap = userr.getTasks();
+                            HomeActivity.Latertasks= userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
 

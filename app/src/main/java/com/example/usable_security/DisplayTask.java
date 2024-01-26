@@ -483,7 +483,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
-                });
+              });
 
                 builder.show();
             }
@@ -689,6 +689,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                             User userr = userSnapshot.getValue(User.class);
                             Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
                             taskMap = userr.getTasks();
+                            HomeActivity.Latertasks= userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     if(entry.getValue().getCompleted()==false && !entry.getValue().getName().contains("(Repeated)")) {

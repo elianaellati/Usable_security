@@ -638,6 +638,7 @@ String time="";
                             User userr = userSnapshot.getValue(User.class);
                             taskMap = userr.getTasks();
                             Latertasks=userr.getTasks();
+
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                                     if(entry.getValue().getCompleted()==false) {
@@ -652,12 +653,21 @@ String time="";
 
                                 }
                             }
+                            Gson gson = new Gson();
+                            User updateuser = null;
+                            updateuser = gson.fromJson(userJson, User.class);
+                            updateuser.setTasks(HomeActivity.Latertasks);
+                            String updatedUserJson = gson.toJson(updateuser);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("user", updatedUserJson);
+                            editor.apply();
                         }
 
 
                     }
                 }
                 callback.onTasksDisplayed(count);
+
                     // List<tasks> taskList = new ArrayList<>(taskMap.values());
                     LocalDate currentDate = LocalDate.now();
                     for (tasks task : taskList) {
