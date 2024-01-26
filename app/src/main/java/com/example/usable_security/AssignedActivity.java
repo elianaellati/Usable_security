@@ -49,6 +49,7 @@ import java.util.Map;
 
 public class  AssignedActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public DrawerLayout drawerLayout;
+
     static User user = null;
     static Gson gson = new Gson();
     static User updateuser;
@@ -118,7 +119,6 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
            user = gson.fromJson(userJson, User.class);
            Log.d("Info", "ELIANANANANANANANANANANANANAN" + user.getUsername());
        }
-
        usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -150,7 +150,7 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
                }
                RecyclerView recycler = findViewById(R.id.recycler_view);
                recycler.setLayoutManager(new LinearLayoutManager(AssignedActivity.this));
-               Adapter adapter = new Adapter(contactlist);
+               Adapter adapter = new Adapter(contactlist,AssignedActivity.this);
                recycler.setAdapter(adapter);
                 searchView = findViewById(R.id.searchView);
 
@@ -218,7 +218,7 @@ public class  AssignedActivity extends AppCompatActivity implements NavigationVi
     private void updateRecyclerView(List<contacts> contactsList) {
 
 
-        Adapter adapter = new Adapter(contactsList);
+        Adapter adapter = new Adapter(contactsList,AssignedActivity.this);
         RecyclerView recycler = findViewById(R.id.recycler_view);
         recycler.setAdapter(adapter);
     }

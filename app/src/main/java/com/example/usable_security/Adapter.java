@@ -2,6 +2,7 @@ package com.example.usable_security;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,10 +32,12 @@ public class Adapter
 
     private List<contacts> contacts;
     private Context context;
+    private AssignedActivity assignedActivity;
     contacts contactt;
 
-    public Adapter( List<contacts> contacts){
+    public Adapter( List<contacts> contacts ,AssignedActivity assignedActivity){
        this.contacts=contacts;
+       this.assignedActivity=assignedActivity;
     }
 
 
@@ -106,6 +109,7 @@ public class Adapter
                                         for (Map.Entry<String, contacts> entryy :   AssignedActivity.updateuser.getContacts().entrySet()) {
                                             Log.d("LoginInfo", "78779898898" + entryy.getValue().getName());
                                         }
+
                                         String updatedUserJson = AssignedActivity.gson.toJson(AssignedActivity.updateuser);
                                         SharedPreferences.Editor editor = AssignedActivity.preferences.edit();
                                         editor.putString("user", updatedUserJson);
@@ -130,7 +134,8 @@ public class Adapter
 
                                                     }
                                                 });
-                                        break; // Exit the loop after deleting the task
+                                        assignedActivity.displayContacts();
+                                        break;
                                     }
                                 }
                             }
