@@ -147,6 +147,14 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
 
                                 }
                             }
+                            Gson gson = new Gson();
+                            User updateuser = null;
+                            updateuser = gson.fromJson(userJson, User.class);
+                            updateuser.setTasks(HomeActivity.Latertasks);
+                            String updatedUserJson = gson.toJson(updateuser);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("user", updatedUserJson);
+                            editor.apply();
                         }
 
                     }
