@@ -59,14 +59,28 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
         setContentView(R.layout.important);
         ActionBar actionBar;
         actionBar = getSupportActionBar();
+
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            displayTasks();
-            Log.d("LoginInfo", "Refreshhh ");
-
-            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+            // This method will be invoked when the user performs a swipe-to-refresh
+            displayTasks(new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    // Update the notification item with the count
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                    swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+                }
+            });
         });
-        displayTasks();
+        displayTasks(new DisplayTasksCallback() {
+            @Override
+            public void onTasksDisplayed(int count) {
+                updateNotificationItem("Notification" + "(" + count + ")");
+            }
+        });
+
+
+
         imp=findViewById(R.id.no_important);
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
@@ -95,7 +109,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
 
     }
 
-    public void displayTasks() {
+    public void displayTasks(final importantActivity.DisplayTasksCallback callback) {
 
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> importantTasks = new ArrayList<>();
@@ -136,6 +150,7 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
                                 }
                             }
                         }
+                        callback.onTasksDisplayed(count);
                         recycler.setLayoutManager(new LinearLayoutManager(importantActivity.this));
                         adapter_important adapter = new adapter_important(importantTasks);
                         recycler.setAdapter(adapter);
@@ -234,10 +249,19 @@ public class importantActivity extends AppCompatActivity implements NavigationVi
         startActivity(intent);
     }
 
+    interface DisplayTasksCallback {
+        void onTasksDisplayed(int count);
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+HomeActivity.count+")");
+            // Call displayTasks with a callback
+            displayTasks( new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);

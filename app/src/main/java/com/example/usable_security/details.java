@@ -415,10 +415,10 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
 
                     }
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                        Log.d("LoginInfo", "task.getName()"+entry.getValue().getName());
-                        Log.d("LoginInfo", ":Here Testingggggg"+task.getName());
+
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
                             Log.d("Taskkkkkkkk", task.getName());
+                            editForSharedContacts(user,task);
                             task.setName(edtName.getText().toString());
                             task.setNote(edtNote.getText().toString());
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
