@@ -61,12 +61,23 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
         com=findViewById(R.id.no_completed);
         SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            displayTasks();
-            Log.d("LoginInfo", "Refreshhh ");
-
-            swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+            // This method will be invoked when the user performs a swipe-to-refresh
+            displayTasks(new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    // Update the notification item with the count
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                    swipeRefreshLayout.setRefreshing(false); // Stop the refreshing animation
+                }
+            });
         });
-        displayTasks();
+        displayTasks(new DisplayTasksCallback() {
+            @Override
+            public void onTasksDisplayed(int count) {
+                updateNotificationItem("Notification" + "(" + count + ")");
+            }
+        });
+
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -96,7 +107,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
     }
 
 
-    public void displayTasks() {
+    public void displayTasks(final completeActivity.DisplayTasksCallback callback) {
         RecyclerView recycler = findViewById(R.id.recycler_viewTasks);
         List<tasks> completedTasks = new ArrayList<>();
         List<tasks> taskList = new ArrayList<>();
@@ -140,7 +151,7 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
                     }
                 }
 
-
+                callback.onTasksDisplayed(count);
                 // List<tasks> taskList = new ArrayList<>(taskMap.values());
                 LocalDate currentDate = LocalDate.now();
                 for (tasks task : taskList) {
@@ -240,15 +251,23 @@ public class completeActivity extends AppCompatActivity implements NavigationVie
         startActivity(intent);
     }
 
+    interface DisplayTasksCallback {
+        void onTasksDisplayed(int count);
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            updateNotificationItem("Notification"+"("+count+")");
+            // Call displayTasks with a callback
+            displayTasks( new DisplayTasksCallback() {
+                @Override
+                public void onTasksDisplayed(int count) {
+                    updateNotificationItem("Notification" + "(" + count + ")");
+                }
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
     private void updateNotificationItem(String newTitle) {
