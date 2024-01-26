@@ -691,7 +691,7 @@ public class DisplayTask extends AppCompatActivity implements NavigationView.OnN
                             taskMap = userr.getTasks();
                             if (taskMap != null) {
                                 for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
-                                    if(entry.getValue().getCompleted()==false) {
+                                    if(entry.getValue().getCompleted()==false && !entry.getValue().getName().contains("(Repeated)")) {
                                         taskList.add(entry.getValue());
                                     }
                                     if(entry.getValue().getShared()==1){

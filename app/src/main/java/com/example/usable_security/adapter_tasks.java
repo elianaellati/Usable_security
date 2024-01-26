@@ -301,6 +301,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
                                                                 // Task deleted successfully
+                                                                Log.d("deleted","bfgf");
                                                                 tasks.remove(holder.getAdapterPosition()); // Remove the deleted task from the list
                                                                 notifyItemRemoved(holder.getAdapterPosition()); // Notify the adapter of the removed item
                                                                 notifyItemRangeChanged(holder.getAdapterPosition(), tasks.size()); // Notify the adapter that the data set has changed

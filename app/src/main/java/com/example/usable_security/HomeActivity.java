@@ -74,7 +74,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     Map<String,tasks> taskMap=new HashMap<>();
     static Map<String ,tasks>Latertasks=new HashMap<>();
     static int count=0;
-
+String time="";
     String name="";
 
     private ReminderUtils reminderUtils = new ReminderUtils();
@@ -196,7 +196,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         // For example:
                                         String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                                         task.setTime(selectedTime);
-
+                                         time=selectedTime;
                                     }
                                 },
                                 hour,
@@ -699,6 +699,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         tasks newTask=new tasks();
         Log.d("Dd","naame:"+ name);
         newTask.setName(name+"(Repeated)");
+        Log.d("Dd","timmeee:"+ time);
+        newTask.setTime(time);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(customRepeatInterval+" "+customRepeatUnit);
         newTask.setRepeat(task.repeat);
@@ -766,6 +768,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Date nextDueDate = calendar.getTime();
         tasks newTask=new tasks();
         newTask.setName(name +"(Repeated)");
+        newTask.setTime(time);
         newTask.setNote(task.note);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(task.repeat);

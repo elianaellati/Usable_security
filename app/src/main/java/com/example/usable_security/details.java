@@ -431,10 +431,6 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             User updateuser = null;
                             updateuser = gson.fromJson(userJson, User.class);
                             updateuser.editTask(entry.getKey(), task);
-                            String userrJson = gson.toJson(updateuser);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("user", userrJson);
-                            editor.apply();
                             Intent intent = new Intent(details.this, HomeActivity.class);
                             startActivity(intent);
                         }
