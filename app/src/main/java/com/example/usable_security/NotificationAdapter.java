@@ -86,12 +86,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                        user = userSnapshot.getValue(User.class);
-
                         Map<String, contacts> contact = user.getContacts();
                         usertasks = user.getTasks();
                         for (Map.Entry<String, contacts> entry : contact.entrySet()) {
                             if (entry.getValue().getEmail().compareToIgnoreCase(tasks.get(position).getEmail()) == 0) {
                                 isEmailFound = true;
+                                DatabaseReference contactReference = usersReference.child(user.getKey()).child("contacts");
+                                contactReference.child(entry.getKey()).child("shared").setValue(1);
+
                             }
                         }
 
@@ -113,12 +115,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                                 contacts contact = new contacts(tasks.get(position).getShareduser(), tasks.get(position).getEmail());
                                 DatabaseReference userContactsRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
                                 DatabaseReference newContactRef = userContactsRef.push();
+                                contact.setShared(1);
                                 newContactRef.setValue(contact);
+
                                 preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
                                 String userJson = preferences.getString("user", "");
                                 Gson gson = new Gson();
                                 User updateuser = gson.fromJson(userJson, User.class);
                                 updateuser.addContactToMap(newContactRef.getKey(), contact);
+
 
                             }
                 user.setTasks(usertasks);
