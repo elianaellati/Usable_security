@@ -557,6 +557,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                         if (currentUser != null) {
                                             String userEmail = currentUser.getEmail();
                                             Log.d("UserEmail", "Current user email: " + userEmail);
+                                            Log.d("UserEmail", "Boolean: " + contactEmails.contains(userEmail));
                                             if (userEmail != null && contactEmails.contains(userEmail)) {
                                                 Log.d("maybveee", "Task found for user with email: " + userEmail);
                                                 Map<String, tasks> userTasks = currentUser.getTasks();

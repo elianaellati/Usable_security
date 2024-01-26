@@ -74,6 +74,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     Map<String,tasks> taskMap=new HashMap<>();
     static int count=0;
 
+    String name="";
+
     private ReminderUtils reminderUtils = new ReminderUtils();
 
     @Override
@@ -207,6 +209,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 repeat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        name=input.getText().toString();
                         LayoutInflater inflater = getLayoutInflater();
                         View dialogView = inflater.inflate(R.layout.dialogue_layout, null);
                         Spinner spinner = dialogView.findViewById(R.id.dateSpinner);
@@ -653,7 +656,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         calendar.add(getCalendarUnitFromCustomRepeatUnit(customRepeatUnit), customRepeatInterval);
         Date nextDueDate = calendar.getTime();
         tasks newTask=new tasks();
-        newTask.setName(task.name);
+        Log.d("Dd","naame:"+ name);
+        newTask.setName(name+"(Repeated)");
         newTask.setDate(nextDueDate);
         newTask.setRepeat(customRepeatInterval+" "+customRepeatUnit);
         newTask.setRepeat(task.repeat);
@@ -720,7 +724,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         calendar.add(getCalendarUnitFromRepeatUnit(repeatUnit), repeatInterval);
         Date nextDueDate = calendar.getTime();
         tasks newTask=new tasks();
-        newTask.setName(task.name);
+        newTask.setName(name +"(Repeated)");
         newTask.setNote(task.note);
         newTask.setDate(nextDueDate);
         newTask.setRepeat(task.repeat);

@@ -94,6 +94,7 @@ public class ShareAdapter
         String foundKey = null;
         ImageButton share = cardView.findViewById(R.id.shareImage);
         contactt = contact.get(position);
+
         Log.d("LoginInfo", "elianaaa" + contact.get(position).getName());
         TextView namee = (TextView) cardView.findViewById(R.id.name);
         namee.setText(contact.get(position).getName());
@@ -103,7 +104,7 @@ public class ShareAdapter
             @Override
             public void onClick(View v) {
                 clickedPosition = position;
-
+                findKey(contact.get(clickedPosition).getEmail());
                 ShareDialogue(clickedPosition);
 
             }
@@ -143,9 +144,10 @@ public class ShareAdapter
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-               BiometricPrompt biometricPrompt = getPrompt(position);
-               biometricPrompt.authenticate(getPromptInfo());
+              // BiometricPrompt biometricPrompt = getPrompt(position);
+              // biometricPrompt.authenticate(getPromptInfo());
 
+                PasswordDialogue(position);
 
             /*    if (flag == 2) {
                     Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
@@ -205,12 +207,12 @@ public class ShareAdapter
     }
 
 
-    public void findKey() {
+    public void findKey(String email) {
         for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
-            if (entry.getValue().getEmail().compareToIgnoreCase(contactt.getEmail()) == 0) {
+            if (entry.getValue().getEmail().compareToIgnoreCase(email) == 0) {
                 keycontact = entry.getKey();
                 Log.d("LoginInfo", "Keyyyyyyy" + keycontact);
-
+                Log.d("LoginInfo", "emaillllllll" + contactt.getEmail());
             }
         }
     }
@@ -229,6 +231,7 @@ public class ShareAdapter
                 boolean isUsernameFound = false;
 
                 if (dataSnapshot.exists()) {
+                    contact.get(position).setShared(1);
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         User user = userSnapshot.getValue(User.class);
                         Map<String, tasks> taskk = user.getTasks();
@@ -258,9 +261,20 @@ public class ShareAdapter
                             newTaskRef.setValue(task);
                             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("contacts");
                             userRef.child(keycontact).child("shared").setValue(1);
+                            Log.d("LoginInfo", "keycontact "+keycontact);
+                            Log.d("LoginInfo", "edit 1 ");
                             SuccessDialog();
                         }
                     }
+
+
+
+
+
+
+
+
+
                 }
 
                 if (!isUsernameFound) {
@@ -301,7 +315,7 @@ public class ShareAdapter
                 super.onAuthenticationSucceeded(result);
                 flag = 2;
                 Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
-                findKey();
+
                 searchtheuser(position);
                 task.setShared(1);
 
@@ -418,7 +432,6 @@ public class ShareAdapter
                                         public void onComplete(@NonNull Task<AuthResult> taskk) {
                                             if (taskk.isSuccessful()) {
                                                                         Log.d("LoginInfo", "YAMOOOO99");
-                                                                        findKey();
                                                                         searchtheuser(position);
                                                                         task.setShared(1);
 
@@ -557,7 +570,7 @@ public class ShareAdapter
                                          if (user != null) {
                                              if (user.getPassword().equals(password)) {
                                                  Log.d("LoginInfo", "Keyyyyyyy" + contact.get(position).getName());
-                                                 findKey();
+
                                                  searchtheuser(position);
                                                  task.setShared(1);
 
