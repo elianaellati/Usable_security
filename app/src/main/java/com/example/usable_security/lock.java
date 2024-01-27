@@ -59,7 +59,7 @@ public class lock extends AppCompatActivity {
                         Intent intent = new Intent(lock.this, MainActivity.class);
                         startActivity(intent);
                         running = false;
-                        MainActivity.duaration=MainActivity.duaration+(60*2);
+                        MainActivity.duaration=MainActivity.duaration+(60*5);
                         MainActivity.count=1;
                         MainActivity.attempt=0;
                     }

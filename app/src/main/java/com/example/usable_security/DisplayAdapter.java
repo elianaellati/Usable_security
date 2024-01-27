@@ -68,9 +68,7 @@ public class DisplayAdapter extends RecyclerView.Adapter< DisplayAdapter.ViewHol
         namee.setText(tasks.get(position).getName());
         date.setText(formattedDate);
         Log.d("userId", id[0]);
-
         task = tasks.get(holder.getAdapterPosition());
-
         ImageButton starButton = cardView.findViewById(R.id.starButton);
         ImageButton details=cardView.findViewById(R.id.detailsButton);
 

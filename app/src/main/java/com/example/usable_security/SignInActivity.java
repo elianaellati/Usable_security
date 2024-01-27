@@ -212,6 +212,11 @@ public class SignInActivity extends AppCompatActivity {
              username = Username.getText().toString().trim();
              email = Email.getText().toString().trim();
              password = Password.getText().toString().trim();
+             Password passwordd=new Password(password);
+            Double entropy=passwordd.CalculateEntropy(password);
+            Double varience=passwordd.calculateVarience(password);
+            int type=passwordd.sum;
+            int check=EvaluateCategory(password,type,entropy,varience);
             firebaseAuth = FirebaseAuth.getInstance();
             if (name.isEmpty()) {
                 TextView errorMessageTextView = findViewById(R.id.errorMessageTextView1);
@@ -239,7 +244,8 @@ public class SignInActivity extends AppCompatActivity {
                 bio.setVisibility(View.VISIBLE);
             }
 
-            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("") && flag == 2) {
+
+            if (!username.equals("") && !password.equals("") && !email.equals("") && check==2 && flag == 2) {
 
                 // Create a new user with email and password
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
@@ -274,6 +280,9 @@ public class SignInActivity extends AppCompatActivity {
 //                        }
 //            });
 
+            }
+            if(check==1 || check==0){
+                status.setText("weak password");
             }
 
         });
@@ -353,9 +362,6 @@ public class SignInActivity extends AppCompatActivity {
                     });
         }
     }
-
-
-
 
     private void checkEmailVerificationStatus(FirebaseUser user, String name, String username, String email, String password) {
         status.setText("Waiting for email verification...");
@@ -515,6 +521,19 @@ public class SignInActivity extends AppCompatActivity {
 //                    }
 //                });
 
+    public int EvaluateCategory(String input,int type,Double entropy,Double varience) {
+        if(input.length()<=8 || (type==1 ) || entropy<30 || varience<100 ) {
+           return 0;
 
+        }
+        else if( (type==2 || type==3)  || (entropy>=30 && entropy<60) || (varience>100 && varience<500)) {
+         return 1;
+        }else {
+            return 2;
+        }
+
+
+
+    }
 
 }

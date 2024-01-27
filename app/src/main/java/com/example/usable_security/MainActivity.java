@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -203,6 +205,42 @@ static long duaration=60;
             }
         });
     }
+    private void sendEmailVerification(FirebaseUser user, String name, String username, String email, String password) {
+        if (!user.isEmailVerified()) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Email verification sent, handle the success (e.g., show a message to the user)
+                            Log.d(TAG, "Email verification sent.");
+
+                            checkEmailVerificationStatus(user, name, username, email, password);
+                        } else {
+                            // Email verification failed, handle the error (e.g., show a message to the user)
+                            Log.e(TAG, "Failed to send email verification: " + task.getException());
+                        }
+                    });
+        }
+    }
+    private void checkEmailVerificationStatus(FirebaseUser user, String name, String username, String email, String password) {
+        status.setText("Waiting for email verification...");
+        new Handler().postDelayed(() -> {
+            user.reload().addOnCompleteListener(reloadTask -> {
+                if (reloadTask.isSuccessful()) {
+                    FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (reloadedUser != null && reloadedUser.isEmailVerified()) {
+
+                    } else {
+
+                    }
+                } else {
+                    // Failed to reload user
+                    Log.e(TAG, "Failed to reload user: " + reloadTask.getException());
+                    // Handle the error
+                }
+            });
+        }, 30000); // 60,000 milliseconds = 1 minute
+    }
+
 }
 
                   /* if (!email.equals("") && !password.equals("")) {

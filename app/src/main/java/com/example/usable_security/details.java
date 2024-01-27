@@ -610,6 +610,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                                         if (userTask.getName().equals(nameBeforeUpdate)) {
                                                             Log.d("TaskFound", "Found matching task: " + userTask.getName());
                                                             DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
+                                                            userTasksRef.child(entry.getKey()).child("name").setValue(task.getImportant());
                                                             userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
                                                             userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
                                                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
