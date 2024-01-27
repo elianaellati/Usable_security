@@ -51,7 +51,7 @@ public class Password {
     }
 
 
-    public double calculateVarience(String password) {
+    public double calculateVarience() {
         int sum = 0;
         double varience=0;
         int[] values = password.chars().toArray();

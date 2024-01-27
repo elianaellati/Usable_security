@@ -361,7 +361,6 @@ public class ShareAdapter
         preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
         String userJson = preferences.getString("user", "");
         Gson gson = new Gson();
-
         storeduser = gson.fromJson(userJson, User.class);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);

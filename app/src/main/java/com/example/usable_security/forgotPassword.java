@@ -73,7 +73,7 @@ import com.google.firebase.auth.FirebaseAuth;
                 @Override
                 public void onClick(View v) {
                     strEmail = edtEmail.getText().toString().trim();
-                    if (!TextUtils.isEmpty(strEmail)) {
+                    if (!TextUtils.isEmpty(strEmail) ) {
                         ResetPassword();
                     } else {
                         edtEmail.setError("Email field can't be empty");

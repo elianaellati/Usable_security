@@ -412,8 +412,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                     Map<String, tasks> taskMap = HomeActivity.Latertasks;
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
                         Log.d("LoginInfo", "task name" + entry.getValue().getName());
-
                     }
+
                     for (Map.Entry<String, tasks> entry : taskMap.entrySet()) {
 
                         if (entry.getValue().getName().compareToIgnoreCase(task.getName()) == 0) {
@@ -424,6 +424,7 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("name").setValue(task.getName());
                             userTasksRef.child(entry.getKey()).child("note").setValue(task.getNote());
+
                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
                             userTasksRef.child(entry.getKey()).child("date").setValue(task.getDate());
                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
@@ -611,7 +612,8 @@ public class details extends AppCompatActivity implements NavigationView.OnNavig
                                                             Log.d("TaskFound", "Found matching task: " + userTask.getName());
                                                             DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
                                                             userTasksRef.child(entry.getKey()).child("name").setValue(task.getImportant());
-                                                            userTasksRef.child(entry.getKey()).child("name").setValue(edtName.getText().toString());
+                                                            userTasksRef.child(entry.getKey()).child("name").setValue(task.getName());
+                                                            userTasksRef.child(entry.getKey()).child("name").setValue(task.getImportant());
                                                             userTasksRef.child(entry.getKey()).child("note").setValue(edtNote.getText().toString());
                                                             userTasksRef.child(entry.getKey()).child("reminder").setValue(task.getReminder());
                                                             userTasksRef.child(entry.getKey()).child("repeat").setValue(task.getRepeat());
