@@ -45,7 +45,9 @@ import java.util.concurrent.Executor;
 public class MainActivity extends AppCompatActivity {
 static int attempt=0;
 static int count=3;
+int flagsign=0;
 static long duaration=60;
+    FirebaseUser user;
 
     TextView status;
     TextView forgotPassword;
@@ -139,97 +141,106 @@ static long duaration=60;
                     errorMessageTextView.setText("Password is required");
                     errorMessageTextView.setVisibility(View.VISIBLE);
                 }
-
                 if (!email.equals("") && !password.equals("")) {
-
-
+                    flagsign=0;
                     auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        // User is successfully authenticated
-                                        Log.d("LoginInfo", "ba88888 ");
-                                        usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
-                                                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                                        User user = userSnapshot.getValue(User.class);
-                                                        Log.d("LoginInfo", "ba88888 " + user.getName());
-                                                        String userId = userSnapshot.getKey();
-                                                            Log.d("LoginInfo", "jsjsjsj " + userId);
-                                                            User.key = userId;
-                                                            SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
-                                                            SharedPreferences.Editor editor = preferences.edit();
-                                                            editor.clear();
-                                                            Gson gson = new Gson();
-                                                            String userJson = gson.toJson(user);
-                                                            editor.putString("user", userJson);
-                                                            editor.apply();
-                                                            Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
+                                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        if (user != null) {
+                                            sendEmailVerification(user);
 
+                                            if (user.isEmailVerified()) {
+                                                // User is successfully authenticated
+                                                Log.d("LoginInfo", "ba88888 ");
+                                                usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                        if (dataSnapshot.exists()) {
+                                                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                                                User user = userSnapshot.getValue(User.class);
+                                                                Log.d("LoginInfo", "ba88888 " + user.getName());
+                                                                String userId = userSnapshot.getKey();
+                                                                Log.d("LoginInfo", "jsjsjsj " + userId);
+                                                                User.key = userId;
+                                                                SharedPreferences preferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+                                                                SharedPreferences.Editor editor = preferences.edit();
+                                                                editor.clear();
+                                                                Gson gson = new Gson();
+                                                                String userJson = gson.toJson(user);
+                                                                editor.putString("user", userJson);
+                                                                editor.apply();
+                                                                Log.d("LoginInfo", "Login successful. Username: " + user.getEmail());
 
-
-                                                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                                            startActivity(intent);
-                                                            finish();
-                                                            return; // No need to continue checking other users
+                                                                Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                                                startActivity(intent);
+                                                                finish();
+                                                                return; // No need to continue checking other users
+                                                            }
                                                         }
+
+                                                        Log.d("LoginInfo", "User data not found");
                                                     }
 
-                                                Log.d("LoginInfo", "User data not found");
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        // Handle errors here
+                                                        Log.e("FirebaseError", "Error: " + databaseError.getMessage());
+                                                    }
+                                                });
+                                            } else {
+                                                // Email is not verified
+                                                // Handle accordingly (e.g., prompt the user to verify their email)
+                                                Log.d("LoginInfo", "Email not verified");
                                             }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                // Handle errors here
-                                                Log.e("FirebaseError", "Error: " + databaseError.getMessage());
-                                            }
-                                        });
-
-
-                                    } else {
-                                        ++attempt;
-                                        status.setText("Incorrect username or password");
-                                        if(attempt==count) {
-                                            Intent intent = new Intent(MainActivity.this, lock.class);
-                                            startActivity(intent);
-
+                                        } else {
+                                            // User is null
+                                            Log.e("LoginInfo", "User is null");
                                         }
+                                    } else {
+                                        // Authentication failed, handle the error
+                                        Log.e("LoginInfo", "Authentication failed: " + task.getException());
                                     }
                                 }
                             });
-
                 }
+
+
+
             }
         });
     }
-    private void sendEmailVerification(FirebaseUser user, String name, String username, String email, String password) {
+    private void sendEmailVerification(FirebaseUser user) {
+        Log.d(TAG, "Email verification sent.");
         if (!user.isEmailVerified()) {
             user.sendEmailVerification()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            // Email verification sent, handle the success (e.g., show a message to the user)
-                            Log.d(TAG, "Email verification sent.");
 
-                            checkEmailVerificationStatus(user, name, username, email, password);
+                            Log.d(TAG, "Email verification sent.");
+                          checkEmailVerificationStatus(user);
                         } else {
-                            // Email verification failed, handle the error (e.g., show a message to the user)
+
                             Log.e(TAG, "Failed to send email verification: " + task.getException());
                         }
                     });
         }
     }
-    private void checkEmailVerificationStatus(FirebaseUser user, String name, String username, String email, String password) {
+
+    private void checkEmailVerificationStatus(FirebaseUser user) {
         status.setText("Waiting for email verification...");
         new Handler().postDelayed(() -> {
             user.reload().addOnCompleteListener(reloadTask -> {
                 if (reloadTask.isSuccessful()) {
                     FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (reloadedUser != null && reloadedUser.isEmailVerified()) {
-
+                        flagsign=1;
+                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                        startActivity(intent);
                     } else {
+                        Log.e(TAG, "Email not verified within one minute");
 
                     }
                 } else {
@@ -240,7 +251,6 @@ static long duaration=60;
             });
         }, 30000); // 60,000 milliseconds = 1 minute
     }
-
 }
 
                   /* if (!email.equals("") && !password.equals("")) {

@@ -220,10 +220,13 @@ public class SignInActivity extends AppCompatActivity {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Sign up success, send verification email to the user
-                                 user = FirebaseAuth.getInstance().getCurrentUser();
-                                if (user != null) {
+                                user = FirebaseAuth.getInstance().getCurrentUser();
+                                addUserToDatabase(name, username, email);
+                                Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                             /*   if (user != null) {
                                     sendEmailVerification(user, name, username, email, password);
-                                }
+                                }*/
                             } else {
                                 // Sign up failed, handle the error (e.g., display an error message)
                                 Log.e(TAG, "Failed to sign up: " + task.getException().getMessage());
@@ -252,6 +255,8 @@ public class SignInActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 flag = 2;
+                BiometricPrompt.CryptoObject cryptoObject = result.getCryptoObject();
+
                 notifyUser("Authentication Succeeded!");
             }
 
