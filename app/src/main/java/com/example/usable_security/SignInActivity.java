@@ -214,16 +214,17 @@ public class SignInActivity extends AppCompatActivity {
             }
 
 
-            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("") && flag == 2 && number==2 || number==1 ) {
+            if (!username.equals("") && !password.equals("") && !email.equals("") && !password.equals("") && flag == 2 && number==2 ) {
                 // Create a new user with email and password
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 // Sign up success, send verification email to the user
                                  user = FirebaseAuth.getInstance().getCurrentUser();
-                                if (user != null) {
+                                addUserToDatabase(name, username, email);
+                              /*  if (user != null) {
                                     sendEmailVerification(user, name, username, email, password);
-                                }
+                                }*/
                             } else {
                                 // Sign up failed, handle the error (e.g., display an error message)
                                 Log.e(TAG, "Failed to sign up: " + task.getException().getMessage());

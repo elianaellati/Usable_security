@@ -28,10 +28,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +47,8 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
     private tasks task;
     private AlertDialog detailsDialog;
     private AlertDialog viewDialog;
+    Map<String,contacts> contactsMap=new HashMap<>();
+    ArrayList<String> contactEmails = new ArrayList<>();
 
 
 
@@ -372,6 +379,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                         Log.d("Taskkkkkkkk", task.getName());
                         String taskName = entry.getValue().getName();
                         if (taskName != null && taskName.equalsIgnoreCase(task.getName())) {
+                            editForSharedContacts(user,  task);
                             Log.d("status", String.valueOf(task.getImportant()));
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant())
@@ -380,6 +388,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d("Firebase", "Database update successful");
+
                                             } else {
                                                 Log.e("Firebase", "Database update failed: " + task.getException());
                                             }
@@ -433,6 +442,7 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
                         if (taskName != null && entry.getValue().getName().compareToIgnoreCase(task.getName())==0){
                             DatabaseReference userTasksRef = FirebaseDatabase.getInstance().getReference().child("Data").child(User.key).child("tasks");
                             userTasksRef.child(entry.getKey()).child("completed").setValue(task.getCompleted());
+                            editForSharedContacts(user,  task);
                         }
                     }
                 }
@@ -456,6 +466,106 @@ public class adapter_tasks extends RecyclerView.Adapter<adapter_tasks.ViewHolder
             super(cardView);
             this.cardView = cardView;
         }
+    }
+
+
+    private void editForSharedContacts(User user, tasks task) {
+        Log.d("hello", "hieiei");
+        Log.d("name", "" + user.getName());
+        List<contacts> contactList = new ArrayList<>();
+        SharedPreferences preferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE);
+        String userJson = preferences.getString("user", "");
+        if (!userJson.isEmpty()) {
+            Gson gson = new Gson();
+            user = gson.fromJson(userJson, User.class);
+        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("Data");
+        usersReference.orderByChild("email").equalTo(user.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isUsernameFound = false;
+
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        if (dataSnapshot.exists()) {
+                            User userr = userSnapshot.getValue(User.class);
+                            Log.d("LoginInfo", "Ba7000000000000 " + userr.getEmail());
+                            contactsMap = userr.getContacts();
+                            if (contactsMap != null) {
+                                for (Map.Entry<String, contacts> entry : contactsMap.entrySet()) {
+                                    contactList.add(entry.getValue());
+                                    Log.d("LoginInfo", "contact " + entry.getValue().getEmail());
+
+                                }
+                            }
+                            for (contacts entry:contactList) {
+                                Log.d("ooooooooooooooooooooo", "ppoll" );
+                                if (entry.getShared() == 1) {
+                                    Log.d("name", "" + entry.getName());
+                                    String email = entry.getEmail();
+                                    if (email != null && !email.isEmpty()) {
+                                        contactEmails.add(email);
+                                        Log.d("email", email);
+                                    }
+                                }
+                            }
+                            // Now you can use the contactEmails list for further processing
+                        } else {
+                            Log.d("contacts", "Contacts map is null");
+                        }
+
+                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Data");
+                        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                    User currentUser = userSnapshot.getValue(User.class);
+                                    Log.d("UserData", "Snapshot key: " + userSnapshot.getKey());
+                                    Log.d("UserData", "Current user: " + currentUser);
+                                    if (currentUser != null) {
+                                        String userEmail = currentUser.getEmail();
+                                        Log.d("UserEmail", "Current user email: " + userEmail);
+                                        Log.d("UserEmail", "Boolean: " + contactEmails.contains(userEmail));
+                                        if (userEmail != null && contactEmails.contains(userEmail)) {
+                                            Log.d("maybveee", "Task found for user with email: " + userEmail);
+                                            Map<String, tasks> userTasks = currentUser.getTasks();
+                                            if (userTasks != null) {
+                                                for (Map.Entry<String, tasks> entry : userTasks.entrySet()) {
+                                                    tasks userTask = entry.getValue();
+                                                    Log.d("TasfffkFound", "check " + userTask.getName());
+                                                    if (userTask.getName().equals(task.getName())) {
+                                                        Log.d("TaskFound", "Found matching task: " + userTask.getName());
+                                                        DatabaseReference userTasksRef = userSnapshot.child("tasks").getRef();
+                                                        userTasksRef.child(entry.getKey()).child("completed").setValue(task.getCompleted());
+                                                        userTasksRef.child(entry.getKey()).child("important").setValue(task.getImportant());
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("Firebase", "Error reading data from Firebase", error.toException());
+                            }
+                        });
+                    }
+                }
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
     }
 
 
